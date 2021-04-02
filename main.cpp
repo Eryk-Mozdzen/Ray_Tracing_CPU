@@ -1,8 +1,7 @@
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <string>
-#include <SFML/Audio.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "Tools.h"
@@ -61,7 +60,7 @@ public:
     Ray(Vector3d origin, Vector3d direction) : Line(origin, direction) {}
 
     bool intersect(Vector3d _point, double *t) {
-        double d = Line::distance(Line(point, direction), _point);
+        double d = distance(Line(point, direction), _point);
         if(d>EPSILON)
             return false;
 
@@ -309,21 +308,50 @@ public:
 
 class Ground : public Object, public Plane {
 public:
+    sf::Image *texture;
+    double textWidth, textHeight;
     double reflectivity;
 
     Ground() {}
 
     Ground(Vector3d point, Vector3d normal, double _reflectivity) : Plane(point, normal) {
         reflectivity = _reflectivity;
+        texture = nullptr;
+    }
+
+    Ground(Vector3d point, Vector3d normal, double _reflectivity, sf::Image *_texture, double _textWidth, double _textHeight) : Plane(point, normal) {
+        reflectivity = _reflectivity;
+
+        texture = _texture;
+        textWidth = _textWidth;
+        textHeight = _textHeight;
     }
 
     sf::Color getPixel(Vector3d point3D) {
+        //only special case
         sf::Vector2f point2D(point3D.x, point3D.y);
 
-        bool gridX = round(fabs(fmod(point2D.x/50, 1))); if(point2D.x<0) gridX = !gridX;
-        bool gridY = round(fabs(fmod(point2D.y/50, 1))); if(point2D.y<0) gridY = !gridY;
+        if(texture==nullptr) {
+            bool gridX = round(fabs(fmod(point2D.x/50, 1))); if(point2D.x<0) gridX = !gridX;
+            bool gridY = round(fabs(fmod(point2D.y/50, 1))); if(point2D.y<0) gridY = !gridY;
 
-        return !gridX != !gridY ? sf::Color(100, 100, 100) : sf::Color(50, 50, 50);
+            return !gridX != !gridY ? sf::Color(100, 100, 100) : sf::Color(50, 50, 50);
+        }
+
+        sf::Vector2f textCoords(
+            std::fmod(point2D.x, textWidth),
+            std::fmod(point2D.y, textHeight)
+        );
+
+        if(textCoords.x<0) textCoords.x +=textWidth;
+        if(textCoords.y<0) textCoords.y +=textHeight;
+
+//std::cout << textCoords.y << std::endl;
+
+        return texture->getPixel(
+            (textCoords.x/textWidth)*texture->getSize().x,
+            (textCoords.y/textHeight)*texture->getSize().y
+        );
     }
 
     bool intersect(Ray ray, CollisionData *data) {
@@ -440,42 +468,6 @@ public:
 
 };
 
-class DataDisplay {
-public:
-    sf::Clock clock;
-    sf::Font font;
-    sf::Text text;
-    double alpha;
-    double dT_filter;
-    std::string str;
-
-    DataDisplay() {}
-
-    DataDisplay(double _alpha) {
-        alpha = _alpha;
-        dT_filter = 0;
-        str = "";
-
-        if(!font.loadFromFile("arial.ttf")) {}
-        text.setFont(font);
-        text.setCharacterSize(18);
-    }
-
-    void update(sf::RenderWindow *win, sf::Vector2f pos) {
-        double dT = clock.restart().asSeconds();
-        dT_filter = alpha*dT + (1.f-alpha)*dT_filter;
-        text.setString("FPS: " + std::to_string(1.f/dT_filter) + "\nTime: " + std::to_string(dT_filter) + "\n" + str);
-        text.setPosition(pos);
-        win->draw(text);
-        str = "";
-    }
-
-    void add(std::string name, Vector3d v) {
-        str +=(name + std::to_string(v.x) + " " + std::to_string(v.y) + " " + std::to_string(v.z) + "\n");
-    }
-
-};
-
 class TextureMenager {
 public:
     std::vector<sf::Image> textures;
@@ -496,7 +488,8 @@ public:
 
 int main() {
 
-    DataDisplay data_display(1);
+    sf::Clock clock;
+
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Ray Tracing");
 	window.setMouseCursorVisible(false);
 
@@ -506,9 +499,10 @@ int main() {
 	TextureMenager menager;
 	menager.load("textures/road1.jpg");
 	menager.load("textures/earth2.jpg");
+	menager.load("textures/notexture.jpg");
 
     Sphere skybox(Vector3d(0, 0, 0), 10000, 0, menager.getTextureReference(0));
-	Ground ground(Vector3d(0, 0, 0), Vector3d(0, 0, 1), 0);
+	Ground ground(Vector3d(0, 0, 0), Vector3d(0, 0, 1), 0, menager.getTextureReference(2), 50, 50);
 	Triangle mirror(Vector3d(50, 100, 0), Vector3d(50, 10, 0), Vector3d(100, 10, 100), 1);
 
 	Sphere balls[9];
@@ -541,7 +535,7 @@ int main() {
 		window.clear();
 		scene.clear();
 
-		balls[0].center = Vector3d(20*sin(angle), -20 + 20*cos(angle), 20);
+		balls[0].center = Vector3d(-10, -10, 20) + rotate(Vector3d(0, 0, 1), Vector3d(10, 10, 0), angle);
 		angle +=0.1;
 
         for(int i=0; i<9; i++)
@@ -552,11 +546,14 @@ int main() {
 
 		scene.render(&window);
 
-        data_display.add("Position: ", camera.position);
-        data_display.add("Direction X: ", camera.directionX);
-        data_display.add("Direction Y: ", camera.directionY);
-        data_display.add("Direction Z: ", camera.directionZ);
-        data_display.update(&window, sf::Vector2f(0, 0));
+		double renderTime = clock.restart().asSeconds();
+
+		std::string windowTitle = "Ray Tracing";
+		windowTitle +=" | Resolution: " + std::to_string(RESOLUTION_H) + "x" + std::to_string(RESOLUTION_V);
+        windowTitle +=" | Render Time: " + std::to_string(renderTime) + "s";
+		windowTitle +=" | FPS: " + std::to_string(1/renderTime);
+		window.setTitle(windowTitle);
+
         window.display();
     }
 

@@ -7,7 +7,7 @@ Line::Line(Vector3d _point, Vector3d _direction) {
     direction = normalize(_direction);
 }
 
-double Line::distance(Line line, Vector3d point) {
+double distance(Line line, Vector3d point) {
     return length(cross(line.direction, line.point-point))/length(line.direction);
 }
 
@@ -96,25 +96,14 @@ void print(Vector3d v) {
     std::cout << v.x << '\t' << v.y << '\t' << v.z << '\n';
 }
 
-Vector3d rotate(Vector3d k, Vector3d v, double theta) {
-    k = normalize(k);
+Vector3d rotate(Vector3d axis, Vector3d v, double theta) {
+    axis = normalize(axis);
 
-    double c = cos(theta);
-    double s = sin(theta);
+    double c = std::cos(theta);
+    double s = std::sin(theta);
 
-    //return (c*v + s*cross(k, v) + dot(k, v)*(1.f-c)*k);
-
-    Vector3d parallel = dot(k, v)*k;
-    Vector3d prep = v - parallel;
-
-    Vector3d pp = cross(k, prep);
-
-    //Vector3d new_prep = prep*c + pp*s;
-
-    //std::cout << length(new_prep) << std::endl;
-
-    //return parallel + new_prep;
-    return length(v)*normalize(v+pp*theta);
+    //Rodrigues' rotation formula
+    return (c*v + s*cross(axis, v) + dot(axis, v)*(1.f-c)*axis);
 }
 
 

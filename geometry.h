@@ -1,6 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include <math.h>
+#include <cmath>
 
 typedef sf::Vector3<double> Vector3d;
 
@@ -11,7 +11,6 @@ public:
 
     Line();
     Line(Vector3d, Vector3d);
-    static double distance(Line, Vector3d);
 };
 
 class Plane {
@@ -26,6 +25,7 @@ public:
     bool intersect(Line, Vector3d*);
 };
 
+double distance(Line, Vector3d);
 void print(Vector3d);
 double length(Vector3d);
 double dot(Vector3d, Vector3d);

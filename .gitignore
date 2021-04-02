@@ -1,3 +1,5 @@
 bin/*
 obj/*
-test-sfml.*
+RayTracingCPU.*
+sfml-*
+openal32.dll
