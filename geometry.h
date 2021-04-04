@@ -1,3 +1,6 @@
+#ifndef GEOMETRY_H
+#define GEOMETRY_H
+
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <cmath>
@@ -34,4 +37,4 @@ Vector3d cross(Vector3d, Vector3d);
 Vector3d normalize(Vector3d);
 Vector3d rotate(Vector3d, Vector3d, double);
 
-
+#endif

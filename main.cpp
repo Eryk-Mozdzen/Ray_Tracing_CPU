@@ -1,10 +1,14 @@
 #include <iostream>
+#include <stdlib.h>
+#include <ctime>
 #include <cmath>
 #include <vector>
 #include <string>
+#include <SFML/Audio.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-#include "Tools.h"
+#include "Matrix.h"
 #include "geometry.h"
 
 //#define RESOLUTION_144P
@@ -19,6 +23,8 @@
 #define LINEAR_VELOCITY     1.5
 #define ANGULAR_VELOCITY    0.1
 #define REFLECTION_DEPTH    3
+
+constexpr auto M_PI = 3.14159265358979323846;
 
 //////////////////////////////////////////////////////
 
@@ -69,6 +75,22 @@ public:
         return true;
     }
 
+};
+
+class Transform {
+private:
+public:
+    Transform() {
+
+    }
+
+    void translate(Vector3d d) {
+
+    }
+
+    void rotate(Vector3d axis, double theta) {
+
+    }
 };
 
 class CollisionData {
@@ -169,12 +191,6 @@ public:
 
         for(int i=0; i<RESOLUTION_V; i++) {
             for(int j=0; j<RESOLUTION_H; j++) {
-                /*Vector3d dir = normalize(
-                    distance*directionX +
-                    (j-RESOLUTION_H/2.f)*directionY +
-                    (i-RESOLUTION_V/2.f)*directionZ
-                );*/
-
                 Vector3d dir = normalize(
                     distance*directionX +
                     (j-RESOLUTION_H/2.)/RESOLUTION_H*WINDOW_WIDTH*directionY +
@@ -202,7 +218,7 @@ public:
         center = _center;
         radius = _radius;
         reflectivity = _reflectivity;
-        color = sf::Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
+        color = sf::Color(rand()%256, rand()%256, rand()%256);
         texture = nullptr;
     }
 
@@ -218,8 +234,8 @@ public:
         if(texture!=nullptr) {
             Vector3d d = normalize(point-center);
 
-            double u = 0.5f + atan2(d.x, d.y)/(2.f*PI);
-            double v = 0.5f - asin(d.z)/PI;
+            double u = 0.5f + atan2(d.x, d.y)/(2.f*M_PI);
+            double v = 0.5f - asin(d.z)/M_PI;
 
             return texture->getPixel(u*texture->getSize().x, v*texture->getSize().y);
         }
@@ -241,7 +257,7 @@ public:
         if(t1<EPSILON && t2<EPSILON)
             return false;
 
-        double t_nearest_positive = (sgn(t1)!=sgn(t2)) ? ((t1>0.f) ? t1 : t2) : std::min(t1, t2);
+        double t_nearest_positive = ((t1*t2<0) ? std::max(t1, t2) : std::min(t1, t2));
 
         data->point = ray.point + t_nearest_positive*ray.direction;
         data->color = getPixel(data->point);
@@ -266,7 +282,7 @@ public:
         v1 = _v1;
         v2 = _v2;
         reflectivity = _reflectivity;
-        color = sf::Color(randomInt(0, 255), randomInt(0, 255), randomInt(0, 255));
+        color = sf::Color(rand()%256, rand()%256, rand()%256);
     }
 
     bool intersect(Ray ray, CollisionData *data) {
@@ -488,6 +504,8 @@ public:
 
 int main() {
 
+    srand(time(NULL));
+
     sf::Clock clock;
 
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Ray Tracing");
@@ -503,7 +521,7 @@ int main() {
 
     Sphere skybox(Vector3d(0, 0, 0), 10000, 0, menager.getTextureReference(0));
 	Ground ground(Vector3d(0, 0, 0), Vector3d(0, 0, 1), 0, menager.getTextureReference(2), 50, 50);
-	Triangle mirror(Vector3d(50, 100, 0), Vector3d(50, 10, 0), Vector3d(100, 10, 100), 1);
+	Triangle mirror(Vector3d(50, 100, 0), Vector3d(50, 10, 0), Vector3d(100, 10, 100), 0.3);
 
 	Sphere balls[9];
 	for(int i=0; i<9; i++)
@@ -521,8 +539,9 @@ int main() {
         while(window.pollEvent(event)) {
             if(event.type==sf::Event::Closed)
                 window.close();
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-                window.close();
+            if(event.type==sf::Event::KeyPressed)
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+                    window.close();
         }
 
         sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
@@ -540,7 +559,7 @@ int main() {
 
         for(int i=0; i<9; i++)
             scene.add(&balls[i]);
-		scene.add(&skybox);
+		//scene.add(&skybox);
 		scene.add(&ground);
 		scene.add(&mirror);
 
