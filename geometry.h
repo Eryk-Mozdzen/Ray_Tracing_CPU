@@ -2,18 +2,16 @@
 #define GEOMETRY_H
 
 #include <iostream>
-#include <SFML/Graphics.hpp>
 #include <cmath>
-
-typedef sf::Vector3<double> Vector3d;
+#include "Vector.h"
 
 class Line {
 public:
-    Vector3d point;
-    Vector3d direction;
+    Vector3 point;
+    Vector3 direction;
 
     Line();
-    Line(Vector3d, Vector3d);
+    Line(Vector3, Vector3);
 };
 
 class Plane {
@@ -22,19 +20,12 @@ public:
 
     Plane();
     Plane(double, double, double, double);
-    Plane(Vector3d, Vector3d);
-    Plane(Vector3d, Vector3d, Vector3d);
-    Vector3d getNormal();
-    bool intersect(Line, Vector3d*);
+    Plane(Vector3, Vector3);
+    Plane(Vector3, Vector3, Vector3);
+    Vector3 getNormal();
+    bool intersect(Line, Vector3*);
 };
 
-double distance(Line, Vector3d);
-void print(Vector3d);
-double length(Vector3d);
-double dot(Vector3d, Vector3d);
-double triple(Vector3d, Vector3d, Vector3d);
-Vector3d cross(Vector3d, Vector3d);
-Vector3d normalize(Vector3d);
-Vector3d rotate(Vector3d, Vector3d, double);
+double distance(Line, Vector3);
 
 #endif

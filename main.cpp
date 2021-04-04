@@ -8,6 +8,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include "Vector.h"
 #include "Matrix.h"
 #include "geometry.h"
 
@@ -63,41 +64,91 @@ class Ray : public Line {
 public:
     Ray() {}
 
-    Ray(Vector3d origin, Vector3d direction) : Line(origin, direction) {}
+    Ray(Vector3 origin, Vector3 direction) : Line(origin, direction) {}
 
-    bool intersect(Vector3d _point, double *t) {
+    bool intersect(Vector3 _point, double *t) {
         double d = distance(Line(point, direction), _point);
         if(d>EPSILON)
             return false;
 
-        *t = dot(direction, _point-point);
+        *t = direction*(_point-point);
 
         return true;
     }
 
 };
 
-class Transform {
-private:
+class Transform3 : public Matrix {
 public:
-    Transform() {
 
+    Transform3() : Matrix(4, 4) {
+        *this = Matrix::Identity(4);
     }
 
-    void translate(Vector3d d) {
+    Transform3 & operator=(const Matrix &rhs) {
+        if(rhs.getRows()!=4) throw std::string("Can't assign matrix to transform");
+        if(rhs.getCols()!=4) throw std::string("Can't assign matrix to transform");
 
+        for(int i=0; i<4; i++)
+            for(int j=0; j<4; j++)
+                (*this)(i, j) = rhs(i, j);
+
+        return *this;
     }
 
-    void rotate(Vector3d axis, double theta) {
+    void translate(Vector3 d) {
+        Transform3 transform;
 
+        transform(0, 3) = d.x;
+        transform(1, 3) = d.y;
+        transform(2, 3) = d.z;
+
+        *this = (*this)*transform;
     }
+
+    void rotate(Vector3 axis, double theta) {
+        Transform3 transform;
+
+        Matrix m(3, 3);
+        m(0, 1) = -axis.z;
+        m(0, 2) = axis.y;
+        m(1, 0) = axis.z;
+        m(1, 2) = -axis.x;
+        m(2, 0) = -axis.y;
+        m(2, 1) = axis.x;
+
+        Matrix rot = m*std::sin(theta) + (Matrix::Identity(3) - axis*axis.transposition())*std::cos(theta) + (axis*axis.transposition());
+
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
+                transform(i, j) = rot(i, j);
+
+        *this = (*this)*transform;
+    }
+
+    Vector3 getTranslation() const {
+        Vector3 result;
+        result.x = (*this)(0, 3);
+        result.y = (*this)(1, 3);
+        result.z = (*this)(2, 3);
+        return result;
+    }
+
+    Matrix getRotation() const {
+        Matrix result(3, 3);
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
+                result(i, j) = (*this)(i, j);
+        return result;
+    }
+
 };
 
 class CollisionData {
 public:
     sf::Color color;
-    Vector3d normal;
-    Vector3d point;
+    Vector3 normal;
+    Vector3 point;
     double reflectivity;
 
     CollisionData() {}
@@ -116,33 +167,33 @@ public:
 
 class Camera {
 public:
-    Vector3d position;
-    Vector3d directionX, directionY, directionZ;
+    Vector3 position;
+    Vector3 directionX, directionY, directionZ;
     double distance;
     Plane screen;
     std::vector<Ray> rays;
 
     Camera() {}
 
-    Camera(Vector3d _position, Vector3d _directionX, double _distance) {
+    Camera(Vector3 _position, Vector3 _directionX, double _distance) {
         position = _position;
         distance = _distance;
         directionX = normalize(_directionX);
 
         directionX = normalize(directionX);
-        directionY = normalize(cross(Vector3d(0, 0, 1), directionX));
-        directionZ = normalize(cross(directionY, directionX));
+        directionY = normalize(Vector3(0, 0, 1)^directionX);
+        directionZ = normalize(directionY^directionX);
 
         update_rays();
     }
 
     void move(sf::Vector2i mouse) {
-        Vector3d p = position;
-        Vector3d dx = directionX;
-        Vector3d dy = directionY;
-        Vector3d dz = directionZ;
+        Vector3 p = position;
+        Vector3 dx = directionX;
+        Vector3 dy = directionY;
+        Vector3 dz = directionZ;
 
-        Vector3d translation(0, 0, 0);
+        Vector3 translation(0, 0, 0);
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))         translation +=directionX;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))         translation -=directionX;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))         translation -=directionY;
@@ -167,10 +218,10 @@ public:
             directionZ = rotate(directionY, directionZ, -ANGULAR_VELOCITY);
         }
 
-        if(dot(directionY, Vector3d(0, 0, 1))<-0.1) {
+        if((directionY*Vector3(0, 0, 1))<-0.1) {
             directionY = rotate(directionX, directionY, ANGULAR_VELOCITY);
             directionZ = rotate(directionX, directionZ, ANGULAR_VELOCITY);
-        } else if(dot(directionY, Vector3d(0, 0, 1))>0.1) {
+        } else if((directionY*Vector3(0, 0, 1))>0.1) {
             directionY = rotate(directionX, directionY, -ANGULAR_VELOCITY);
             directionZ = rotate(directionX, directionZ, -ANGULAR_VELOCITY);
         }
@@ -191,7 +242,7 @@ public:
 
         for(int i=0; i<RESOLUTION_V; i++) {
             for(int j=0; j<RESOLUTION_H; j++) {
-                Vector3d dir = normalize(
+                Vector3 dir = normalize(
                     distance*directionX +
                     (j-RESOLUTION_H/2.)/RESOLUTION_H*WINDOW_WIDTH*directionY +
                     (i-RESOLUTION_V/2.)/RESOLUTION_V*WINDOW_HEIGHT*directionZ
@@ -208,34 +259,56 @@ class Sphere : public Object {
 public:
     sf::Image *texture;
     sf::Color color;
-    Vector3d center;
+    Transform3 transform;
     double radius;
     double reflectivity;
 
     Sphere() {}
 
-    Sphere(Vector3d _center, double _radius, double _reflectivity) {
-        center = _center;
+    Sphere(Vector3 _center, double _radius, double _reflectivity) {
+        transform.translate(_center);
         radius = _radius;
         reflectivity = _reflectivity;
+
         color = sf::Color(rand()%256, rand()%256, rand()%256);
         texture = nullptr;
     }
 
-    Sphere(Vector3d _center, double _radius, double _reflectivity, sf::Image *_texture) {
-        center = _center;
+    Sphere(Vector3 _center, double _radius, double _reflectivity, sf::Image *_texture) {
+        transform.translate(_center);
         radius = _radius;
         reflectivity = _reflectivity;
+
         color = sf::Color::Transparent;
         texture = _texture;
     }
 
-    sf::Color getPixel(Vector3d point) {
-        if(texture!=nullptr) {
-            Vector3d d = normalize(point-center);
+    sf::Color getPixel(Vector3 point) {
+        Vector3 relative;
+        try {
+            Matrix p(4, 1);
+            p(0, 0) = point.x;
+            p(1, 0) = point.y;
+            p(2, 0) = point.z;
+            p(3, 0) = 1;
+            Matrix rel = transform.inverse()*p;
+            Vector3 relative(
+                rel(0, 3),
+                rel(1, 3),
+                rel(2, 3)
+            );
 
-            double u = 0.5f + atan2(d.x, d.y)/(2.f*M_PI);
-            double v = 0.5f - asin(d.z)/M_PI;
+            //std::cout << Matrix::Inverse(transform)*point << std::endl;
+        } catch(std::string e) {
+            std::cout << e << std::endl;
+            exit(0);
+        }
+
+        if(texture!=nullptr) {
+            Vector3 d = normalize(relative);
+
+            double u = 0.5f + std::atan2(d.x, d.y)/(2.f*M_PI);
+            double v = 0.5f - std::asin(d.z)/M_PI;
 
             return texture->getPixel(u*texture->getSize().x, v*texture->getSize().y);
         }
@@ -244,9 +317,10 @@ public:
     }
 
     bool intersect(Ray ray, CollisionData *data) {
+        Vector3 center = transform.getTranslation();
 
-        double delta = pow(dot(ray.direction, ray.point-center), 2) - (pow(length(ray.point-center), 2) - pow(radius, 2));
-        double t = -dot(ray.direction, ray.point-center);
+        double delta = pow(ray.direction*(ray.point-center), 2) - (pow(length(ray.point-center), 2) - pow(radius, 2));
+        double t = -(ray.direction*(ray.point-center));
 
         if(delta<0.f)
             return false;
@@ -271,13 +345,13 @@ public:
 
 class Triangle : public Object {
 public:
-    Vector3d v0, v1, v2;
+    Vector3 v0, v1, v2;
     sf::Color color;
     double reflectivity;
 
     Triangle() {}
 
-    Triangle(Vector3d _v0, Vector3d _v1, Vector3d _v2, double _reflectivity) {
+    Triangle(Vector3 _v0, Vector3 _v1, Vector3 _v2, double _reflectivity) {
         v0 = _v0;
         v1 = _v1;
         v2 = _v2;
@@ -288,29 +362,29 @@ public:
     bool intersect(Ray ray, CollisionData *data) {
         //Möller–Trumbore intersection algorithm
 
-        Vector3d edge1 = v1 - v0;
-        Vector3d edge2 = v2 - v0;
-        Vector3d h = cross(ray.direction, edge2);
+        Vector3 edge1 = v1 - v0;
+        Vector3 edge2 = v2 - v0;
+        Vector3 h = ray.direction^edge2;
 
-        double a = dot(edge1, h);
+        double a = edge1*h;
         if (a>-EPSILON && a<EPSILON)
             return false;    // This ray is parallel to this triangle.
 
         double f = 1.0/a;
-        Vector3d s = ray.point - v0;
-        double u = f * dot(s, h);
+        Vector3 s = ray.point - v0;
+        double u = f * (s*h);
         if(u<0.0 || u>1.0)
             return false;
 
-        Vector3d q = cross(s, edge1);
-        double v = f*dot(ray.direction, q);
+        Vector3 q = s^edge1;
+        double v = f*(ray.direction*q);
         if(v<0.0 || u+v>1.0)
             return false;
 
-        double t = f*dot(edge2, q);
+        double t = f*(edge2*q);
         if(t>EPSILON) {
             data->point = ray.point + t*ray.direction;
-            data->normal = normalize(cross(edge1, edge2));
+            data->normal = normalize(edge1^edge2);
             data->color = color;
             data->reflectivity = reflectivity;
             return true;
@@ -330,12 +404,12 @@ public:
 
     Ground() {}
 
-    Ground(Vector3d point, Vector3d normal, double _reflectivity) : Plane(point, normal) {
+    Ground(Vector3 point, Vector3 normal, double _reflectivity) : Plane(point, normal) {
         reflectivity = _reflectivity;
         texture = nullptr;
     }
 
-    Ground(Vector3d point, Vector3d normal, double _reflectivity, sf::Image *_texture, double _textWidth, double _textHeight) : Plane(point, normal) {
+    Ground(Vector3 point, Vector3 normal, double _reflectivity, sf::Image *_texture, double _textWidth, double _textHeight) : Plane(point, normal) {
         reflectivity = _reflectivity;
 
         texture = _texture;
@@ -343,7 +417,7 @@ public:
         textHeight = _textHeight;
     }
 
-    sf::Color getPixel(Vector3d point3D) {
+    sf::Color getPixel(Vector3 point3D) {
         //only special case
         sf::Vector2f point2D(point3D.x, point3D.y);
 
@@ -362,8 +436,6 @@ public:
         if(textCoords.x<0) textCoords.x +=textWidth;
         if(textCoords.y<0) textCoords.y +=textHeight;
 
-//std::cout << textCoords.y << std::endl;
-
         return texture->getPixel(
             (textCoords.x/textWidth)*texture->getSize().x,
             (textCoords.y/textHeight)*texture->getSize().y
@@ -372,7 +444,7 @@ public:
 
     bool intersect(Ray ray, CollisionData *data) {
         if(Plane::intersect(ray, &data->point)) {
-            if(dot(ray.direction, data->point-ray.point)<0)
+            if((ray.direction*(data->point-ray.point))<0)
                 return false;
 
             data->normal = getNormal();
@@ -385,26 +457,9 @@ public:
 
 };
 
-class Light {
-public:
-    Vector3d position;
-    sf::Color color;
-    double brightness;
-
-    Light() {}
-
-    Light(Vector3d _position, sf::Color _color, double _brightness) {
-        position = _position;
-        color = _color;
-        brightness = _brightness;
-    }
-
-};
-
 class Scene {
 public:
     std::vector<Object*> objects;
-    std::vector<Light*> lights;
     Camera *camera;
 
     Scene() {}
@@ -437,7 +492,7 @@ public:
         if(exist) {
             //sf::Color color_reflected = trace(Ray(point, ray.direction - 2.f*dot(ray.direction, normal)*normal), depth-1);
             sf::Color color_reflected = (data.reflectivity>EPSILON) ?
-                trace(Ray(data.point, ray.direction - 2.f*dot(ray.direction, data.normal)*data.normal), depth-1) :
+                trace(Ray(data.point, ray.direction - 2.f*(ray.direction*data.normal)*data.normal), depth-1) :
                 sf::Color::Transparent;
 
             //double brightness = dot(light_ray.direction, normal);
@@ -461,9 +516,9 @@ public:
         objects.clear();
     }
 
-    void render(sf::RenderWindow *window) {
-        const double pixel_w = (double)window->getSize().x/RESOLUTION_H;
-        const double pixel_h = (double)window->getSize().y/RESOLUTION_V;
+    void render(sf::RenderWindow &window) {
+        const double pixel_w = (double)window.getSize().x/RESOLUTION_H;
+        const double pixel_h = (double)window.getSize().y/RESOLUTION_V;
 
         sf::RectangleShape pixel(sf::Vector2f(pixel_w, pixel_h));
 
@@ -475,7 +530,7 @@ public:
                     pixel.setFillColor(color);
                     pixel.setPosition(sf::Vector2f(j*pixel_w, i*pixel_h));
 
-                    window->draw(pixel);
+                    window.draw(pixel);
                 }
             }
         }
@@ -511,7 +566,7 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Ray Tracing");
 	window.setMouseCursorVisible(false);
 
-	Camera camera(Vector3d(-60, 20, 20), Vector3d(1, 0, 0), 1000);
+	Camera camera(Vector3(-60, 20, 20), Vector3(1, 0, 0), 1000);
 	Scene scene(&camera);
 
 	TextureMenager menager;
@@ -519,18 +574,16 @@ int main() {
 	menager.load("textures/earth2.jpg");
 	menager.load("textures/notexture.jpg");
 
-    Sphere skybox(Vector3d(0, 0, 0), 10000, 0, menager.getTextureReference(0));
-	Ground ground(Vector3d(0, 0, 0), Vector3d(0, 0, 1), 0, menager.getTextureReference(2), 50, 50);
-	Triangle mirror(Vector3d(50, 100, 0), Vector3d(50, 10, 0), Vector3d(100, 10, 100), 0.3);
+    Sphere skybox(Vector3(0, 0, 0), 10000, 0, menager.getTextureReference(0));
+	Ground ground(Vector3(0, 0, 0), Vector3(0, 0, 1), 0, menager.getTextureReference(2), 50, 50);
+	Triangle mirror(Vector3(50, 100, 0), Vector3(50, 10, 0), Vector3(100, 10, 100), 0.3);
 
 	Sphere balls[9];
 	for(int i=0; i<9; i++)
-        balls[i] = Sphere(Vector3d((i/3)*20, (i%3)*20, 20), 7, 0.3);
+        balls[i] = Sphere(Vector3((i/3)*20, (i%3)*20, 20), 7, 0.3);
 
     balls[0].texture = menager.getTextureReference(1);
     balls[0].reflectivity = 0.15;
-
-    //scene.lights.push_back(new Light(Vector3d(0, 0, 50), sf::Color(255, 255, 255), 0.1));
 
     double angle = 0;
 
@@ -549,21 +602,22 @@ int main() {
         sf::Mouse::setPosition(center, window);
         camera.move(mouse);
 
-        //skybox.center = camera.position;
-
 		window.clear();
 		scene.clear();
 
-		balls[0].center = Vector3d(-10, -10, 20) + rotate(Vector3d(0, 0, 1), Vector3d(10, 10, 0), angle);
+		balls[0].transform = Transform3();
+
+		balls[0].transform.translate(Vector3(-10, -10, 20) + rotate(Vector3(0, 0, 1), Vector3(10, 10, 0), angle));
 		angle +=0.1;
 
+		//scene.add(&balls[0]);
         for(int i=0; i<9; i++)
             scene.add(&balls[i]);
 		//scene.add(&skybox);
-		scene.add(&ground);
+		//scene.add(&ground);
 		scene.add(&mirror);
 
-		scene.render(&window);
+		scene.render(window);
 
 		double renderTime = clock.restart().asSeconds();
 
@@ -576,5 +630,4 @@ int main() {
         window.display();
     }
 
-    return 0;
 }
