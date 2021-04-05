@@ -79,10 +79,15 @@ public:
 };
 
 class Transform3 : public Matrix {
+private:
+    Matrix inv;
+    bool invReady;
 public:
 
     Transform3() : Matrix(4, 4) {
         *this = Matrix::Identity(4);
+
+        this->invReady = false;
     }
 
     Transform3 & operator=(const Matrix &rhs) {
@@ -93,6 +98,8 @@ public:
             for(int j=0; j<4; j++)
                 (*this)(i, j) = rhs(i, j);
 
+        this->invReady = false;
+
         return *this;
     }
 
@@ -102,6 +109,8 @@ public:
         transform(0, 3) = d.x;
         transform(1, 3) = d.y;
         transform(2, 3) = d.z;
+
+        this->invReady = false;
 
         *this = (*this)*transform;
     }
@@ -123,6 +132,8 @@ public:
             for(int j=0; j<3; j++)
                 transform(i, j) = rot(i, j);
 
+        this->invReady = false;
+
         *this = (*this)*transform;
     }
 
@@ -140,6 +151,15 @@ public:
             for(int j=0; j<3; j++)
                 result(i, j) = (*this)(i, j);
         return result;
+    }
+
+    Matrix getInverse() {
+        if(!this->invReady) {
+            this->invReady = true;
+            this->inv = this->inverse();
+        }
+
+        return this->inv;
     }
 
 };
@@ -284,25 +304,20 @@ public:
     }
 
     sf::Color getPixel(Vector3 point) {
-        Vector3 relative;
-        try {
-            Matrix p(4, 1);
-            p(0, 0) = point.x;
-            p(1, 0) = point.y;
-            p(2, 0) = point.z;
-            p(3, 0) = 1;
-            Matrix rel = transform.inverse()*p;
-            Vector3 relative(
-                rel(0, 3),
-                rel(1, 3),
-                rel(2, 3)
-            );
 
-            //std::cout << Matrix::Inverse(transform)*point << std::endl;
-        } catch(std::string e) {
-            std::cout << e << std::endl;
-            exit(0);
-        }
+        Matrix p(4, 1);
+        p(0, 0) = point.x;
+        p(1, 0) = point.y;
+        p(2, 0) = point.z;
+        p(3, 0) = 1;
+
+        Matrix rel = transform.getInverse()*p;
+
+        Vector3 relative(
+            rel(0, 0),
+            rel(1, 0),
+            rel(2, 0)
+        );
 
         if(texture!=nullptr) {
             Vector3 d = normalize(relative);
@@ -607,7 +622,10 @@ int main() {
 
 		balls[0].transform = Transform3();
 
+        //simple earth simulation
 		balls[0].transform.translate(Vector3(-10, -10, 20) + rotate(Vector3(0, 0, 1), Vector3(10, 10, 0), angle));
+		balls[0].transform.rotate(Vector3(0, 1, 1), M_PI/3);
+        balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);
 		angle +=0.1;
 
 		//scene.add(&balls[0]);
