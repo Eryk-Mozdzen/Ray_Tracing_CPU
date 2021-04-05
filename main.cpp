@@ -620,20 +620,22 @@ int main() {
 		window.clear();
 		scene.clear();
 
-		balls[0].transform = Transform3();
+		Transform3 tr_original = balls[0].transform;            //safe original transformation
 
         //simple earth simulation
-		balls[0].transform.translate(Vector3(-10, -10, 20) + rotate(Vector3(0, 0, 1), Vector3(10, 10, 0), angle));
-		balls[0].transform.rotate(Vector3(0, 1, 1), M_PI/3);
-        balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);
-		angle +=0.1;
+		balls[0].transform.translate(Vector3(-10, -10, 0));     //move to orbit center
+		balls[0].transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
+		balls[0].transform.translate(Vector3(10, 0, 0));        //move to orbit position
+		balls[0].transform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
+		balls[0].transform.rotate(Vector3(0, 1, 1), M_PI/3);    //tilt self-rotate axis
+        balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
+		angle +=0.1;                                            //increment angle
 
-		//scene.add(&balls[0]);
         for(int i=0; i<9; i++)
             scene.add(&balls[i]);
 		//scene.add(&skybox);
 		//scene.add(&ground);
-		scene.add(&mirror);
+		//scene.add(&mirror);
 
 		scene.render(window);
 
@@ -644,6 +646,8 @@ int main() {
         windowTitle +=" | Render Time: " + std::to_string(renderTime) + "s";
 		windowTitle +=" | FPS: " + std::to_string(1/renderTime);
 		window.setTitle(windowTitle);
+
+		balls[0].transform = tr_original;                       //return to original transformation
 
         window.display();
     }
