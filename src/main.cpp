@@ -8,13 +8,13 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
-#include "geometry.h"
+#include "../include/Vector.h"
+#include "../include/Matrix.h"
+#include "../include/geometry.h"
 
-#include "RayTracingConfig.h"
-#include "RayTracingUtilities.h"
-#include "RayTracing.h"
+#include "../include/RayTracingConfig.h"
+#include "../include/RayTracingUtilities.h"
+#include "../include/RayTracing.h"
 
 /*-----------  User custom drawable objects  ---------------*/
 

@@ -1,4 +1,4 @@
-#include "RayTracing.h"
+#include "../include/RayTracing.h"
 
 Camera::Camera() {}
 
