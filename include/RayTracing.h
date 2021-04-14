@@ -15,30 +15,27 @@
 
 class Camera {
 public:
-    Vector3 position;
-    Vector3 directionX, directionY, directionZ;
     double distance;
-    Plane screen;
+    Transform3 transform;
     std::vector<Ray> rays;
 
     Camera();
-    Camera(Vector3 _position, Vector3 _directionX, double _distance);
-    void move(sf::Vector2i);
+    Camera(const Vector3&, const double &);
     void update_rays();
+    Vector3 getDirectionX();
+    Vector3 getDirectionY();
+    Vector3 getDirectionZ();
 };
 
-
 class Scene {
-public:
+private:
     std::vector<Object*> objects;
-    Camera *camera;
-
+public:
     Scene();
-    Scene(Camera*);
-    sf::Color trace(Ray, int);
     void add(Object*);
     void clear();
-    void render(sf::RenderWindow &);
+    sf::Color trace(const Ray&, const int&) const;
+    void render(const Camera&, sf::RenderWindow &) const;
 };
 
 

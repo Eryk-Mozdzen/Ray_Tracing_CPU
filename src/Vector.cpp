@@ -96,6 +96,18 @@ Vector3 Vector3::operator/(const double &rhs) const {
     return (*this)*(1/rhs);
 }
 
+Vector3 Vector3::UnitX() {
+    return  Vector3(1, 0, 0);
+}
+
+Vector3 Vector3::UnitY() {
+    return  Vector3(0, 1, 0);
+}
+
+Vector3 Vector3::UnitZ() {
+    return  Vector3(0, 0, 1);
+}
+
 Vector3 operator*(const double &lhs, const Vector3 &rhs) {
     return rhs*lhs;
 }

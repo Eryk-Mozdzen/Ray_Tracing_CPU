@@ -60,6 +60,23 @@ Matrix Matrix::Inverse(const Matrix &input) {
     }
 }
 
+bool Matrix::operator==(const Matrix &rhs) const {
+    if(this->rows!=rhs.rows) throw std::string("Rows not equal");
+    if(this->cols!=rhs.cols) throw std::string("Cols not equal");
+
+    bool areEqual = true;
+    for(int i=0; i<this->rows; i++)
+        for(int j=0; j<this->cols; j++)
+            if(this->values[i][j]!=rhs.values[i][j])
+                areEqual = false;
+
+    return areEqual;
+}
+
+bool Matrix::operator!=(const Matrix &rhs) const {
+    return !(*this==rhs);
+}
+
 Matrix Matrix::operator+(const Matrix &rhs) const {
     if(this->rows!=rhs.rows) throw std::string("Rows not equal");
     if(this->cols!=rhs.cols) throw std::string("Cols not equal");

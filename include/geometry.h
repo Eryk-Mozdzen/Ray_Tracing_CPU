@@ -11,7 +11,7 @@ public:
     Vector3 direction;
 
     Line();
-    Line(Vector3, Vector3);
+    Line(const Vector3&, const Vector3&);
 };
 
 class Plane {
@@ -19,13 +19,13 @@ public:
     double A, B, C, D;
 
     Plane();
-    Plane(double, double, double, double);
-    Plane(Vector3, Vector3);
-    Plane(Vector3, Vector3, Vector3);
-    Vector3 getNormal();
-    bool intersect(Line, Vector3*);
+    Plane(const double&, const double&, const double&, const double&);
+    Plane(const Vector3&, const Vector3&);
+    Plane(const Vector3&, const Vector3&, const Vector3&);
+    Vector3 getNormal() const;
+    bool intersect(const Line&, Vector3*) const;
 };
 
-double distance(Line, Vector3);
+double distance(const Line&, const Vector3&);
 
 #endif

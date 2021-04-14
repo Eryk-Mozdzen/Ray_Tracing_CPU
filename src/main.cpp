@@ -1,7 +1,10 @@
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <string>
+#include <sstream>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Window.hpp>
@@ -16,15 +19,48 @@
 #include "../include/RayTracingUtilities.h"
 #include "../include/RayTracing.h"
 
+#define WINDOW_WIDTH        1280
+#define WINDOW_HEIGHT       720
+
+#define LINEAR_VELOCITY     1.5
+#define ANGULAR_VELOCITY    0.1
+
+void cameraMove(Camera &camera, const sf::Vector2i &mouse) {
+    Transform3 tr = camera.transform;
+
+    Vector3 translation(0, 0, 0);
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))         translation +=Vector3::UnitX();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))         translation -=Vector3::UnitX();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))         translation +=Vector3::UnitY();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))         translation -=Vector3::UnitY();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))    translation +=Vector3::UnitZ();
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))  translation -=Vector3::UnitZ();
+
+    camera.transform.translate(LINEAR_VELOCITY*normalize(translation));
+
+    if(std::abs(mouse.x)>5)
+        camera.transform.rotate(Vector3::UnitZ(), ANGULAR_VELOCITY*((mouse.x<0)? 1 : -1));
+
+    if(std::abs(mouse.y)>5)
+        camera.transform.rotate(Vector3::UnitY(), ANGULAR_VELOCITY*((mouse.y>0)? 1 : -1));
+
+    double s = camera.getDirectionY()*Vector3::UnitZ();
+    if(std::abs(s)>0.1)
+        camera.transform.rotate(Vector3::UnitX(), ANGULAR_VELOCITY*((s<0)? 1 : -1));
+
+    //if(camera.transform!=tr)
+        camera.update_rays();
+}
+
 /*-----------  User custom drawable objects  ---------------*/
 
 class Sphere : public Object {
 public:
     sf::Image *texture;
     sf::Color color;
+    double reflectivity;
     Transform3 transform;
     double radius;
-    double reflectivity;
 
     Sphere() {}
 
@@ -74,7 +110,7 @@ public:
         return color;
     }
 
-    bool intersect(Ray ray, CollisionData *data) {
+    bool intersect(const Ray &ray, CollisionData *data) {
         Vector3 center = transform.getTranslation();
 
         double delta = pow(ray.direction*(ray.point-center), 2) - (pow(length(ray.point-center), 2) - pow(radius, 2));
@@ -117,7 +153,7 @@ public:
         color = sf::Color(rand()%256, rand()%256, rand()%256);
     }
 
-    bool intersect(Ray ray, CollisionData *data) {
+    bool intersect(const Ray &ray, CollisionData *data) {
         //Möller–Trumbore intersection algorithm
 
         Vector3 edge1 = v1 - v0;
@@ -200,7 +236,7 @@ public:
         );
     }
 
-    bool intersect(Ray ray, CollisionData *data) {
+    bool intersect(const Ray &ray, CollisionData *data) {
         if(Plane::intersect(ray, &data->point)) {
             if((ray.direction*(data->point-ray.point))<0)
                 return false;
@@ -217,15 +253,24 @@ public:
 
 int main() {
 
+    try {
+
     srand(time(NULL));
 
     sf::Clock clock;
 
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Ray Tracing");
-	window.setMouseCursorVisible(false);
+	//window.setFramerateLimit(8);
+	sf::View view = window.getView();
+    view.setRotation(180);
+    window.setView(view);
 
-	Camera camera(Vector3(-60, 20, 20), Vector3(1, 0, 0), 1000);
-	Scene scene(&camera);
+	window.setMouseCursorVisible(false);
+	sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
+	sf::Mouse::setPosition(center, window);
+
+	Camera camera(Vector3(-60, 20, 20), 1);
+	Scene scene;
 
 	TextureMenager menager;
 	menager.load("textures/road1.jpg");
@@ -253,12 +298,15 @@ int main() {
             if(event.type==sf::Event::KeyPressed)
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                     window.close();
+            if(event.type==sf::Event::MouseWheelScrolled) {
+                if(event.mouseWheelScroll.delta>0)  camera.distance +=((camera.distance>=1)? 1 : 0.1);
+                else if(camera.distance>0.2)        camera.distance -=((camera.distance>1)? 1 : 0.1);
+            }
         }
 
-        sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
-        sf::Vector2i mouse = sf::Mouse::getPosition(window) - center;
+        sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
-        camera.move(mouse);
+        cameraMove(camera, deltaMouse);
 
 		window.clear();
 		scene.clear();
@@ -277,22 +325,31 @@ int main() {
         for(int i=0; i<9; i++)
             scene.add(&balls[i]);
 		//scene.add(&skybox);
-		//scene.add(&ground);
+		scene.add(&ground);
 		//scene.add(&mirror);
 
-		scene.render(window);
-
-		double renderTime = clock.restart().asSeconds();
-
-		std::string windowTitle = "Ray Tracing";
-		windowTitle +=" | Resolution: " + std::to_string(RESOLUTION_H) + "x" + std::to_string(RESOLUTION_V);
-        windowTitle +=" | Render Time: " + std::to_string(renderTime) + "s";
-		windowTitle +=" | FPS: " + std::to_string(1/renderTime);
-		window.setTitle(windowTitle);
+		scene.render(camera, window);
 
 		balls[0].transform = tr_original;                       //return to original transformation
 
+		double renderTime = clock.restart().asSeconds();
+
+		std::stringstream windowTitle;
+		windowTitle << std::setprecision(5) << std::fixed;
+		windowTitle << "Ray Tracing";
+		windowTitle << " | Resolution: " << RESOLUTION_H << "x" << RESOLUTION_V;
+        windowTitle << " | Render Time: " << renderTime << "s";
+		windowTitle << " | FPS: " << 1/renderTime;
+		//windowTitle << " | Position: " << camera.transform.getTranslation();
+		//windowTitle << " | dirX: " << camera.getDirectionX();
+		windowTitle << " | Zoom: " << camera.distance;
+		window.setTitle(windowTitle.str());
+
         window.display();
+    }
+
+    } catch(std::string e) {
+        std::cout << e << std::endl;
     }
 
 }

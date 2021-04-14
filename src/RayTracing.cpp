@@ -2,91 +2,57 @@
 
 Camera::Camera() {}
 
-Camera::Camera(Vector3 _position, Vector3 _directionX, double _distance) {
-    position = _position;
-    distance = _distance;
-    directionX = normalize(_directionX);
+Camera::Camera(const Vector3 &position, const double &distance) {
+    this->distance = distance;
 
-    directionX = normalize(directionX);
-    directionY = normalize(Vector3(0, 0, 1)^directionX);
-    directionZ = normalize(directionY^directionX);
+    this->transform.translate(position);
 
-    update_rays();
-}
+    this->rays.resize(RESOLUTION_H*RESOLUTION_V);
 
-void Camera::move(sf::Vector2i mouse) {
-    Vector3 p = position;
-    Vector3 dx = directionX;
-    Vector3 dy = directionY;
-    Vector3 dz = directionZ;
-
-    Vector3 translation(0, 0, 0);
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))         translation +=directionX;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))         translation -=directionX;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))         translation -=directionY;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::D))         translation +=directionY;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))    translation -=directionZ;
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))  translation +=directionZ;
-    position +=LINEAR_VELOCITY*normalize(translation);
-
-    if(mouse.x<0) {
-        directionX = rotate(directionZ, directionX, ANGULAR_VELOCITY);
-        directionY = rotate(directionZ, directionY, ANGULAR_VELOCITY);
-    } else if(mouse.x>0) {
-        directionX = rotate(directionZ, directionX, -ANGULAR_VELOCITY);
-        directionY = rotate(directionZ, directionY, -ANGULAR_VELOCITY);
-    }
-
-    if(mouse.y>0) {
-        directionX = rotate(directionY, directionX, ANGULAR_VELOCITY);
-        directionZ = rotate(directionY, directionZ, ANGULAR_VELOCITY);
-    } else if(mouse.y<0) {
-        directionX = rotate(directionY, directionX, -ANGULAR_VELOCITY);
-        directionZ = rotate(directionY, directionZ, -ANGULAR_VELOCITY);
-    }
-
-    if((directionY*Vector3(0, 0, 1))<-0.1) {
-        directionY = rotate(directionX, directionY, ANGULAR_VELOCITY);
-        directionZ = rotate(directionX, directionZ, ANGULAR_VELOCITY);
-    } else if((directionY*Vector3(0, 0, 1))>0.1) {
-        directionY = rotate(directionX, directionY, -ANGULAR_VELOCITY);
-        directionZ = rotate(directionX, directionZ, -ANGULAR_VELOCITY);
-    }
-
-    if(position!=p || directionX!=dx || directionY!=dy || directionZ!=dz) {
-        update_rays();
-    }
-
+    this->update_rays();
 }
 
 void Camera::update_rays() {
-    directionX = normalize(directionX);
-    directionY = normalize(directionY);
-    directionZ = normalize(directionZ);
-
-    screen = Plane(position + distance*directionX, directionX);
-    rays.resize(RESOLUTION_H*RESOLUTION_V);
+    Vector3 directionX = this->getDirectionX();
+    Vector3 directionY = this->getDirectionY();
+    Vector3 directionZ = this->getDirectionZ();
 
     for(int i=0; i<RESOLUTION_V; i++) {
         for(int j=0; j<RESOLUTION_H; j++) {
             Vector3 dir = normalize(
                 distance*directionX +
-                (j-RESOLUTION_H/2.)/RESOLUTION_H*WINDOW_WIDTH*directionY +
-                (i-RESOLUTION_V/2.)/RESOLUTION_V*WINDOW_HEIGHT*directionZ
+                (j-RESOLUTION_H/2.)/RESOLUTION_H*ASPECT_RATIO*directionY +
+                (i-RESOLUTION_V/2.)/RESOLUTION_V*directionZ
             );
 
-            rays[i*RESOLUTION_H + j] = Ray(position, dir);
+            rays[i*RESOLUTION_H + j] = Ray(this->transform.getTranslation(), dir);
         }
     }
 }
 
-Scene::Scene() {}
-
-Scene::Scene(Camera *_camera) {
-    camera = _camera;
+Vector3 Camera::getDirectionX() {
+    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitX()) - this->transform.getTranslation());
 }
 
-sf::Color Scene::trace(Ray ray, int depth) {
+Vector3 Camera::getDirectionY() {
+    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitY()) - this->transform.getTranslation());
+}
+
+Vector3 Camera::getDirectionZ() {
+    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitZ()) - this->transform.getTranslation());
+}
+
+Scene::Scene() {}
+
+void Scene::add(Object *object_ptr) {
+    objects.push_back(object_ptr);
+}
+
+void Scene::clear() {
+    objects.clear();
+}
+
+sf::Color Scene::trace(const Ray &ray, const int &depth) const {
     if(depth<=0)
         return sf::Color::Transparent;
 
@@ -126,15 +92,7 @@ sf::Color Scene::trace(Ray ray, int depth) {
     return sf::Color::Transparent;
 }
 
-void Scene::add(Object *object_ptr) {
-    objects.push_back(object_ptr);
-}
-
-void Scene::clear() {
-    objects.clear();
-}
-
-void Scene::render(sf::RenderWindow &window) {
+void Scene::render(const Camera &camera, sf::RenderWindow &window) const {
     const double pixel_w = (double)window.getSize().x/RESOLUTION_H;
     const double pixel_h = (double)window.getSize().y/RESOLUTION_V;
 
@@ -142,11 +100,12 @@ void Scene::render(sf::RenderWindow &window) {
 
     for(int i=0; i<RESOLUTION_V; i++) {
         for(int j=0; j<RESOLUTION_H; j++) {
-            sf::Color color = trace(camera->rays[i*RESOLUTION_H + j], REFLECTION_DEPTH);
+            sf::Color color = trace(camera.rays[i*RESOLUTION_H + j], REFLECTION_DEPTH);
 
             if(color!=sf::Color::Transparent && color!=sf::Color::Black) {
                 pixel.setFillColor(color);
                 pixel.setPosition(sf::Vector2f(j*pixel_w, i*pixel_h));
+                //pixel.setPosition(sf::Vector2f(j*pixel_w, (RESOLUTION_V - i)*pixel_h));
 
                 window.draw(pixel);
             }

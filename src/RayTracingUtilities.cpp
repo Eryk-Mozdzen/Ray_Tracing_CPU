@@ -2,14 +2,14 @@
 
 Ray::Ray() {}
 
-Ray::Ray(Vector3 origin, Vector3 direction) : Line(origin, direction) {}
+Ray::Ray(const Vector3 &origin, const Vector3 &direction) : Line(origin, direction) {}
 
-bool Ray::intersect(Vector3 _point, double *t) {
-    double d = distance(Line(point, direction), _point);
+bool Ray::intersect(const Vector3 &point, double *t) const {
+    double d = distance(Line(this->point, this->direction), point);
     if(d>EPSILON)
         return false;
 
-    *t = direction*(_point-point);
+    *t = direction*(point-this->point);
 
     return true;
 }
@@ -33,7 +33,7 @@ Transform3 & Transform3::operator=(const Matrix &rhs) {
     return *this;
 }
 
-void Transform3::translate(Vector3 d) {
+void Transform3::translate(const Vector3 &d) {
     Transform3 transform;
 
     transform(0, 3) = d.x;
@@ -45,7 +45,7 @@ void Transform3::translate(Vector3 d) {
     *this = (*this)*transform;
 }
 
-void Transform3::rotate(Vector3 axis, double theta) {
+void Transform3::rotate(const Vector3 &axis, const double &theta) {
     Transform3 transform;
 
     Matrix m(3, 3);
@@ -65,6 +65,38 @@ void Transform3::rotate(Vector3 axis, double theta) {
     this->invReady = false;
 
     *this = (*this)*transform;
+}
+
+Vector3 Transform3::getRelativeToTransform(const Vector3 &v) {
+    Matrix p(4, 1);
+    p(0, 0) = v.x;
+    p(1, 0) = v.y;
+    p(2, 0) = v.z;
+    p(3, 0) = 1;
+
+    Matrix rel = this->getInverse()*p;
+
+    return Vector3(
+        rel(0, 0),
+        rel(1, 0),
+        rel(2, 0)
+    );
+}
+
+Vector3 Transform3::getRelativeToReferenceFrame(const Vector3 &v) {
+    Matrix p(4, 1);
+    p(0, 0) = v.x;
+    p(1, 0) = v.y;
+    p(2, 0) = v.z;
+    p(3, 0) = 1;
+
+    Matrix rel = (*this)*p;
+
+    return Vector3(
+        rel(0, 0),
+        rel(1, 0),
+        rel(2, 0)
+    );
 }
 
 Vector3 Transform3::getTranslation() const {
@@ -96,17 +128,17 @@ CollisionData::CollisionData() {}
 
 TextureMenager::TextureMenager() {}
 
-void TextureMenager::load(std::string texture_str) {
+void TextureMenager::load(const std::string &texture_str) {
     sf::Image texture;
     texture.loadFromFile(texture_str);
     textures.push_back(texture);
 }
 
-sf::Image* TextureMenager::getTextureReference(int index) {
+sf::Image* TextureMenager::getTextureReference(const int &index) {
     return &textures[index];
 }
 
-sf::Color color_interpolation(sf::Color color1, sf::Color color2, double alpha) {
+sf::Color color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {
     if(color1==sf::Color::Transparent) return color2;
     if(color2==sf::Color::Transparent) return color1;
 

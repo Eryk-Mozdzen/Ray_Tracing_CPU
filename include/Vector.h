@@ -26,6 +26,10 @@ public:
     Matrix operator*(const Matrix &) const;
     Vector3 operator*(const double &) const;
     Vector3 operator/(const double &) const;
+
+    static Vector3 UnitX();
+    static Vector3 UnitY();
+    static Vector3 UnitZ();
 };
 
 Vector3 operator*(const double &, const Vector3 &);

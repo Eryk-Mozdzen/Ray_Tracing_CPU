@@ -2,42 +2,40 @@
 
 Line::Line() {}
 
-Line::Line(Vector3 _point, Vector3 _direction) {
-    point = _point;
-    direction = normalize(_direction);
+Line::Line(const Vector3 &point, const Vector3 &direction) {
+    this->point = point;
+    this->direction = normalize(direction);
 }
 
-double distance(Line line, Vector3 point) {
+double distance(const Line &line, const Vector3 &point) {
     return length(line.direction^(line.point-point))/length(line.direction);
 }
 
 Plane::Plane() {}
 
-Plane::Plane(double _A, double _B, double _C, double _D) {
-    A = _A;
-    B = _B;
-    C = _C;
-    D = _D;
+Plane::Plane(const double &A, const double &B, const double &C, const double &D) {
+    this->A = A;
+    this->B = B;
+    this->C = C;
+    this->D = D;
 }
 
-Plane::Plane(Vector3 p, Vector3 n) {
-    n = normalize(n);
+Plane::Plane(const Vector3 &p, const Vector3 &n) {
+    Vector3 norm = normalize(n);
 
-    A = n.x;
-    B = n.y;
-    C = n.z;
+    A = norm.x;
+    B = norm.y;
+    C = norm.z;
     D = -A*p.x - B*p.y - C*p.z;
 }
 
-Plane::Plane(Vector3 p, Vector3 u, Vector3 v) : Plane(p, normalize(u^v)) {
+Plane::Plane(const Vector3 &p, const Vector3& u, const Vector3 &v) : Plane(p, normalize(u^v)) {}
 
-}
-
-Vector3 Plane::getNormal() {
+Vector3 Plane::getNormal() const {
     return normalize(Vector3(A, B, C));
 }
 
-bool Plane::intersect(Line line, Vector3 *point) {
+bool Plane::intersect(const Line &line, Vector3 *point) const {
     if(getNormal()*line.direction==0.f)
         return false;
 

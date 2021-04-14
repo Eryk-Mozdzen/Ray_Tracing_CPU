@@ -18,8 +18,8 @@ constexpr auto M_PI = 3.14159265358979323846;
 class Ray : public Line {
 public:
     Ray();
-    Ray(Vector3, Vector3);
-    bool intersect(Vector3, double*);
+    Ray(const Vector3&, const Vector3&);
+    bool intersect(const Vector3&, double*) const;
 };
 
 class Transform3 : public Matrix {
@@ -29,8 +29,13 @@ private:
 public:
     Transform3();
     Transform3 & operator=(const Matrix &);
-    void translate(Vector3 d);
-    void rotate(Vector3, double);
+
+    void translate(const Vector3 &d);
+    void rotate(const Vector3&, const double&);
+
+    Vector3 getRelativeToTransform(const Vector3&);
+    Vector3 getRelativeToReferenceFrame(const Vector3&);
+
     Vector3 getTranslation() const;
     Matrix getRotation() const;
     Matrix getInverse();
@@ -50,20 +55,20 @@ class Object {
 public:
     Object() {}
 
-    virtual bool intersect(Ray, CollisionData*) {
+    virtual bool intersect(const Ray&, CollisionData*) {
         return false;
     }
 };
 
 class TextureMenager {
-public:
+private:
     std::vector<sf::Image> textures;
-
+public:
     TextureMenager();
-    void load(std::string);
-    sf::Image* getTextureReference(int);
+    void load(const std::string&);
+    sf::Image* getTextureReference(const int&);
 };
 
-sf::Color color_interpolation(sf::Color, sf::Color, double);
+sf::Color color_interpolation(const sf::Color&, const sf::Color&, const double&);
 
 #endif
