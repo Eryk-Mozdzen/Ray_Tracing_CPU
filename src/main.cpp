@@ -219,13 +219,13 @@ int main() {
 
     balls[0].material = Material(menager.getTextureReference(1));
 
-    for(int i=0; i<9; i++)
+    for(int i=0; i<2; i++)
         scene.addObject(&balls[i]);
     //scene.addObject(&skybox);
-    //scene.addObject(&ground);
+    scene.addObject(&ground);
     //scene.addObject(&mirror);
 
-    scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
+    //scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
     scene.addLightSource(new LightSource(Vector3(0, 20, 60)));
 
     double angle = 0;

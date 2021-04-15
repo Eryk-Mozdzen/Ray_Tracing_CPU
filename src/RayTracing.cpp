@@ -84,20 +84,25 @@ sf::Color Scene::trace(const Ray &ray, const int &depth) const {
     //sf::Color color_reflected = trace(Ray(data.point, nextDir), depth-1);
     //return color_interpolation(data.color, color_reflected, 0.3);
 
-    const double ka = data.material.getAmbient();
-    const double kd = data.material.getDiffuse();
-    const double ks = data.material.getSpecular();
-    const double a = data.material.getShininess();
     const Vector3 N = normalize(data.normal);
     const Vector3 V = normalize(ray.point - data.point);
 
     double illumination = data.material.getAmbient()*255;
     for(int i=0; i<this->lights.size(); i++) {
-        const Vector3 L = normalize(lights[i]->getPosition() - data.point);
+        const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);
         const Vector3 R = normalize(2*(L*N)*N - L);
 
-        illumination +=kd*std::max(L*N, 0.)*255;
-        illumination +=ks*std::pow(std::max(V*R, 0.), a)*255;
+        //for(int j=0; j<objects.size(); j++)
+        //    if(objects[j]->intersect(Ray(data.point, L), tmp))
+        //        if(length(tmp.point-ray.point)>EPSILON)
+        //            continue;
+
+        sf::Color check = this->trace(Ray(data.point, L), 1);
+        if(check!=sf::Color::Transparent)
+            continue;
+
+        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*255;
+        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*255;
     }
 
     return sf::Color(illumination, illumination, illumination);
