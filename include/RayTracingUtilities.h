@@ -24,10 +24,20 @@ public:
     bool intersect(const Vector3&, double*) const;
 };
 
-class CollisionData {
+class LightSource {
+private:
+    Vector3 position;
+    sf::Color color;
 public:
+    LightSource();
+    LightSource(const Vector3&);
+    const Vector3 & getPosition() const;
+};
+
+struct CollisionData {
     Vector3 normal;
     Vector3 point;
+    Material material;
     sf::Color color;
 
     CollisionData();

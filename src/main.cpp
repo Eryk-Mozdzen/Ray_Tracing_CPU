@@ -19,9 +19,7 @@
 #define LINEAR_VELOCITY     1.5
 #define ANGULAR_VELOCITY    0.1
 
-void ViewPointMove(View &view, const sf::Vector2i &mouse) {
-    Transform3 tr = view.transform;
-
+void viewMove(View &view, const sf::Vector2i &mouse) {
     Vector3 translation(0, 0, 0);
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))         translation +=Vector3::UnitX();
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))         translation -=Vector3::UnitX();
@@ -30,17 +28,17 @@ void ViewPointMove(View &view, const sf::Vector2i &mouse) {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))    translation +=Vector3::UnitZ();
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))  translation -=Vector3::UnitZ();
 
-    view.transform.translate(LINEAR_VELOCITY*normalize(translation));
+    view.translate(LINEAR_VELOCITY*normalize(translation));
 
     if(std::abs(mouse.x)>5)
-        view.transform.rotate(Vector3::UnitZ(), ANGULAR_VELOCITY*((mouse.x<0)? 1 : -1));
+        view.rotate(Vector3::UnitZ(), ANGULAR_VELOCITY*((mouse.x<0)? 1 : -1));
 
     if(std::abs(mouse.y)>5)
-        view.transform.rotate(Vector3::UnitY(), ANGULAR_VELOCITY*((mouse.y>0)? 1 : -1));
+        view.rotate(Vector3::UnitY(), ANGULAR_VELOCITY*((mouse.y>0)? 1 : -1));
 
     double s = view.getDirectionY()*Vector3::UnitZ();
     if(std::abs(s)>0.1)
-        view.transform.rotate(Vector3::UnitX(), ANGULAR_VELOCITY*((s<0)? 1 : -1));
+        view.rotate(Vector3::UnitX(), ANGULAR_VELOCITY*((s<0)? 1 : -1));
 }
 
 /*-----------  User custom drawable objects  ---------------*/
@@ -96,6 +94,7 @@ public:
         data.point = ray.point + t_nearest_positive*ray.direction;
         data.normal = normalize(data.point - center);
         data.color = this->getPixel(data.point);
+        data.material = this->material;
 
         return true;
     }
@@ -105,17 +104,14 @@ public:
 class Triangle : public Object {
 public:
     Vector3 v0, v1, v2;
-    sf::Color color;
-    double reflectivity;
 
     Triangle() {}
 
-    Triangle(Vector3 _v0, Vector3 _v1, Vector3 _v2, double _reflectivity) {
-        v0 = _v0;
-        v1 = _v1;
-        v2 = _v2;
-        reflectivity = _reflectivity;
-        color = sf::Color(rand()%256, rand()%256, rand()%256);
+    Triangle(const Vector3 &v0, const Vector3 &v1, const Vector3 &v2) {
+        this->v0 = v0;
+        this->v1 = v1;
+        this->v2 = v2;
+        this->material = Material(rand()%256, rand()%256, rand()%256);
     }
 
     bool intersect(const Ray &ray, CollisionData &data) {
@@ -144,7 +140,8 @@ public:
         if(t>EPSILON) {
             data.point = ray.point + t*ray.direction;
             data.normal = normalize(edge1^edge2);
-            data.color = this->color;
+            data.color = this->material.getColorAt(0, 0);
+            data.material = this->material;
             return true;
         }
 
@@ -160,7 +157,7 @@ public:
     Ground() : Plane() {}
 
     Ground(Vector3 point, Vector3 normal, double reflectivity) : Plane(point, normal) {
-        this->material.setParameters(reflectivity, 0, 0);
+        this->material.setParameters(reflectivity, 0, 0, 0);
     }
 
     Ground(Vector3 point, Vector3 normal, sf::Image *texture, double textWidth, double textHeight) : Plane(point, normal) {
@@ -179,8 +176,9 @@ public:
             if((ray.direction*(data.point-ray.point))<0)
                 return false;
 
-            data.normal = getNormal();
-            data.color = getPixel(data.point);
+            data.normal = this->getNormal();
+            data.color = this->getPixel(data.point);
+            data.material = this->material;
             return true;
         }
         return false;
@@ -212,8 +210,8 @@ int main() {
 	menager.load("textures/wood2.jpg");
 
     Sphere skybox(Vector3(0, 0, 0), 10000, menager.getTextureReference(0));
-	Ground ground(Vector3(0, 0, 0), Vector3(0, 0, 1), menager.getTextureReference(3), 10000, 10000);
-	Triangle mirror(Vector3(50, 100, 0), Vector3(50, 10, 0), Vector3(100, 10, 100), 0.5);
+	Ground ground(Vector3(0, 0, 0), Vector3(0, 0, 1), menager.getTextureReference(2), 5000, 5000);
+	Triangle mirror(Vector3(50, 100, 0), Vector3(50, 10, 0), Vector3(100, 10, 100));
 
 	Sphere balls[9];
 	for(int i=0; i<9; i++)
@@ -221,7 +219,20 @@ int main() {
 
     balls[0].material = Material(menager.getTextureReference(1));
 
+    for(int i=0; i<9; i++)
+        scene.addObject(&balls[i]);
+    //scene.addObject(&skybox);
+    //scene.addObject(&ground);
+    //scene.addObject(&mirror);
+
+    scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
+    scene.addLightSource(new LightSource(Vector3(0, 20, 60)));
+
     double angle = 0;
+    double distance = 1;
+
+    int resolutionH = 15;
+    int resolutionV = 10;
 
     while(window.isOpen()) {
         sf::Event event;
@@ -231,22 +242,24 @@ int main() {
             if(event.type==sf::Event::KeyPressed)
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                     window.close();
+            /*if(event.type==sf::Event::MouseWheelScrolled) {
+                if(event.mouseWheelScroll.delta>0) distance +=((distance>=1)? 1 : 0.1);
+                else if(distance>0.2)              distance -=((distance>1)? 1 : 0.1);
+            }*/
             if(event.type==sf::Event::MouseWheelScrolled) {
-                if(event.mouseWheelScroll.delta>0) view.distance +=((view.distance>=1)? 1 : 0.1);
-                else if(view.distance>0.2)         view.distance -=((view.distance>1)? 1 : 0.1);
+                if(event.mouseWheelScroll.delta>0) {resolutionH +=15; resolutionV +=10;}
+                else                               {resolutionH -=15; resolutionV -=10;}
             }
         }
 
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
-        ViewPointMove(view, deltaMouse);
 
-		window.clear();
-		scene.clear();
-
-		Transform3 tr_original = balls[0].transform;            //safe original transformation
+        viewMove(view, deltaMouse);
+        view.setDistanceFromProjectionPlane(distance);
 
         //simple earth simulation
+		Transform3 tr_original = balls[0].transform;            //safe original transformation
 		balls[0].transform.translate(Vector3(-10, -10, 0));     //move to orbit center
 		balls[0].transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
 		balls[0].transform.translate(Vector3(10, 0, 0));        //move to orbit position
@@ -255,26 +268,24 @@ int main() {
         balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
 		angle +=0.1;                                            //increment angle
 
-        for(int i=0; i<1; i++)
-            scene.add(&balls[i]);
-		//scene.add(&skybox);
-		//scene.add(&ground);
-		//scene.add(&mirror);
+		clock.restart();
 
-		sf::Image frame = scene.render(view, 150, 100);
-
-		balls[0].transform = tr_original;                       //return to original transformation
+		sf::Image frame = scene.render(view, resolutionH, resolutionV);
 
 		double renderTime = clock.restart().asSeconds();
+
+		balls[0].transform = tr_original;                       //return to original transformation
 
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;
 		windowTitle << "Ray Tracing";
-		windowTitle << " | Resolution: " << RESOLUTION_H << "x" << RESOLUTION_V;
+		windowTitle << " | Resolution: " << resolutionH << "x" << resolutionV;
         windowTitle << " | Render Time: " << renderTime << "s";
 		windowTitle << " | FPS: " << 1/renderTime;
-		windowTitle << " | Zoom: " << view.distance;
+		windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
 		window.setTitle(windowTitle.str());
+
+		window.clear(sf::Color(32, 32, 32));
 
 		frame.flipVertically();
 		frame.flipHorizontally();
@@ -282,11 +293,13 @@ int main() {
         tex.loadFromImage(frame);
         sf::Sprite sprite;
         sprite.setTexture(tex);
-        sprite.scale(8, 7);
+        sprite.scale((double)WINDOW_WIDTH/resolutionH, (double)WINDOW_HEIGHT/resolutionV);
 		window.draw(sprite);
 
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
             frame.saveToFile("saved_frame.jpg");
+            std::cout << "Saved frame" << std::endl;
+		}
 
         window.display();
     }

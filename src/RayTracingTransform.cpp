@@ -2,8 +2,6 @@
 
 Transform3::Transform3() : Matrix(4, 4) {
     *this = Matrix::Identity(4);
-
-    this->invReady = false;
 }
 
 Transform3 & Transform3::operator=(const Matrix &rhs) {
@@ -14,8 +12,6 @@ Transform3 & Transform3::operator=(const Matrix &rhs) {
         for(int j=0; j<4; j++)
             (*this)(i, j) = rhs(i, j);
 
-    this->invReady = false;
-
     return *this;
 }
 
@@ -25,8 +21,6 @@ void Transform3::translate(const Vector3 &d) {
     transform(0, 3) = d.x;
     transform(1, 3) = d.y;
     transform(2, 3) = d.z;
-
-    this->invReady = false;
 
     *this = (*this)*transform;
 }
@@ -47,8 +41,6 @@ void Transform3::rotate(const Vector3 &axis, const double &theta) {
     for(int i=0; i<3; i++)
         for(int j=0; j<3; j++)
             transform(i, j) = rot(i, j);
-
-    this->invReady = false;
 
     *this = (*this)*transform;
 }
@@ -102,11 +94,5 @@ Matrix Transform3::getRotation() const {
 }
 
 Matrix Transform3::getInverse() const {
-    /*if(!this->invReady) {
-        this->invReady = true;
-        this->inv = this->inverse();
-    }
-
-    return this->inv;*/
     return this->inverse();
 }

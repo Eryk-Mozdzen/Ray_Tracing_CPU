@@ -14,6 +14,20 @@ bool Ray::intersect(const Vector3 &point, double *t) const {
     return true;
 }
 
+LightSource::LightSource() {
+    this->position = Vector3(0, 0, 0);
+    this->color = sf::Color::White;
+}
+
+LightSource::LightSource(const Vector3 &position) {
+    this->position = position;
+    this->color = sf::Color::White;
+}
+
+const Vector3 & LightSource::getPosition() const {
+    return this->position;
+}
+
 CollisionData::CollisionData() {}
 
 TextureMenager::TextureMenager() {}

@@ -14,9 +14,6 @@
 #include "RayTracingConfig.h"
 
 class Transform3 : public Matrix {
-private:
-    Matrix inv;
-    bool invReady;
 public:
     Transform3();
     Transform3 & operator=(const Matrix &);
