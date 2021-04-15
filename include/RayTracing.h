@@ -13,18 +13,16 @@
 #include "RayTracingConfig.h"
 #include "RayTracingUtilities.h"
 
-class Camera {
+class View {
 public:
     double distance;
     Transform3 transform;
-    std::vector<Ray> rays;
 
-    Camera();
-    Camera(const Vector3&, const double &);
-    void update_rays();
-    Vector3 getDirectionX();
-    Vector3 getDirectionY();
-    Vector3 getDirectionZ();
+    View();
+    View(const Vector3&, const double &);
+    Vector3 getDirectionX() const;
+    Vector3 getDirectionY() const;
+    Vector3 getDirectionZ() const;
 };
 
 class Scene {
@@ -35,7 +33,7 @@ public:
     void add(Object*);
     void clear();
     sf::Color trace(const Ray&, const int&) const;
-    void render(const Camera&, sf::RenderWindow &) const;
+    sf::Image render(const View&, const int&, const int&) const;
 };
 
 

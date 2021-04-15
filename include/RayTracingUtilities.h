@@ -12,6 +12,8 @@
 #include "geometry.h"
 
 #include "RayTracingConfig.h"
+#include "RayTracingMaterial.h"
+#include "RayTracingTransform.h"
 
 constexpr auto M_PI = 3.14159265358979323846;
 
@@ -22,40 +24,23 @@ public:
     bool intersect(const Vector3&, double*) const;
 };
 
-class Transform3 : public Matrix {
-private:
-    Matrix inv;
-    bool invReady;
-public:
-    Transform3();
-    Transform3 & operator=(const Matrix &);
-
-    void translate(const Vector3 &d);
-    void rotate(const Vector3&, const double&);
-
-    Vector3 getRelativeToTransform(const Vector3&);
-    Vector3 getRelativeToReferenceFrame(const Vector3&);
-
-    Vector3 getTranslation() const;
-    Matrix getRotation() const;
-    Matrix getInverse();
-};
-
 class CollisionData {
 public:
-    sf::Color color;
     Vector3 normal;
     Vector3 point;
-    double reflectivity;
+    sf::Color color;
 
     CollisionData();
 };
 
 class Object {
 public:
+    Material material;
+    Transform3 transform;
+
     Object() {}
 
-    virtual bool intersect(const Ray&, CollisionData*) {
+    virtual bool intersect(const Ray&, CollisionData&) {
         return false;
     }
 };

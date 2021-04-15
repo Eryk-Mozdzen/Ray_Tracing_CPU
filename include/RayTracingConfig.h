@@ -34,6 +34,6 @@
 #endif
 
 #define EPSILON             0.0001
-#define REFLECTION_DEPTH    3
+#define REFLECTION_DEPTH    1
 
 #endif
