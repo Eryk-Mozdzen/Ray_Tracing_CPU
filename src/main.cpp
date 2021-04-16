@@ -65,6 +65,7 @@ public:
 
     sf::Color getPixel(const Vector3 &point) {
         Vector3 relative = this->transform.getRelativeToTransform(point);
+        //Vector3 relative = point - this->transform.getTranslation();
 
         Vector3 d = normalize(relative);
 
@@ -95,6 +96,8 @@ public:
         data.normal = normalize(data.point - center);
         data.color = this->getPixel(data.point);
         data.material = this->material;
+        data.distance = length(data.point - ray.point);
+        data.exist = true;
 
         return true;
     }
@@ -142,6 +145,8 @@ public:
             data.normal = normalize(edge1^edge2);
             data.color = this->material.getColorAt(0, 0);
             data.material = this->material;
+            data.distance = length(data.point - ray.point);
+            data.exist = true;
             return true;
         }
 
@@ -179,6 +184,8 @@ public:
             data.normal = this->getNormal();
             data.color = this->getPixel(data.point);
             data.material = this->material;
+            data.distance = length(data.point - ray.point);
+            data.exist = true;
             return true;
         }
         return false;
@@ -225,7 +232,7 @@ int main() {
     scene.addObject(&ground);
     //scene.addObject(&mirror);
 
-    //scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
+    scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
     scene.addLightSource(new LightSource(Vector3(0, 20, 60)));
 
     double angle = 0;

@@ -56,56 +56,51 @@ void Scene::addLightSource(LightSource *light) {
     this->lights.push_back(light);
 }
 
-sf::Color Scene::trace(const Ray &ray, const int &depth) const {
-    if(depth<=0)
-        return sf::Color::Transparent;
-
+CollisionData Scene::trace(const Ray &ray) const {
     CollisionData tmp, data;
-    double d, dist = 100000;
-    bool exist = false;
 
-    for(int i=0; i<objects.size(); i++) {
-        if(objects[i]->intersect(ray, tmp)) {
+    for(int i=0; i<this->objects.size(); i++) {
+        if(this->objects[i]->intersect(ray, tmp)) {
             if(length(tmp.point-ray.point)>EPSILON) {
-                d = length(tmp.point-ray.point);
-                if(d<dist) {
-                    dist = d;
+                if(tmp.distance<data.distance) {
                     data = tmp;
                 }
-                exist = true;
+                data.exist = true;
             }
         }
     }
 
-    if(!exist)
+    return data;
+}
+
+sf::Color Scene::evaluate(const Ray &ray, const int &depth) const {
+    if(depth<=0)
         return sf::Color::Transparent;
 
-    //Vector3 nextDir = ray.direction - 2.f*(ray.direction*data.normal)*data.normal;
-    //sf::Color color_reflected = trace(Ray(data.point, nextDir), depth-1);
-    //return color_interpolation(data.color, color_reflected, 0.3);
+    CollisionData data = this->trace(ray);
+
+    if(!data.exist)
+        return sf::Color::Transparent;
 
     const Vector3 N = normalize(data.normal);
     const Vector3 V = normalize(ray.point - data.point);
 
-    double illumination = data.material.getAmbient()*255;
+    sf::Color illumination = data.material.getAmbient()*data.color;
     for(int i=0; i<this->lights.size(); i++) {
         const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);
         const Vector3 R = normalize(2*(L*N)*N - L);
 
-        //for(int j=0; j<objects.size(); j++)
-        //    if(objects[j]->intersect(Ray(data.point, L), tmp))
-        //        if(length(tmp.point-ray.point)>EPSILON)
-        //            continue;
-
-        sf::Color check = this->trace(Ray(data.point, L), 1);
-        if(check!=sf::Color::Transparent)
+        CollisionData shadowCollision = this->trace(Ray(data.point, L));
+        const double distToLight = length(data.point - this->lights[i]->getPosition());
+        const double distToCollision = length(data.point - shadowCollision.point);
+        if(shadowCollision.exist && distToCollision<distToLight)
             continue;
 
-        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*255;
-        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*255;
+        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
+        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
     }
 
-    return sf::Color(illumination, illumination, illumination);
+    return illumination;
 }
 
 sf::Image Scene::render(const View &view, const int &resolutionH, const int &resolutionV) const {
@@ -125,7 +120,7 @@ sf::Image Scene::render(const View &view, const int &resolutionH, const int &res
                 (i-resolutionV/2.)/resolutionV*directionZ
             );
 
-            sf::Color color = trace(Ray(view.getPosition(), dir), REFLECTION_DEPTH);
+            sf::Color color = this->evaluate(Ray(view.getPosition(), dir), REFLECTION_DEPTH);
 
             if(color!=sf::Color::Transparent && color!=sf::Color::Black)
                 frame.setPixel(j, i, color);

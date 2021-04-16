@@ -6,10 +6,10 @@ Material::Material() {
     this->textureWrap = false;
     this->textureSize = sf::Vector2u(0, 0);
 
-    this->ambient = 0.1;
-    this->diffuse = 0.25;
-    this->specular = 0.25;
-    this->shininess = 5;
+    this->ambient = 0.25;
+    this->diffuse = 0.20;
+    this->specular = 0.20;
+    this->shininess = 7;
 }
 
 Material::Material(const int &r, const int &g, const int &b) : Material() {

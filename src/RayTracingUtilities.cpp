@@ -28,7 +28,11 @@ const Vector3 & LightSource::getPosition() const {
     return this->position;
 }
 
-CollisionData::CollisionData() {}
+CollisionData::CollisionData() {
+    this->color = sf::Color::Transparent;
+    this->distance = 1000000;
+    this->exist = false;
+}
 
 TextureMenager::TextureMenager() {}
 
@@ -40,6 +44,23 @@ void TextureMenager::load(const std::string &texture_str) {
 
 sf::Image* TextureMenager::getTextureReference(const int &index) {
     return &textures[index];
+}
+
+std::ostream & operator<<(std::ostream &lhs, const sf::Color &rhs) {
+    lhs << "(";
+    lhs << (int)rhs.r << "\t";
+    lhs << (int)rhs.g << "\t";
+    lhs << (int)rhs.b;
+    lhs << ")";
+    return lhs;
+}
+
+sf::Color operator*(const double &lhs, const sf::Color &rhs) {
+    return sf::Color(
+        std::min(std::max(0., lhs*rhs.r), 255.),
+        std::min(std::max(0., lhs*rhs.g), 255.),
+        std::min(std::max(0., lhs*rhs.b), 255.)
+    );
 }
 
 sf::Color color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {

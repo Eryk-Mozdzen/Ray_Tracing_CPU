@@ -37,11 +37,13 @@ class Scene {
 private:
     std::vector<Object*> objects;
     std::vector<LightSource*> lights;
+
+    CollisionData trace(const Ray&) const;
+    sf::Color evaluate(const Ray&, const int&) const;
 public:
     Scene();
     void addObject(Object*);
     void addLightSource(LightSource*);
-    sf::Color trace(const Ray&, const int&) const;
     sf::Image render(const View&, const int&, const int&) const;
 };
 

@@ -1,6 +1,7 @@
 #ifndef RAY_TRACING_UTILITIES_H
 #define RAY_TRACING_UTILITIES_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -39,6 +40,8 @@ struct CollisionData {
     Vector3 point;
     Material material;
     sf::Color color;
+    double distance;
+    bool exist;
 
     CollisionData();
 };
@@ -64,6 +67,8 @@ public:
     sf::Image* getTextureReference(const int&);
 };
 
+std::ostream & operator<<(std::ostream&, const sf::Color&);
+sf::Color operator*(const double&, const sf::Color&);
 sf::Color color_interpolation(const sf::Color&, const sf::Color&, const double&);
 
 #endif
