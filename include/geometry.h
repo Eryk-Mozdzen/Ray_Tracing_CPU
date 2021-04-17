@@ -2,6 +2,7 @@
 #define GEOMETRY_H
 
 #include <iostream>
+#include <string>
 #include <cmath>
 #include "Vector.h"
 
@@ -27,5 +28,6 @@ public:
 };
 
 double distance(const Line&, const Vector3&);
+Matrix solveLinearSystem(const Matrix&, const Matrix&);
 
 #endif

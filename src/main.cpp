@@ -65,7 +65,6 @@ public:
 
     sf::Color getPixel(const Vector3 &point) {
         Vector3 relative = this->transform.getRelativeToTransform(point);
-        //Vector3 relative = point - this->transform.getTranslation();
 
         Vector3 d = normalize(relative);
 
@@ -162,7 +161,7 @@ public:
     Ground() : Plane() {}
 
     Ground(Vector3 point, Vector3 normal, double reflectivity) : Plane(point, normal) {
-        this->material.setParameters(reflectivity, 0, 0, 0);
+        this->material.setParameters(reflectivity, 0, 0, 0, 0.1);
     }
 
     Ground(Vector3 point, Vector3 normal, sf::Image *texture, double textWidth, double textHeight) : Plane(point, normal) {
@@ -195,6 +194,19 @@ public:
 
 int main() {
 
+    /*std::cout << std::setprecision(4) << std::fixed;
+
+    Matrix m1(4, 4);
+    for(int i=0; i<m1.getRows(); i++)
+        for(int j=0; j<m1.getCols(); j++)
+            m1(i, j) = rand()%10;
+
+    std::cout << m1 << std::endl;
+
+    std::cout << (double)Matrix::Det(m1) << std::endl;
+
+    return 0;*/
+
     try {
 
     srand(time(NULL));
@@ -224,16 +236,17 @@ int main() {
 	for(int i=0; i<9; i++)
         balls[i] = Sphere(Vector3((i/3)*20, (i%3)*20, 20), 7);
 
-    balls[0].material = Material(menager.getTextureReference(1));
+    //balls[0].material = Material(menager.getTextureReference(1));
 
-    for(int i=0; i<2; i++)
+    for(int i=0; i<1; i++)
         scene.addObject(&balls[i]);
     //scene.addObject(&skybox);
     scene.addObject(&ground);
     //scene.addObject(&mirror);
 
-    scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
+    //scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
     scene.addLightSource(new LightSource(Vector3(0, 20, 60)));
+    scene.addLightSource(new LightSource(Vector3(0, 40, 60)));
 
     double angle = 0;
     double distance = 1;
@@ -265,7 +278,7 @@ int main() {
         viewMove(view, deltaMouse);
         view.setDistanceFromProjectionPlane(distance);
 
-        //simple earth simulation
+/*        //simple earth simulation
 		Transform3 tr_original = balls[0].transform;            //safe original transformation
 		balls[0].transform.translate(Vector3(-10, -10, 0));     //move to orbit center
 		balls[0].transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
@@ -274,14 +287,14 @@ int main() {
 		balls[0].transform.rotate(Vector3(0, 1, 1), M_PI/3);    //tilt self-rotate axis
         balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
 		angle +=0.1;                                            //increment angle
-
+*/
 		clock.restart();
 
 		sf::Image frame = scene.render(view, resolutionH, resolutionV);
 
 		double renderTime = clock.restart().asSeconds();
 
-		balls[0].transform = tr_original;                       //return to original transformation
+//		balls[0].transform = tr_original;                       //return to original transformation
 
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;

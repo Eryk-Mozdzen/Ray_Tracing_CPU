@@ -90,14 +90,21 @@ sf::Color Scene::evaluate(const Ray &ray, const int &depth) const {
         const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);
         const Vector3 R = normalize(2*(L*N)*N - L);
 
-        CollisionData shadowCollision = this->trace(Ray(data.point, L));
+        CollisionData shadow = this->trace(Ray(data.point, L));
         const double distToLight = length(data.point - this->lights[i]->getPosition());
-        const double distToCollision = length(data.point - shadowCollision.point);
-        if(shadowCollision.exist && distToCollision<distToLight)
+        const double distToCollision = length(data.point - shadow.point);
+        if(shadow.exist && distToCollision<distToLight)
             continue;
 
         illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
         illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
+
+        const Vector3 H = normalize(2*(V*N)*N + V);
+        sf::Color reflected = this->evaluate(Ray(data.point, H), depth-1);
+
+        if(reflected!=sf::Color::Transparent)
+            illumination +=data.material.getReflection()*reflected;
+            //illumination = color_interpolation(illumination, reflected.color, data.material.getReflection());
     }
 
     return illumination;

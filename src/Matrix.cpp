@@ -163,48 +163,35 @@ Matrix Matrix::Identity(const int &degree) {
     return identity;
 }
 
-double Matrix::Det(const Matrix &input) {
-    if(input.getRows()!=input.getCols())
+double Matrix::Det(Matrix A) {
+    if(A.getRows()!=A.getCols())
         throw std::string("Try to calculate determinant from non square matrix");
 
-    int n = input.getRows();
+    const int n = A.getRows();
 
-    if(n==1) {
-        return input(0, 0);
-    } else if(n==2) {
-        return input(0, 0)*input(1, 1) - input(0, 1)*input(1, 0);
-    } else if(n==3) {
-        return  input(0, 0)*input(1, 1)*input(2, 2) +
-                input(0, 1)*input(1, 2)*input(2, 0) +
-                input(0, 2)*input(1, 0)*input(2, 1) -
-                input(0, 2)*input(1, 1)*input(2, 0) -
-                input(0, 1)*input(1, 0)*input(2, 2) -
-                input(0, 0)*input(1, 2)*input(2, 1);
-    } else {
+    if(n==1)
+        return A(0, 0);
 
-        double det = 0;
+    for(int i=0; i<n-1; i++) {
+        const double top = A(i, i);
 
-        for(int i=0; i<n; i++) {
-            Matrix tmp(n-1, n-1);
-            int index = 0, index_tmp = 0;
-            while(index<n*n) {
-
-                if(index%n!=0 && index/n!=i) {
-                    tmp(index_tmp%(n-1), index_tmp/(n-1)) = input(index%n, index/n);
-                    index_tmp++;
-                }
-
-                index++;
+        for(int j=i+1; j<n; j++) {
+            const double factor = A(j, i)/top;
+            for(int k=0; k<n; k++) {
+                A(j, k) -=factor*A(i, k);
             }
-            det +=((i%2==0) ? 1:-1)*input(0, i)*Matrix::Det(tmp);
         }
-
-        return det;
     }
+
+    double det = 1;
+    for(int i=0; i<n; i++)
+        det *=A(i, i);
+
+    return det;
 }
 
 std::ostream & operator<<(std::ostream &lhs, const Matrix &rhs) {
-    lhs.precision(2);
+    lhs.precision(5);
     lhs.setf(std::ios_base::fixed);
 
     lhs << "[";
@@ -223,7 +210,7 @@ std::ostream & operator<<(std::ostream &lhs, const Matrix &rhs) {
     }
     lhs << "]";
 
-    lhs.unsetf(std::ios_base::fixed);
+    //lhs.unsetf(std::ios_base::fixed);
 
     return lhs;
 }

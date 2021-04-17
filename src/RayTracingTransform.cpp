@@ -52,7 +52,12 @@ Vector3 Transform3::getRelativeToTransform(const Vector3 &v) const {
     p(2, 0) = v.z;
     p(3, 0) = 1;
 
-    Matrix rel = this->getInverse()*p;
+    //not good approach (work but highly not efficient)
+    //Matrix rel = this->getInverse()*p;
+
+    Matrix rel = solveLinearSystem(*this, p);
+
+    //return v - this->getTranslation();
 
     return Vector3(
         rel(0, 0),

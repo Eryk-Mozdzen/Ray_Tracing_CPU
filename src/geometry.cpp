@@ -53,6 +53,32 @@ bool Plane::intersect(const Line &line, Vector3 *point) const {
     return true;
 }
 
+Matrix solveLinearSystem(const Matrix &A, const Matrix &y) {
+    if(A.getRows()!=A.getCols()) throw std::string("matrix is not square in linear solver");
+    if(A.getCols()!=y.getRows()) throw std::string("wrong matrix size in linear solver");
+    if(y.getCols()!=1)           throw std::string("y is not a vector in linear solver");
+
+    const int n = y.getRows();
+
+    Matrix x(n, 1);
+
+    const double W = Matrix::Det(A);
+
+    if(std::abs(W)<0.0001)
+        throw std::string("system not have single unique solution");
+
+    Matrix A_i;
+    for(int i=0; i<n; i++) {
+        A_i = A;
+
+        for(int j=0; j<n; j++)
+            A_i(j, i) = y(j, 0);
+
+        x(i, 0) = Matrix::Det(A_i)/W;
+    }
+
+    return x;
+}
 
 
 
