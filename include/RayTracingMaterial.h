@@ -1,12 +1,14 @@
 #ifndef RAY_TRACING_MATERIAL_H
 #define RAY_TRACING_MATERIAL_H
 
+#ifndef EPSILON
+    #define EPSILON     0.0001
+#endif
+
 #include <iostream>
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
-
-#include "../include/RayTracingConfig.h"
 
 class Material {
 private:
@@ -17,12 +19,16 @@ private:
     bool textureWrap;
 public:
     Material();
-    Material(const int&);
     Material(const int&, const int&, const int&);
     Material(sf::Image*);
     Material(sf::Image*, const int&, const int&);
 
-    void setParameters(const double&, const double&, const double&, const double&, const double&);
+    void setAmbient(const double&);
+    void setDiffuse(const double&);
+    void setSpecular(const double&);
+    void setShininess(const double&);
+    void setReflection(const double&);
+
     const double & getAmbient() const;
     const double & getDiffuse() const;
     const double & getSpecular() const;

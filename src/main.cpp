@@ -2,15 +2,15 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
-#include <vector>
 #include <string>
 #include <sstream>
-#include <cassert>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+
+#define EPSILON             0.0001
 
 #include "../include/RayTracing.h"
 
@@ -45,8 +45,9 @@ void viewMove(View &view, const sf::Vector2i &mouse) {
 /*-----------  User custom drawable objects  ---------------*/
 
 class Sphere : public Object {
-public:
+private:
     double radius;
+public:
 
     Sphere() {
         this->radius = 1;
@@ -56,12 +57,6 @@ public:
         this->radius = radius;
         this->transform.translate(center);
         this->material = Material(rand()%256, rand()%256, rand()%256);
-    }
-
-    Sphere(const Vector3 &center, const double &radius, sf::Image *texture) {
-        this->radius = radius;
-        this->transform.translate(center);
-        this->material = Material(texture);
     }
 
     sf::Color getPixel(const Vector3 &point) {
@@ -159,17 +154,24 @@ public:
 class Ground : public Object, public Plane {
 public:
 
-    Ground() : Plane() {}
-
-    Ground(Vector3 point, Vector3 normal, double reflectivity) : Plane(point, normal) {
-        this->material.setParameters(reflectivity, 0, 0, 0, 0.1);
+    Ground(const Vector3 &point, const Vector3 &normal) : Plane(point, normal) {
+        this->material.setAmbient(0);
+        this->material.setDiffuse(1);
+        this->material.setSpecular(0);
+        this->material.setShininess(1);
+        this->material.setReflection(0);
     }
 
-    Ground(Vector3 point, Vector3 normal, sf::Image *texture, double textWidth, double textHeight) : Plane(point, normal) {
+    Ground(const Vector3 &point, const Vector3 &normal, sf::Image *texture, const double &textWidth, const double &textHeight) : Ground(point, normal) {
         this->material = Material(texture, textWidth, textHeight);
+        this->material.setAmbient(0);
+        this->material.setDiffuse(1);
+        this->material.setSpecular(0);
+        this->material.setShininess(1);
+        this->material.setReflection(0.5);
     }
 
-    sf::Color getPixel(Vector3 point3D) {
+    sf::Color getPixel(const Vector3 &point3D) {
         //only special case
         sf::Vector2f point2D(point3D.x, point3D.y);
 
@@ -195,19 +197,6 @@ public:
 
 int main() {
 
-    /*std::cout << std::setprecision(4) << std::fixed;
-
-    Matrix m1(4, 4);
-    for(int i=0; i<m1.getRows(); i++)
-        for(int j=0; j<m1.getCols(); j++)
-            m1(i, j) = rand()%10;
-
-    std::cout << m1 << std::endl;
-
-    std::cout << (double)Matrix::Det(m1) << std::endl;
-
-    return 0;*/
-
     srand(time(NULL));
 
     sf::Clock clock;
@@ -218,40 +207,31 @@ int main() {
 	sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
 	sf::Mouse::setPosition(center, window);
 
-	View view(Vector3(-60, 20, 20), 1);
-	Scene scene;
+	View view(Vector3(-60, 0, 20), 1);
+	RenderScene scene;
+
+	scene.setReflectionDepth(2);
 
 	TextureMenager menager;
 	menager.load("textures/road1.jpg");
 	menager.load("textures/earth2.jpg");
 	menager.load("textures/notexture.jpg");
-	menager.load("textures/wood2.jpg");
 
-    Sphere skybox(Vector3(0, 0, 0), 10000, menager.getTextureReference(0));
-	Ground ground(Vector3(0, 0, 0), Vector3(0, 0, 1), menager.getTextureReference(2), 5000, 5000);
-	Triangle mirror(Vector3(50, 100, 0), Vector3(50, 10, 0), Vector3(100, 10, 100));
+    //earth setup
+	Sphere earth(Vector3(30, 0, 20), 7);
+	earth.material = Material(menager.getTextureReference(1));
+	earth.material.setAmbient(0);
+	earth.material.setDiffuse(1);
+	earth.material.setSpecular(0);
+	earth.material.setReflection(0);
 
-	Sphere balls[9];
-	for(int i=0; i<9; i++)
-        balls[i] = Sphere(Vector3((i/3)*20, (i%3)*20, 20), 7);
+    scene.addObject(&earth);
+    scene.addObject(new Ground(Vector3(0, 0, 0), Vector3::UnitZ(), menager.getTextureReference(2), 5000, 5000));
 
-    //balls[0].material = Material(menager.getTextureReference(1));
-
-    for(int i=0; i<1; i++)
-        scene.addObject(&balls[i]);
-    //scene.addObject(&skybox);
-    scene.addObject(&ground);
-    //scene.addObject(&mirror);
-
-    //scene.addLightSource(new LightSource(Vector3(-60, 20, 20)));
-    scene.addLightSource(new LightSource(Vector3(0, 20, 60)));
-    scene.addLightSource(new LightSource(Vector3(0, 40, 60)));
+    scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
 
     double angle = 0;
-    double distance = 1;
-
-    int resolutionH = 15;
-    int resolutionV = 10;
+    double scroll = 5;
 
     while(window.isOpen()) {
         sf::Event event;
@@ -261,39 +241,37 @@ int main() {
             if(event.type==sf::Event::KeyPressed)
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                     window.close();
-            /*if(event.type==sf::Event::MouseWheelScrolled) {
-                if(event.mouseWheelScroll.delta>0) distance +=((distance>=1)? 1 : 0.1);
-                else if(distance>0.2)              distance -=((distance>1)? 1 : 0.1);
-            }*/
             if(event.type==sf::Event::MouseWheelScrolled) {
-                if(event.mouseWheelScroll.delta>0) {resolutionH +=15; resolutionV +=10;}
-                else                               {resolutionH -=15; resolutionV -=10;}
+                if(event.mouseWheelScroll.delta>0)  scroll++;
+                else                                scroll--;
             }
         }
+
+        int resolutionH = 15*scroll;
+        int resolutionV = 10*scroll;
 
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
 
         viewMove(view, deltaMouse);
-        view.setDistanceFromProjectionPlane(distance);
 
-/*        //simple earth simulation
-		Transform3 tr_original = balls[0].transform;            //safe original transformation
-		balls[0].transform.translate(Vector3(-10, -10, 0));     //move to orbit center
-		balls[0].transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
-		balls[0].transform.translate(Vector3(10, 0, 0));        //move to orbit position
-		balls[0].transform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
-		balls[0].transform.rotate(Vector3(0, 1, 1), M_PI/3);    //tilt self-rotate axis
-        balls[0].transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
-		angle +=0.1;                                            //increment angle
-*/
+        //simple earth orbit simulation
+		Transform3 tr_original = earth.transform;            //safe original transformation
+		earth.transform.translate(Vector3(-30, 0, 0));       //move to orbit center
+		earth.transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
+		earth.transform.translate(Vector3(30, 0, 0));        //move to orbit position
+		earth.transform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
+		earth.transform.rotate(Vector3(0, 1, 1), M_PI/6);    //tilt self-rotate axis
+        earth.transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
+
 		clock.restart();
 
-		sf::Image frame = scene.render(view, resolutionH, resolutionV);
+		sf::Image frameBuffer = scene.render(view, resolutionH, resolutionV);
 
 		double renderTime = clock.restart().asSeconds();
 
-//		balls[0].transform = tr_original;                       //return to original transformation
+		earth.transform = tr_original;                       //return to original transformation
+		angle +=0.5*renderTime;                              //increment angle
 
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;
@@ -304,19 +282,19 @@ int main() {
 		windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
 		window.setTitle(windowTitle.str());
 
-		window.clear(sf::Color(32, 32, 32));
+		window.clear(sf::Color::Green);
 
-		frame.flipVertically();
-		frame.flipHorizontally();
+		frameBuffer.flipVertically();
+		frameBuffer.flipHorizontally();
         sf::Texture tex;
-        tex.loadFromImage(frame);
+        tex.loadFromImage(frameBuffer);
         sf::Sprite sprite;
         sprite.setTexture(tex);
         sprite.scale((double)WINDOW_WIDTH/resolutionH, (double)WINDOW_HEIGHT/resolutionV);
 		window.draw(sprite);
 
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-            frame.saveToFile("saved_frame.jpg");
+            frameBuffer.saveToFile("saved_frame.jpg");
             std::cout << "Saved frame" << std::endl;
 		}
 

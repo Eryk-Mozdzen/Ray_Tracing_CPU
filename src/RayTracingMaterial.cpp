@@ -6,19 +6,15 @@ Material::Material() {
     this->textureWrap = false;
     this->textureSize = sf::Vector2u(0, 0);
 
-    this->ambient = 0.4;
-    this->diffuse = 0.20;
-    this->specular = 0.20;
-    this->shininess = 5;
-    this->reflection = 0.5;
+    this->setAmbient(0.4);
+    this->setDiffuse(0.2);
+    this->setSpecular(0.2);
+    this->setShininess(5);
+    this->setReflection(0.5);
 }
 
 Material::Material(const int &r, const int &g, const int &b) : Material() {
     this->color = sf::Color(r, g, b);
-}
-
-Material::Material(const int &gray) : Material(gray, gray, gray) {
-
 }
 
 Material::Material(sf::Image *texture) : Material() {
@@ -32,11 +28,23 @@ Material::Material(sf::Image *texture, const int &width, const int &height) : Ma
     this->textureSize = sf::Vector2u(width, height);
 }
 
-void Material::setParameters(const double &ambient, const double &diffuse, const double &specular, const double &shininess, const double &reflection) {
+void Material::setAmbient(const double &ambient) {
     this->ambient = ambient;
+}
+
+void Material::setDiffuse(const double &diffuse) {
     this->diffuse = diffuse;
+}
+
+void Material::setSpecular(const double &specular) {
     this->specular = specular;
+}
+
+void Material::setShininess(const double &shininess) {
     this->shininess = shininess;
+}
+
+void Material::setReflection(const double &reflection) {
     this->reflection = reflection;
 }
 
@@ -45,11 +53,11 @@ const double & Material::getAmbient() const {
 }
 
 const double & Material::getDiffuse() const {
-    return this->ambient;
+    return this->diffuse;
 }
 
 const double & Material::getSpecular() const {
-    return this->ambient;
+    return this->specular;
 }
 
 const double & Material::getShininess() const {

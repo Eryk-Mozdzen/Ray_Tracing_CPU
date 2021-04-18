@@ -1,10 +1,16 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#ifndef EPSILON
+    #define EPSILON     0.0001
+#endif
+
 #include <iostream>
+#include <cassert>
 #include <string>
 #include <cmath>
-#include "Vector.h"
+#include "../include/Vector.h"
+#include "../include/Matrix.h"
 
 class Line {
 public:

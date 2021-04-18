@@ -46,17 +46,33 @@ void View::rotate(const Vector3 &axis, const double &theta) {
     this->transform.rotate(axis, theta);
 }
 
-Scene::Scene() {}
+RenderScene::RenderScene() {
+    this->setReflectionDepth(1);
+}
 
-void Scene::addObject(Object *object_ptr) {
+void RenderScene::addObject(Object *object_ptr) {
     this->objects.push_back(object_ptr);
 }
 
-void Scene::addLightSource(LightSource *light) {
+void RenderScene::addLightSource(LightSource *light) {
     this->lights.push_back(light);
 }
 
-CollisionData Scene::trace(const Ray &ray) const {
+void RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
+    this->reflectionDepth = reflectionDepth;
+}
+
+Object* RenderScene::getObjectReference(const unsigned int &index) {
+    assert(index>=0 && index<this->objects.size());
+
+    return this->objects[index];
+}
+
+const unsigned int & RenderScene::getReflectionDepth() const {
+    return this->reflectionDepth;
+}
+
+CollisionData RenderScene::trace(const Ray &ray) const {
     CollisionData tmp, data;
 
     for(int i=0; i<this->objects.size(); i++) {
@@ -73,8 +89,8 @@ CollisionData Scene::trace(const Ray &ray) const {
     return data;
 }
 
-sf::Color Scene::evaluate(const Ray &ray, const int &depth) const {
-    if(depth<=0)
+sf::Color RenderScene::evaluate(const Ray &ray, const unsigned int &depth) const {
+    if(depth==0)
         return sf::Color::Transparent;
 
     CollisionData data = this->trace(ray);
@@ -99,18 +115,16 @@ sf::Color Scene::evaluate(const Ray &ray, const int &depth) const {
         illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
         illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
 
-        //const Vector3 H = normalize(2*(V*N)*N + V);
-        //sf::Color reflected = this->evaluate(Ray(data.point, H), depth-1);
+        const Vector3 H = normalize(2*(V*N)*N + V);
+        sf::Color reflected = this->evaluate(Ray(data.point, H), depth-1);
 
-        //if(reflected!=sf::Color::Transparent)
-            //illumination +=data.material.getReflection()*reflected;
-            //illumination = color_interpolation(illumination, reflected.color, data.material.getReflection());
+        illumination +=data.material.getReflection()*reflected;
     }
 
     return illumination;
 }
 
-sf::Image Scene::render(const View &view, const int &resolutionH, const int &resolutionV) const {
+sf::Image RenderScene::render(const View &view, const int &resolutionH, const int &resolutionV) const {
     const Vector3 directionX = view.getDirectionX();
     const Vector3 directionY = view.getDirectionY();
     const Vector3 directionZ = view.getDirectionZ();
@@ -127,7 +141,7 @@ sf::Image Scene::render(const View &view, const int &resolutionH, const int &res
                 (i-resolutionV/2.)/resolutionV*directionZ
             );
 
-            sf::Color color = this->evaluate(Ray(view.getPosition(), dir), REFLECTION_DEPTH);
+            sf::Color color = this->evaluate(Ray(view.getPosition(), dir), this->getReflectionDepth());
 
             if(color!=sf::Color::Transparent && color!=sf::Color::Black)
                 frame.setPixel(j, i, color);

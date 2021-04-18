@@ -8,13 +8,12 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
-#include "geometry.h"
+#include "../include/Vector.h"
+#include "../include/Matrix.h"
+#include "../include/geometry.h"
 
-#include "RayTracingConfig.h"
-#include "RayTracingMaterial.h"
-#include "RayTracingTransform.h"
+#include "../include/RayTracingMaterial.h"
+#include "../include/RayTracingTransform.h"
 
 constexpr auto M_PI = 3.14159265358979323846;
 
