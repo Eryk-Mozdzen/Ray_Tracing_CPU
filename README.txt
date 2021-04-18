@@ -4,7 +4,7 @@ YouTube demonstration (old version):
 https://www.youtube.com/watch?v=ZV5iZ8wNY28
 
 Latest screen shoot (not exacly the best):
-![Alt text](./saved_frame.jpg?raw=true "Title")
+![alt text](https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU/blob/main/saved_frame.jpg)
 
 Tasks in progress:
 - OPTIMALIZATION
