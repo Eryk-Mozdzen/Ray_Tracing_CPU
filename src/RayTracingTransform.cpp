@@ -36,7 +36,7 @@ void Transform3::rotate(const Vector3 &axis, const double &theta) {
     m(2, 0) = -axis.y;
     m(2, 1) = axis.x;
 
-    Matrix rot = m*std::sin(theta) + (Matrix::Identity(3) - axis*axis.transposition())*std::cos(theta) + (axis*axis.transposition());
+    Matrix rot = m*std::sin(theta) + (Matrix::Identity(3) - axis*axis.getTransposition())*std::cos(theta) + (axis*axis.getTransposition());
 
     for(int i=0; i<3; i++)
         for(int j=0; j<3; j++)
@@ -96,8 +96,4 @@ Matrix Transform3::getRotation() const {
         for(int j=0; j<3; j++)
             result(i, j) = (*this)(i, j);
     return result;
-}
-
-Matrix Transform3::getInverse() const {
-    return this->inverse();
 }

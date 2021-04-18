@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <cassert>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Window.hpp>
@@ -207,8 +208,6 @@ int main() {
 
     return 0;*/
 
-    try {
-
     srand(time(NULL));
 
     sf::Clock clock;
@@ -322,10 +321,6 @@ int main() {
 		}
 
         window.display();
-    }
-
-    } catch(std::string e) {
-        std::cout << e << std::endl;
     }
 
 }

@@ -2,6 +2,7 @@
 #define VECTOR_H
 
 #include <iostream>
+#include <cassert>
 #include "Matrix.h"
 
 class Vector3 {
@@ -12,9 +13,9 @@ public:
     Vector3(const double &, const double &, const double &);
     Vector3(const Matrix &);
 
-    double abs() const;
-    Vector3 normalized() const;
-    Matrix transposition() const;
+    double getLength() const;
+    Vector3 getNormalized() const;
+    Matrix getTransposition() const;
 
     bool operator!=(const Vector3 &) const;
     Vector3 & operator+=(const Vector3 &);

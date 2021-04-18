@@ -26,7 +26,6 @@ public:
 
     Vector3 getTranslation() const;
     Matrix getRotation() const;
-    Matrix getInverse() const;
 };
 
 #endif

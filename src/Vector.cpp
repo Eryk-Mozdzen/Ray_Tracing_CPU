@@ -1,7 +1,7 @@
 #include "../include/Vector.h"
 #include <string>
 
-Vector3::Vector3() {}
+Vector3::Vector3() : Vector3(0, 0, 0) {}
 
 Vector3::Vector3(const double &x, const double &y, const double &z) {
     this->x = x;
@@ -9,20 +9,24 @@ Vector3::Vector3(const double &x, const double &y, const double &z) {
     this->z = z;
 }
 
-Vector3::Vector3(const Matrix &matrix) {
-    if(matrix.getRows()!=3) throw std::string("Can't assign matrix to vector");
-    if(matrix.getCols()!=1) throw std::string("Can't assign matrix to vector");
+Vector3::Vector3(const Matrix &A) {
+    assert(A.getRows()==3);
+    assert(A.getCols()==1);
 
-    this->x = matrix(0, 0);
-    this->y = matrix(1, 0);
-    this->z = matrix(2, 0);
+    this->x = A(0, 0);
+    this->y = A(1, 0);
+    this->z = A(2, 0);
 }
 
-Vector3 Vector3::normalized() const {
+double Vector3::getLength() const {
+    return length(*this);
+}
+
+Vector3 Vector3::getNormalized() const {
     return normalize(*this);
 }
 
-Matrix Vector3::transposition() const {
+Matrix Vector3::getTransposition() const {
     Matrix result(1, 3);
 
     result(0, 0) = this->x;
@@ -69,7 +73,7 @@ Vector3 Vector3::operator-(const Vector3 &rhs) const {
 }
 
 Matrix Vector3::operator*(const Matrix &rhs) const {
-    return this->transposition().transposition()*rhs;
+    return this->getTransposition().getTransposition()*rhs;
 }
 
 double Vector3::operator*(const Vector3 &rhs) const {
@@ -113,9 +117,7 @@ Vector3 operator*(const double &lhs, const Vector3 &rhs) {
 }
 
 Vector3 operator*(const Matrix &lhs, const Vector3 &rhs) {
-    std::cout << rhs << std::endl;
-    std::cout << lhs << std::endl;
-    return Vector3(lhs*(rhs.transposition().transposition()));
+    return Vector3(lhs*(rhs.getTransposition().getTransposition()));
 }
 
 double length(const Vector3 &vec) {
@@ -126,7 +128,6 @@ Vector3 normalize(const Vector3 &v) {
     double len = length(v);
 
     if(len==0)
-        //throw std::string("Zero vector can't be normalized");
         return v;
 
     return (v/len);
