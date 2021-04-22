@@ -1,10 +1,6 @@
 #ifndef RAY_TRACING_H
 #define RAY_TRACING_H
 
-#ifndef EPSILON
-    #define EPSILON 0.0001
-#endif
-
 #include <vector>
 #include <cmath>
 
@@ -41,6 +37,7 @@ private:
     std::vector<Object*> objects;
     std::vector<LightSource*> lights;
     unsigned int reflectionDepth;
+    unsigned int resolutionH, resolutionV;
 
     CollisionData trace(const Ray&) const;
     sf::Color evaluate(const Ray&, const unsigned int&) const;
@@ -50,11 +47,14 @@ public:
     void addObject(Object*);
     void addLightSource(LightSource*);
     void setReflectionDepth(const unsigned int&);
+    void setRenderResolution(const unsigned int&, const unsigned int&);
 
     Object* getObjectReference(const unsigned int&);
-    const unsigned & getReflectionDepth() const;
+    const unsigned int & getReflectionDepth() const;
+    const unsigned int & getRenderResolutionWidth() const;
+    const unsigned int & getRenderResolutionHeight() const;
 
-    sf::Image render(const View&, const int&, const int&) const;
+    sf::Image render(const View&) const;
 };
 
 #endif

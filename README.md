@@ -1,16 +1,17 @@
-# Ray_Tracing_CPU
+# Ray Tracing Algorithm on CPU
 
-YouTube demonstration (old version):
-https://www.youtube.com/watch?v=ZV5iZ8wNY28
+YouTube demonstration:
+https://www.youtube.com/watch?v=HcqXAsXDC6k
 
-Latest screen shoot (not exacly the best):
+Latest screen shoot:
 
 ![](/saved_frame.jpg)
 
 Tasks in progress:
 - OPTIMALIZATION
-- "Material" class
 - render menegment
 
 To do:
-- epsilon definition bug fix
+- better documentation
+- code division for lib and example usage
+- remove geometry.h (its not necessary)

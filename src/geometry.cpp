@@ -53,7 +53,7 @@ bool Plane::intersect(const Line &line, Vector3 *point) const {
     return true;
 }
 
-Matrix solveLinearSystem(const Matrix &A, const Matrix &b) {
+Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
     assert(A.getRows()==A.getCols());
     assert(A.getCols()==b.getRows());
     assert(b.getCols()==1);
@@ -65,7 +65,7 @@ Matrix solveLinearSystem(const Matrix &A, const Matrix &b) {
     const double W = Matrix::Det(A);
 
     if(std::abs(W)<EPSILON)
-        throw std::string("system not have single unique solution");
+        return x;
 
     Matrix A_i;
     for(int i=0; i<n; i++) {
@@ -75,6 +75,46 @@ Matrix solveLinearSystem(const Matrix &A, const Matrix &b) {
             A_i(j, i) = b(j, 0);
 
         x(i, 0) = Matrix::Det(A_i)/W;
+    }
+
+    return x;
+}
+
+Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
+    assert(A.getRows()==A.getCols());
+    assert(A.getCols()==b.getRows());
+    assert(b.getCols()==1);
+
+    const int n = b.getRows();
+
+    double diagonal = 0;
+    double other = 0;
+    for(int i=0; i<n; i++) {
+        for(int j=0; j<n; j++) {
+            if(j!=i)
+                other +=std::abs(A(i, j));
+        }
+        diagonal +=std::abs(A(i, i));
+    }
+
+    if(diagonal<other) {
+        //std::cout << A << std:: endl;
+        //std::cout << diagonal << "\t" << other << std::endl;
+        //return solveLinearSystemCramersRule(A, b);
+        return Matrix(n, 1);
+    }
+
+    Matrix x(n, 1);
+
+    for(int k=0; k<10; k++) {
+        for(int i=0; i<n; i++) {
+            double sigma = 0;
+            for(int j=0; j<n; j++) {
+                if(j!=i)
+                    sigma +=A(i, j)*x(j, 0);
+            }
+            x(i, 0) = (b(i, 0) - sigma)/A(i, i);
+        }
     }
 
     return x;

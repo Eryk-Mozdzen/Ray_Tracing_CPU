@@ -15,7 +15,8 @@
 #include "../include/RayTracingMaterial.h"
 #include "../include/RayTracingTransform.h"
 
-constexpr auto M_PI = 3.14159265358979323846;
+#define EPSILON         0.0001
+constexpr double M_PI = 3.14159265358979323846;
 
 class Ray : public Line {
 public:

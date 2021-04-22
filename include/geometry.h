@@ -1,16 +1,14 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
-#ifndef EPSILON
-    #define EPSILON     0.0001
-#endif
-
 #include <iostream>
 #include <cassert>
 #include <string>
 #include <cmath>
 #include "../include/Vector.h"
 #include "../include/Matrix.h"
+
+#define EPSILON         0.0001
 
 class Line {
 public:
@@ -34,6 +32,7 @@ public:
 };
 
 double distance(const Line&, const Vector3&);
-Matrix solveLinearSystem(const Matrix&, const Matrix&);
+Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
+Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
 
 #endif

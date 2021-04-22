@@ -10,8 +10,6 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#define EPSILON             0.0001
-
 #include "../include/RayTracing.h"
 
 #define WINDOW_WIDTH        1280
@@ -73,21 +71,25 @@ public:
     bool intersect(const Ray &ray, CollisionData &data) {
         Vector3 center = transform.getTranslation();
 
-        double delta = pow(ray.direction*(ray.point-center), 2) - (pow(length(ray.point-center), 2) - pow(radius, 2));
+        double delta = std::pow(ray.direction*(ray.point-center), 2) - (std::pow(length(ray.point-center), 2) - std::pow(radius, 2));
         double t = -(ray.direction*(ray.point-center));
 
-        if(delta<0)
+        if(delta<EPSILON)
             return false;
 
-        double t1 = t + sqrt(delta);
-        double t2 = t - sqrt(delta);
+        double t1 = t + std::sqrt(delta);
+        double t2 = t - std::sqrt(delta);
 
-        if(t1<EPSILON && t2<EPSILON)
-            return false;
+        //don't work, precision error
+        //double tNearestPositive = ((t1*t2<0) ? std::max(t1, t2) : std::min(t1, t2));
 
-        double t_nearest_positive = ((t1*t2<0) ? std::max(t1, t2) : std::min(t1, t2));
+        double tNearestPositive;
+             if(t1>EPSILON && t2<EPSILON)   tNearestPositive = t1;
+        else if(t1<EPSILON && t2>EPSILON)   tNearestPositive = t2;
+        else if(t1>EPSILON && t2>EPSILON)   tNearestPositive = std::min(t1, t2);
+        else                                return false;
 
-        data.point = ray.point + t_nearest_positive*ray.direction;
+        data.point = ray.point + tNearestPositive*normalize(ray.direction);
         data.normal = normalize(data.point - center);
         data.color = this->getPixel(data.point);
         data.material = this->material;
@@ -207,10 +209,10 @@ int main() {
 	sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
 	sf::Mouse::setPosition(center, window);
 
-	View view(Vector3(-60, 0, 20), 1);
+	View view(Vector3(-60, 20, 20), 1);
 	RenderScene scene;
 
-	scene.setReflectionDepth(2);
+	scene.setReflectionDepth(3);
 
 	TextureMenager menager;
 	menager.load("textures/road1.jpg");
@@ -225,13 +227,16 @@ int main() {
 	earth.material.setSpecular(0);
 	earth.material.setReflection(0);
 
-    scene.addObject(&earth);
+    //scene.addObject(&earth);
+    scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
+    scene.addObject(new Sphere(Vector3(0, 20, 20), 7));
     scene.addObject(new Ground(Vector3(0, 0, 0), Vector3::UnitZ(), menager.getTextureReference(2), 5000, 5000));
 
     scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
+    scene.addLightSource(new LightSource(Vector3(-30, 0, 40)));
 
     double angle = 0;
-    double scroll = 5;
+    double scroll = 10;
 
     while(window.isOpen()) {
         sf::Event event;
@@ -247,11 +252,11 @@ int main() {
             }
         }
 
-        int resolutionH = 15*scroll;
-        int resolutionV = 10*scroll;
-
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
+
+        scene.setRenderResolution(150, 100);
+        view.setDistanceFromProjectionPlane(scroll/10);
 
         viewMove(view, deltaMouse);
 
@@ -266,7 +271,7 @@ int main() {
 
 		clock.restart();
 
-		sf::Image frameBuffer = scene.render(view, resolutionH, resolutionV);
+		sf::Image frameBuffer = scene.render(view);
 
 		double renderTime = clock.restart().asSeconds();
 
@@ -276,7 +281,7 @@ int main() {
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;
 		windowTitle << "Ray Tracing";
-		windowTitle << " | Resolution: " << resolutionH << "x" << resolutionV;
+		windowTitle << " | Resolution: " << scene.getRenderResolutionWidth() << "x" << scene.getRenderResolutionHeight();
         windowTitle << " | Render Time: " << renderTime << "s";
 		windowTitle << " | FPS: " << 1/renderTime;
 		windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
@@ -290,7 +295,7 @@ int main() {
         tex.loadFromImage(frameBuffer);
         sf::Sprite sprite;
         sprite.setTexture(tex);
-        sprite.scale((double)WINDOW_WIDTH/resolutionH, (double)WINDOW_HEIGHT/resolutionV);
+        sprite.scale((double)WINDOW_WIDTH/scene.getRenderResolutionWidth(), (double)WINDOW_HEIGHT/scene.getRenderResolutionHeight());
 		window.draw(sprite);
 
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {

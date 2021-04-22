@@ -55,7 +55,8 @@ Vector3 Transform3::getRelativeToTransform(const Vector3 &v) const {
     //not good approach (work but highly not efficient)
     //Matrix rel = this->getInverse()*p;
 
-    Matrix rel = solveLinearSystem(*this, p);
+    Matrix rel = solveLinearSystemCramersRule(*this, p);
+    //Matrix rel = solveLinearSystemJacobiMethod(*this, p);
 
     //return v - this->getTranslation();
 

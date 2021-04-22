@@ -62,6 +62,11 @@ void RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
     this->reflectionDepth = reflectionDepth;
 }
 
+void RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
+    this->resolutionH = resolutionH;
+    this->resolutionV = resolutionV;
+}
+
 Object* RenderScene::getObjectReference(const unsigned int &index) {
     assert(index>=0 && index<this->objects.size());
 
@@ -70,6 +75,14 @@ Object* RenderScene::getObjectReference(const unsigned int &index) {
 
 const unsigned int & RenderScene::getReflectionDepth() const {
     return this->reflectionDepth;
+}
+
+const unsigned int & RenderScene::getRenderResolutionWidth() const {
+    return this->resolutionH;
+}
+
+const unsigned int & RenderScene::getRenderResolutionHeight() const {
+    return this->resolutionV;
 }
 
 CollisionData RenderScene::trace(const Ray &ray) const {
@@ -90,7 +103,7 @@ CollisionData RenderScene::trace(const Ray &ray) const {
 }
 
 sf::Color RenderScene::evaluate(const Ray &ray, const unsigned int &depth) const {
-    if(depth==0)
+    if(depth>=this->getReflectionDepth())
         return sf::Color::Transparent;
 
     CollisionData data = this->trace(ray);
@@ -98,57 +111,59 @@ sf::Color RenderScene::evaluate(const Ray &ray, const unsigned int &depth) const
     if(!data.exist)
         return sf::Color::Transparent;
 
-    const Vector3 N = normalize(data.normal);
-    const Vector3 V = normalize(ray.point - data.point);
+    const Vector3 N = normalize(data.normal);               //normal
+    const Vector3 V = normalize(ray.point - data.point);    //view
+    const Vector3 H = normalize(2*(V*N)*N + V);             //reflected view from surface
 
     sf::Color illumination = data.material.getAmbient()*data.color;
+
     for(int i=0; i<this->lights.size(); i++) {
-        const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);
-        const Vector3 R = normalize(2*(L*N)*N - L);
+        const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);   //light
+        const Vector3 R = normalize(2*(L*N)*N - L);                                 //reflected light from surface
+
+        sf::Color reflected = this->evaluate(Ray(data.point, H), depth+1);
+        illumination +=data.material.getReflection()*reflected;
 
         CollisionData shadow = this->trace(Ray(data.point, L));
-        const double distToLight = length(data.point - this->lights[i]->getPosition());
-        const double distToCollision = length(data.point - shadow.point);
-        if(shadow.exist && distToCollision<distToLight)
-            continue;
+        if(shadow.exist) {
+            const double distToLight = length(data.point - this->lights[i]->getPosition());
+            const double distToCollision = length(data.point - shadow.point);
+            if(distToCollision<distToLight)
+                continue;
+        }
 
         illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
         illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
-
-        const Vector3 H = normalize(2*(V*N)*N + V);
-        sf::Color reflected = this->evaluate(Ray(data.point, H), depth-1);
-
-        illumination +=data.material.getReflection()*reflected;
     }
 
     return illumination;
 }
 
-sf::Image RenderScene::render(const View &view, const int &resolutionH, const int &resolutionV) const {
+sf::Image RenderScene::render(const View &view) const {
     const Vector3 directionX = view.getDirectionX();
     const Vector3 directionY = view.getDirectionY();
     const Vector3 directionZ = view.getDirectionZ();
-    const double aspectRatio = (double)resolutionH/resolutionV;
+    const double aspectRatio = (double)this->resolutionH/this->resolutionV;
 
-    sf::Image frame;
-    frame.create(resolutionH, resolutionV, sf::Color::Black);
+    sf::Image frameBuffer;
+    frameBuffer.create(this->resolutionH, this->resolutionV, sf::Color::Black);
 
     for(int i=0; i<resolutionV; i++) {
         for(int j=0; j<resolutionH; j++) {
             Vector3 dir = normalize(
                 view.getDistanceFromProjectionPlane()*directionX +
-                (j-resolutionH/2.)/resolutionH*aspectRatio*directionY +
-                (i-resolutionV/2.)/resolutionV*directionZ
+                (j-resolutionH/2.)/this->resolutionH*aspectRatio*directionY +
+                (i-resolutionV/2.)/this->resolutionV*directionZ
             );
 
-            sf::Color color = this->evaluate(Ray(view.getPosition(), dir), this->getReflectionDepth());
+            sf::Color color = this->evaluate(Ray(view.getPosition(), dir), 0);
 
             if(color!=sf::Color::Transparent && color!=sf::Color::Black)
-                frame.setPixel(j, i, color);
+                frameBuffer.setPixel(j, i, color);
         }
     }
 
-    return frame;
+    return frameBuffer;
 }
 
 

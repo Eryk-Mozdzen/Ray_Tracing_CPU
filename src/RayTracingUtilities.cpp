@@ -56,10 +56,20 @@ std::ostream & operator<<(std::ostream &lhs, const sf::Color &rhs) {
 }
 
 sf::Color operator*(const double &lhs, const sf::Color &rhs) {
-    return sf::Color(
+    /*return sf::Color(
         std::min(std::max(0., lhs*rhs.r), 255.),
         std::min(std::max(0., lhs*rhs.g), 255.),
         std::min(std::max(0., lhs*rhs.b), 255.)
+    );*/
+
+    const double r = lhs*(double)rhs.r;
+    const double g = lhs*(double)rhs.g;
+    const double b = lhs*(double)rhs.b;
+
+    return sf::Color(
+        ((r<255) ? ((r<0) ? 0 : (sf::Uint8)r) : 255),
+        ((g<255) ? ((g<0) ? 0 : (sf::Uint8)g) : 255),
+        ((b<255) ? ((b<0) ? 0 : (sf::Uint8)b) : 255)
     );
 }
 
