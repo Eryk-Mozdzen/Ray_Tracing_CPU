@@ -68,6 +68,16 @@ const double & Material::getReflection() const {
     return this->reflection;
 }
 
+bool Material::isTexture() const {
+    return (this->texture!=nullptr);
+}
+
+sf::Color Material::getColor() const {
+    assert(!this->isTexture());
+
+    return this->color;
+}
+
 sf::Color Material::getColorAt(const double &x, const double &y) const {
     if(this->texture==nullptr)
         return this->color;

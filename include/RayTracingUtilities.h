@@ -10,29 +10,15 @@
 
 #include "../include/Vector.h"
 #include "../include/Matrix.h"
-#include "../include/geometry.h"
 
 #include "../include/RayTracingMaterial.h"
-#include "../include/RayTracingTransform.h"
 
-#define EPSILON         0.0001
-constexpr double M_PI = 3.14159265358979323846;
+struct Ray {
+    Vector3 origin;
+    Vector3 direction;
 
-class Ray : public Line {
-public:
     Ray();
     Ray(const Vector3&, const Vector3&);
-    bool intersect(const Vector3&, double*) const;
-};
-
-class LightSource {
-private:
-    Vector3 position;
-    sf::Color color;
-public:
-    LightSource();
-    LightSource(const Vector3&);
-    const Vector3 & getPosition() const;
 };
 
 struct CollisionData {
@@ -46,14 +32,20 @@ struct CollisionData {
     CollisionData();
 };
 
+class LightSource {
+private:
+    Vector3 position;
+public:
+    LightSource();
+    LightSource(const Vector3&);
+    const Vector3 & getPosition() const;
+};
+
 class Object {
 public:
-    Material material;
-    Transform3 transform;
-
     Object() {}
 
-    virtual bool intersect(const Ray&, CollisionData&) {
+    virtual bool intersect(const Ray&, CollisionData&) const {
         return false;
     }
 };

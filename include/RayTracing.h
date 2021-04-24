@@ -8,9 +8,11 @@
 
 #include "../include/Vector.h"
 #include "../include/Matrix.h"
-#include "../include/geometry.h"
 
+#include "../include/RayTracingMath.h"
 #include "../include/RayTracingUtilities.h"
+#include "../include/RayTracingMaterial.h"
+#include "../include/RayTracingTransform.h"
 
 class View {
 private:

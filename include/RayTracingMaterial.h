@@ -6,6 +6,7 @@
 #endif
 
 #include <iostream>
+#include <cassert>
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
@@ -35,6 +36,9 @@ public:
     const double & getShininess() const;
     const double & getReflection() const;
 
+    bool isTexture() const;
+
+    sf::Color getColor() const;
     sf::Color getColorAt(const double&, const double&) const;
 };
 

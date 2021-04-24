@@ -2,26 +2,15 @@
 
 Ray::Ray() {}
 
-Ray::Ray(const Vector3 &origin, const Vector3 &direction) : Line(origin, direction) {}
-
-bool Ray::intersect(const Vector3 &point, double *t) const {
-    double d = distance(Line(this->point, this->direction), point);
-    if(d>EPSILON)
-        return false;
-
-    *t = direction*(point-this->point);
-
-    return true;
+Ray::Ray(const Vector3 &origin, const Vector3 &direction) {
+    this->origin = origin;
+    this->direction = direction;
 }
 
-LightSource::LightSource() {
-    this->position = Vector3(0, 0, 0);
-    this->color = sf::Color::White;
-}
+LightSource::LightSource() {}
 
 LightSource::LightSource(const Vector3 &position) {
     this->position = position;
-    this->color = sf::Color::White;
 }
 
 const Vector3 & LightSource::getPosition() const {

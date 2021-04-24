@@ -1,56 +1,26 @@
-#include "../include/geometry.h"
+#include "../include/RayTracingMath.h"
 
-Line::Line() {}
+double solveLinearEquation(const double &a, const double &b) {
+    if(std::abs(a)<EPSILON && std::abs(b)>EPSILON)
+        return std::nan("");
 
-Line::Line(const Vector3 &point, const Vector3 &direction) {
-    this->point = point;
-    this->direction = normalize(direction);
+    return -b/a;
 }
 
-double distance(const Line &line, const Vector3 &point) {
-    return length(line.direction^(line.point-point))/length(line.direction);
-}
+std::pair<double, double> solveQuadraticEquation(const double &a, const double &b, const double &c) {
+    //if(std::abs(a)<EPSILON)
+    //    return std::make_pair(solveLinearEquation(b, c), std::nan(""));
 
-Plane::Plane() {}
+    const double delta = b*b - 4*a*c;
 
-Plane::Plane(const double &A, const double &B, const double &C, const double &D) {
-    this->A = A;
-    this->B = B;
-    this->C = C;
-    this->D = D;
-}
+    if(delta<-EPSILON)
+        return std::make_pair(std::nan(""), std::nan(""));
 
-Plane::Plane(const Vector3 &p, const Vector3 &n) {
-    Vector3 norm = normalize(n);
+    const double deltaSqrt = (delta>EPSILON) ? std::sqrt(delta) : 0;
 
-    A = norm.x;
-    B = norm.y;
-    C = norm.z;
-    D = -A*p.x - B*p.y - C*p.z;
-}
-
-Plane::Plane(const Vector3 &p, const Vector3& u, const Vector3 &v) : Plane(p, normalize(u^v)) {}
-
-Vector3 Plane::getNormal() const {
-    return normalize(Vector3(A, B, C));
-}
-
-bool Plane::intersect(const Line &line, Vector3 *point) const {
-    if(getNormal()*line.direction==0.f)
-        return false;
-
-    Vector3 p0 = Vector3(0, 0, -D/C);
-    Vector3 p1 = Vector3(1, 0, -(D + A)/C);
-    Vector3 p2 = Vector3(1, 1, -(D + A + B)/C);
-
-    Vector3 p01 = p1 - p0;
-    Vector3 p02 = p2 - p0;
-
-    double t = -(((p01^p02)*(line.point - p0))/(line.direction*(p01^p02)));
-
-    *point = line.point+t*line.direction;
-
-    return true;
+    const double x1 = (-b + deltaSqrt)/(2*a);
+    const double x2 = (-b - deltaSqrt)/(2*a);
+    return std::make_pair(x1, x2);
 }
 
 Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
@@ -119,6 +89,3 @@ Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
 
     return x;
 }
-
-
-

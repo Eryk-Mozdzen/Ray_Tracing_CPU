@@ -45,6 +45,8 @@ void viewMove(View &view, const sf::Vector2i &mouse) {
 class Sphere : public Object {
 private:
     double radius;
+    Material material;
+    Transform3 transform;
 public:
 
     Sphere() {
@@ -57,7 +59,14 @@ public:
         this->material = Material(rand()%256, rand()%256, rand()%256);
     }
 
-    sf::Color getPixel(const Vector3 &point) {
+    Sphere(const Vector3 &center, const double &radius, const Material &material) : Sphere(center, radius) {
+        this->material = material;
+    }
+
+    sf::Color getPixel(const Vector3 &point) const {
+        if(!this->material.isTexture())
+            return this->material.getColor();
+
         Vector3 relative = this->transform.getRelativeToTransform(point);
 
         Vector3 d = normalize(relative);
@@ -68,32 +77,42 @@ public:
         return this->material.getColorAt(u, v);
     }
 
-    bool intersect(const Ray &ray, CollisionData &data) {
-        Vector3 center = transform.getTranslation();
+    const Transform3 & getTransform() const {
+        return this->transform;
+    }
 
-        double delta = std::pow(ray.direction*(ray.point-center), 2) - (std::pow(length(ray.point-center), 2) - std::pow(radius, 2));
-        double t = -(ray.direction*(ray.point-center));
+    const Material & getMaterial() const {
+        return this->material;
+    }
 
-        if(delta<EPSILON)
-            return false;
+    void setTransform(const Transform3 &transform) {
+        this->transform = transform;
+    }
 
-        double t1 = t + std::sqrt(delta);
-        double t2 = t - std::sqrt(delta);
+    void setMaterial(const Material &material) {
+        this->material = material;
+    }
 
-        //don't work, precision error
-        //double tNearestPositive = ((t1*t2<0) ? std::max(t1, t2) : std::min(t1, t2));
+    bool intersect(const Ray &ray, CollisionData &data) const {
+        const Vector3 center = transform.getTranslation();
+
+        const double a = 1;
+        const double b = 2*(ray.direction*(ray.origin - center));
+        const double c = length(ray.origin - center)*length(ray.origin - center) - this->radius*this->radius;
+
+        const std::pair<double, double> tSolution = solveQuadraticEquation(a, b, c);
 
         double tNearestPositive;
-             if(t1>EPSILON && t2<EPSILON)   tNearestPositive = t1;
-        else if(t1<EPSILON && t2>EPSILON)   tNearestPositive = t2;
-        else if(t1>EPSILON && t2>EPSILON)   tNearestPositive = std::min(t1, t2);
-        else                                return false;
+             if(tSolution.first>EPSILON && tSolution.second<EPSILON)   tNearestPositive = tSolution.first;
+        else if(tSolution.first<EPSILON && tSolution.second>EPSILON)   tNearestPositive = tSolution.second;
+        else if(tSolution.first>EPSILON && tSolution.second>EPSILON)   tNearestPositive = std::min(tSolution.first, tSolution.second);
+        else return false;
 
-        data.point = ray.point + tNearestPositive*normalize(ray.direction);
+        data.point = ray.origin + tNearestPositive*normalize(ray.direction);
         data.normal = normalize(data.point - center);
         data.color = this->getPixel(data.point);
-        data.material = this->material;
-        data.distance = length(data.point - ray.point);
+        data.material = this->getMaterial();
+        data.distance = length(data.point - ray.origin);
         data.exist = true;
 
         return true;
@@ -102,8 +121,10 @@ public:
 };
 
 class Triangle : public Object {
-public:
+private:
     Vector3 v0, v1, v2;
+    Material material;
+public:
 
     Triangle() {}
 
@@ -114,7 +135,7 @@ public:
         this->material = Material(rand()%256, rand()%256, rand()%256);
     }
 
-    bool intersect(const Ray &ray, CollisionData &data) {
+    bool intersect(const Ray &ray, CollisionData &data) const {
         //Möller–Trumbore intersection algorithm
 
         Vector3 edge1 = v1 - v0;
@@ -126,7 +147,7 @@ public:
             return false;    // This ray is parallel to this triangle.
 
         double f = 1.0/a;
-        Vector3 s = ray.point - v0;
+        Vector3 s = ray.origin - v0;
         double u = f * (s*h);
         if(u<0.0 || u>1.0)
             return false;
@@ -138,11 +159,11 @@ public:
 
         double t = f*(edge2*q);
         if(t>EPSILON) {
-            data.point = ray.point + t*ray.direction;
+            data.point = ray.origin + t*normalize(ray.direction);
             data.normal = normalize(edge1^edge2);
             data.color = this->material.getColorAt(0, 0);
             data.material = this->material;
-            data.distance = length(data.point - ray.point);
+            data.distance = t;
             data.exist = true;
             return true;
         }
@@ -153,10 +174,19 @@ public:
 
 };
 
-class Ground : public Object, public Plane {
+class Plane : public Object {
+private:
+    double A, B, C, D;
+    Material material;
 public:
 
-    Ground(const Vector3 &point, const Vector3 &normal) : Plane(point, normal) {
+    Plane(const Vector3 &point, const Vector3 &normal) {
+        Vector3 norm = normalize(normal);
+        A = norm.x;
+        B = norm.y;
+        C = norm.z;
+        D = -A*point.x - B*point.y - C*point.z;
+
         this->material.setAmbient(0);
         this->material.setDiffuse(1);
         this->material.setSpecular(0);
@@ -164,8 +194,8 @@ public:
         this->material.setReflection(0);
     }
 
-    Ground(const Vector3 &point, const Vector3 &normal, sf::Image *texture, const double &textWidth, const double &textHeight) : Ground(point, normal) {
-        this->material = Material(texture, textWidth, textHeight);
+    Plane(const Vector3 &point, const Vector3 &normal, const Material &material) : Plane(point, normal) {
+        this->material = material;
         this->material.setAmbient(0);
         this->material.setDiffuse(1);
         this->material.setSpecular(0);
@@ -173,26 +203,113 @@ public:
         this->material.setReflection(0.5);
     }
 
-    sf::Color getPixel(const Vector3 &point3D) {
+    sf::Color getPixel(const Vector3 &point3D) const {
         //only special case
         sf::Vector2f point2D(point3D.x, point3D.y);
 
         return this->material.getColorAt(point3D.x, point3D.y);
     }
 
-    bool intersect(const Ray &ray, CollisionData &data) {
-        if(Plane::intersect(ray, &data.point)) {
-            if((ray.direction*(data.point-ray.point))<0)
-                return false;
+    Vector3 getNormal() const {
+        return Vector3(this->A, this->B, this->C);
+    }
 
-            data.normal = this->getNormal();
-            data.color = this->getPixel(data.point);
-            data.material = this->material;
-            data.distance = length(data.point - ray.point);
-            data.exist = true;
-            return true;
-        }
+    bool intersect(const Ray &ray, CollisionData &data) const {
+        const double dot = this->getNormal()*ray.direction;
+        if(dot<EPSILON && dot>-EPSILON)
+            return false;
+
+        Vector3 p0 = Vector3(0, 0, -D/C);
+        Vector3 p1 = Vector3(1, 0, -(D + A)/C);
+        Vector3 p2 = Vector3(1, 1, -(D + A + B)/C);
+
+        Vector3 p01 = p1 - p0;
+        Vector3 p02 = p2 - p0;
+
+        double t = -(((p01^p02)*(ray.origin - p0))/(ray.direction*(p01^p02)));
+
+        data.point = ray.origin + t*ray.direction;
+
+        if((ray.direction*(data.point - ray.origin))<EPSILON)
+            return false;
+
+        data.normal = this->getNormal();
+        data.color = this->getPixel(data.point);
+        data.material = this->material;
+        data.distance = length(data.point - ray.origin);
+        data.exist = true;
+        return true;
+    }
+
+};
+
+class Torus : public Object {
+private:
+    double majorRadius, minorRadius;
+    Material material;
+    Transform3 transform;
+public:
+
+    Torus() {
+        this->majorRadius = 2;
+        this->minorRadius = 1;
+    }
+
+    Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius) {
+        this->transform.translate(center);
+
+        this->majorRadius = majorRadius;
+        this->minorRadius = minorRadius;
+
+        this->material = Material(rand()%255, rand()%255, rand()%255);
+    }
+
+    Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius, const Material &material) : Torus(center, majorRadius, minorRadius) {
+        this->material = material;
+    }
+
+    sf::Color getPixel() const {
+        return this->material.getColor();
+    }
+
+    Vector3 getNormal(const Vector3 &point) const {
+        const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
+
+        return normalize(point - alpha*Vector3(point.x, point.y, 0));
+    }
+
+    bool intersect(const Ray &ray, CollisionData &data) const {
+        const Vector3 center = this->transform.getTranslation();
+        const double R = this->majorRadius;
+        const double r = this->minorRadius;
+        //const Ray rayRelative = Ray(this->transform.getRelativeToTransform(ray.origin), this->transform.getRelativeToTransform(ray.direction + center));
+
+        /*//http://cosinekitty.com/raytrace/chapter13_torus.html
+        const double A = this->majorRadius;
+        const double B = this->minorRadius;
+        const Vector3 D = ray.origin;
+        const Vector3 E = ray.direction;
+        const double G = 4*A*A*(E.x*E.x + E.y*E.y);
+        const double H = 8*A*A*(D.x*E.x + D.y*E.y);
+        const double I = 4*A*A*(D.x*D.x + D.y*D.y);
+        const double J = E*E;
+        const double K = 2*D*E;
+        const double L = D*D + (A*A - B*B);*/
+
+
+
+        double tNearestPositive;
+
         return false;
+
+        data.point = ray.origin + tNearestPositive*normalize(ray.direction);
+        //data.normal = normalize(data.point - center);
+        data.color = this->getPixel();
+        data.material = this->material;
+        data.distance = length(data.point - ray.origin);
+        data.exist = true;
+
+        return true;
     }
 
 };
@@ -220,17 +337,18 @@ int main() {
 	menager.load("textures/notexture.jpg");
 
     //earth setup
-	Sphere earth(Vector3(30, 0, 20), 7);
-	earth.material = Material(menager.getTextureReference(1));
-	earth.material.setAmbient(0);
-	earth.material.setDiffuse(1);
-	earth.material.setSpecular(0);
-	earth.material.setReflection(0);
+    Material earthMaterial = Material(menager.getTextureReference(1));
+	earthMaterial.setAmbient(0);
+	earthMaterial.setDiffuse(1);
+	earthMaterial.setSpecular(0);
+	earthMaterial.setReflection(0);
+	Sphere earth(Vector3(30, 0, 20), 7, earthMaterial);
 
     //scene.addObject(&earth);
     scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
     scene.addObject(new Sphere(Vector3(0, 20, 20), 7));
-    scene.addObject(new Ground(Vector3(0, 0, 0), Vector3::UnitZ(), menager.getTextureReference(2), 5000, 5000));
+    scene.addObject(new Torus(Vector3(0, 40, 20), 3, 4));
+    scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
 
     scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
     scene.addLightSource(new LightSource(Vector3(-30, 0, 40)));
@@ -255,19 +373,22 @@ int main() {
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
 
-        scene.setRenderResolution(150, 100);
+        scene.setRenderResolution(75, 50);
         view.setDistanceFromProjectionPlane(scroll/10);
 
         viewMove(view, deltaMouse);
 
         //simple earth orbit simulation
-		Transform3 tr_original = earth.transform;            //safe original transformation
-		earth.transform.translate(Vector3(-30, 0, 0));       //move to orbit center
-		earth.transform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
-		earth.transform.translate(Vector3(30, 0, 0));        //move to orbit position
-		earth.transform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
-		earth.transform.rotate(Vector3(0, 1, 1), M_PI/6);    //tilt self-rotate axis
-        earth.transform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
+		Transform3 earthTransformOriginal = earth.getTransform();       //safe original transformation
+
+		Transform3 earthTransform = earth.getTransform();
+		earthTransform.translate(Vector3(-30, 0, 0));       //move to orbit center
+		earthTransform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
+		earthTransform.translate(Vector3(30, 0, 0));        //move to orbit position
+		earthTransform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
+		earthTransform.rotate(Vector3(0, 1, 1), M_PI/6);    //tilt self-rotate axis
+        earthTransform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
+        earth.setTransform(earthTransform);
 
 		clock.restart();
 
@@ -275,7 +396,7 @@ int main() {
 
 		double renderTime = clock.restart().asSeconds();
 
-		earth.transform = tr_original;                       //return to original transformation
+		earth.setTransform(earthTransformOriginal);          //return to original transformation
 		angle +=0.5*renderTime;                              //increment angle
 
 		std::stringstream windowTitle;

@@ -9,7 +9,7 @@
 
 #include "../include/Vector.h"
 #include "../include/Matrix.h"
-#include "../include/geometry.h"
+#include "../include/RayTracingMath.h"
 
 class Transform3 : public Matrix {
 public:
