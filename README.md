@@ -1,21 +1,26 @@
-#Ray Tracing Algorithm on CPU
-
+# Ray Tracing Algorithm on CPU
 Simple ray tracer created for fun and to develop object programing skills.
 
-#Usage
-In order to render a frame you need define your own
-
-YouTube demonstration:
-https://www.youtube.com/watch?v=HcqXAsXDC6k
+YouTube demonstration: https://www.youtube.com/watch?v=HcqXAsXDC6k
 
 Latest screen shoot:
 
 ![](/saved_frame.jpg)
 
-Tasks in progress:
-- OPTIMALIZATION
-- torus test implementation
+## Usage
+In order to render a frame you need:
 
-To do:
+#### Custom drawable object
+- declare your own objects inheriting from `Object` class
+- 
+
+
+## Workflow
+#### Tasks in progress:
+- overall optimalization
+- torus test implementation
 - better documentation
+
+#### To do:
 - code division for lib and example usage
+- transparent materials and light refraction effect
