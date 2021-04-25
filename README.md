@@ -7,7 +7,7 @@ YouTube demonstration: https://www.youtube.com/watch?v=HcqXAsXDC6k
 ![](/saved_frame.jpg)
 
 ## Usage
-In order to render a frame you need:
+Example usage of all functions is presented in code, but for short explanation:
 
 #### Custom drawable object
 Lib does not have any pre-made classes to draw on scene. User must declare his own objects inheriting from `Object` class and overrite
@@ -29,8 +29,24 @@ Also user must fill fields of `CollisionData` struct in correct way:
 - `.distance` type `double` (should contain distance dorm ray origin to collision point)
 - `.exist` type `bool` (should contain result of intersection test, exacly the same what method return)
 
+### Material type
+`Material` class describes character of given material in context to Phong reflection model. 
+
+### Transform matrix
+`Transform3` class is standard transformation matrix 4x4 to describe translation and rotation in 3d space.
+
 ### Camera view
 `View` class describes position and direction of "virtual camera" on scene. It also contains distance from eye to trajectory plane.
+Class methods:
+- `Vector3 getDirectionX() const` returns normalized vector in straight forward direction respect to view.
+- `Vector3 getDirectionY() const` returns normalized vector in up direction respect to view.
+- `Vector3 getDirectionZ() const` returns normalized vector in perpendicular direction respect to view.
+- `Vector3 getPosition() const` returns position.
+- `const Transform3 & getTransform() const` returns current transforamtion matrix.
+- `double getDistanceFromProjectionPlane() const` return distance from projection plane.
+- `void setDistanceFromProjectionPlane(const double&)` set distance to projection plane.
+- `void translate(const Vector3&)` move view by some vector.
+- `void rotate(const Vector3&, const double&)` rotate view around given axis by some angle.
 
 ### RenderScene class
 `RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen. Class have several metods like:
