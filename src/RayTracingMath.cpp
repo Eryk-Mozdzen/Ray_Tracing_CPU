@@ -23,6 +23,30 @@ std::pair<double, double> solveQuadraticEquation(const double &a, const double &
     return std::make_pair(x1, x2);
 }
 
+std::vector<double> solveQuarticEquation(const double &a, const double &b, const double &c, const double &d, const double &e) {
+    const std::complex<double> p1 = 2*c*c*c - 9*b*c*d + 27*a*d*d + 27*b*b*e - 72*a*c*e;
+    const std::complex<double> p2 = p1 + std::sqrt(-4*std::pow(c*c - 3*b*d + 12*a*e, 3) + p1*p1);
+    const std::complex<double> p3 = (c*c - 3.*b*d + 12*a*e)/(3*a*std::pow(p2/2., 0.333)) + (std::pow(p2/2., 0.333))/(3*a);
+    const std::complex<double> p4 = std::sqrt((b*b)/(4*a*a) - (2*c)/(3*a) + p3);
+    const std::complex<double> p5 = (b*b)/(2*a*a) - (4*c)/(3*a) - p3;
+    const std::complex<double> p6 = (-(b*b*b)/(a*a*a) + (4*b*c)/(a*a) - (8*d)/(a))/(4.*p4);
+
+    std::vector<std::complex<double>> complexSolutions = {
+        (-b/(4*a) - p4/2. - std::sqrt(p5 - p6)/2.),
+        (-b/(4*a) - p4/2. + std::sqrt(p5 - p6)/2.),
+        (-b/(4*a) + p4/2. - std::sqrt(p5 + p6)/2.),
+        (-b/(4*a) + p4/2. + std::sqrt(p5 + p6)/2.),
+    };
+
+    std::vector<double> realSolutions;
+    for(int i=0; i<complexSolutions.size(); i++) {
+        if(std::abs(complexSolutions[i].imag())<EPSILON)
+            realSolutions.push_back(complexSolutions[i].real());
+    }
+
+    return realSolutions;
+}
+
 Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
     assert(A.getRows()==A.getCols());
     assert(A.getCols()==b.getRows());

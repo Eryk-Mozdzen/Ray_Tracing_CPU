@@ -275,38 +275,46 @@ public:
     Vector3 getNormal(const Vector3 &point) const {
         const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
 
-        return normalize(point - alpha*Vector3(point.x, point.y, 0));
+        //return normalize(point - alpha*Vector3(point.x, point.y, 0));
+        return normalize(point - this->majorRadius*normalize(Vector3(point.x, point.y, 0)));
     }
 
     bool intersect(const Ray &ray, CollisionData &data) const {
         const Vector3 center = this->transform.getTranslation();
-        const double R = this->majorRadius;
-        const double r = this->minorRadius;
-        //const Ray rayRelative = Ray(this->transform.getRelativeToTransform(ray.origin), this->transform.getRelativeToTransform(ray.direction + center));
+        const Ray rayRelative(ray.origin - center, ray.direction);
 
-        /*//http://cosinekitty.com/raytrace/chapter13_torus.html
+        //http://cosinekitty.com/raytrace/chapter13_torus.html
         const double A = this->majorRadius;
         const double B = this->minorRadius;
-        const Vector3 D = ray.origin;
-        const Vector3 E = ray.direction;
+        const Vector3 D = rayRelative.origin;
+        const Vector3 E = rayRelative.direction;
         const double G = 4*A*A*(E.x*E.x + E.y*E.y);
         const double H = 8*A*A*(D.x*E.x + D.y*E.y);
         const double I = 4*A*A*(D.x*D.x + D.y*D.y);
         const double J = E*E;
         const double K = 2*D*E;
-        const double L = D*D + (A*A - B*B);*/
+        const double L = D*D + (A*A - B*B);
 
+        std::vector<double> tSolutions = solveQuarticEquation(J*J, 2*J*K, 2*J*L + K*K - G, 2*K*L - H, L*L - I);
 
+        double tNearestPositive = 1000000;
+        bool exist = false;
+        for(int i=0; i<tSolutions.size(); i++) {
+            if(tSolutions[i]>EPSILON) {
+                if(tSolutions[i]<tNearestPositive) {
+                    tNearestPositive = tSolutions[i];
+                    exist = true;
+                }
+            }
+        }
+        if(!exist)
+            return false;
 
-        double tNearestPositive;
-
-        return false;
-
-        data.point = ray.origin + tNearestPositive*normalize(ray.direction);
-        //data.normal = normalize(data.point - center);
+        data.point = rayRelative.origin + tNearestPositive*normalize(rayRelative.direction);
+        data.normal = this->getNormal(data.point-center);
         data.color = this->getPixel();
         data.material = this->material;
-        data.distance = length(data.point - ray.origin);
+        data.distance = length(data.point - rayRelative.origin);
         data.exist = true;
 
         return true;
@@ -329,8 +337,6 @@ int main() {
 	View view(Vector3(-60, 20, 20), 1);
 	RenderScene scene;
 
-	scene.setReflectionDepth(3);
-
 	TextureMenager menager;
 	menager.load("textures/road1.jpg");
 	menager.load("textures/earth2.jpg");
@@ -345,16 +351,18 @@ int main() {
 	Sphere earth(Vector3(30, 0, 20), 7, earthMaterial);
 
     //scene.addObject(&earth);
-    scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
+    //scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
     scene.addObject(new Sphere(Vector3(0, 20, 20), 7));
-    scene.addObject(new Torus(Vector3(0, 40, 20), 3, 4));
-    scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
+    scene.addObject(new Torus(Vector3(0, 0, 0), 10, 4));
+    //scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
 
     scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
-    scene.addLightSource(new LightSource(Vector3(-30, 0, 40)));
+    //scene.addLightSource(new LightSource(Vector3(-30, 0, 40)));
 
     double angle = 0;
     double scroll = 10;
+
+    std::vector<double> sol = solveQuarticEquation(2, -3, 4, -5, -6);
 
     while(window.isOpen()) {
         sf::Event event;
@@ -373,8 +381,10 @@ int main() {
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
 
-        scene.setRenderResolution(75, 50);
-        view.setDistanceFromProjectionPlane(scroll/10);
+        scene.setReflectionDepth(2);
+        //scene.setRenderResolution(75, 50);
+        scene.setRenderResolution(15*scroll, 10*scroll);
+        //view.setDistanceFromProjectionPlane(scroll/10);
 
         viewMove(view, deltaMouse);
 

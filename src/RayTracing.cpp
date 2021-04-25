@@ -90,7 +90,7 @@ CollisionData RenderScene::trace(const Ray &ray) const {
 
     for(int i=0; i<this->objects.size(); i++) {
         if(this->objects[i]->intersect(ray, tmp)) {
-            if(length(tmp.point-ray.origin)>EPSILON) {
+            if(tmp.distance>EPSILON) {
                 if(tmp.distance<data.distance) {
                     data = tmp;
                 }
@@ -112,7 +112,7 @@ sf::Color RenderScene::evaluate(const Ray &ray, const unsigned int &depth) const
         return sf::Color::Transparent;
 
     const Vector3 N = normalize(data.normal);               //normal
-    const Vector3 V = normalize(ray.origin - data.point);    //view
+    const Vector3 V = normalize(ray.origin - data.point);   //view
     const Vector3 H = normalize(2*(V*N)*N + V);             //reflected view from surface
 
     sf::Color illumination = data.material.getAmbient()*data.color;
