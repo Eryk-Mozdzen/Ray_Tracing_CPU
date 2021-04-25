@@ -296,15 +296,15 @@ public:
         const double L = D*D + (A*A - B*B);
 
         std::vector<double> tSolutions = solveQuarticEquation(J*J, 2*J*K, 2*J*L + K*K - G, 2*K*L - H, L*L - I);
+        if(tSolutions.size()==0)
+            return false;
 
-        double tNearestPositive = 1000000;
+        double tNearestPositive = 1E+9;
         bool exist = false;
         for(int i=0; i<tSolutions.size(); i++) {
-            if(tSolutions[i]>EPSILON) {
-                if(tSolutions[i]<tNearestPositive) {
-                    tNearestPositive = tSolutions[i];
-                    exist = true;
-                }
+            if(tSolutions[i]>EPSILON && tSolutions[i]<tNearestPositive) {
+                tNearestPositive = tSolutions[i];
+                exist = true;
             }
         }
         if(!exist)
@@ -334,7 +334,7 @@ int main() {
 	sf::Vector2i center = sf::Vector2i(window.getSize().x, window.getSize().y)/2;
 	sf::Mouse::setPosition(center, window);
 
-	View view(Vector3(-60, 20, 20), 1);
+	View view(Vector3(-40, 20, 20), 1);
 	RenderScene scene;
 
 	TextureMenager menager;
@@ -351,16 +351,16 @@ int main() {
 	Sphere earth(Vector3(30, 0, 20), 7, earthMaterial);
 
     //scene.addObject(&earth);
-    //scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
+    scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
     scene.addObject(new Sphere(Vector3(0, 20, 20), 7));
-    scene.addObject(new Torus(Vector3(0, 0, 0), 10, 4));
-    //scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
+    //scene.addObject(new Torus(Vector3(0, 0, 0), 10, 4));
+    scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
 
     scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
-    //scene.addLightSource(new LightSource(Vector3(-30, 0, 40)));
+    scene.addLightSource(new LightSource(Vector3(-40, 0, 20)));
 
     double angle = 0;
-    double scroll = 10;
+    double scroll = 5;
 
     std::vector<double> sol = solveQuarticEquation(2, -3, 4, -5, -6);
 
@@ -381,8 +381,8 @@ int main() {
         sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - center;
         sf::Mouse::setPosition(center, window);
 
-        scene.setReflectionDepth(2);
-        //scene.setRenderResolution(75, 50);
+        scene.setReflectionDepth(3);
+        //scene.setRenderResolution(720, 405);
         scene.setRenderResolution(15*scroll, 10*scroll);
         //view.setDistanceFromProjectionPlane(scroll/10);
 
@@ -407,7 +407,7 @@ int main() {
 		double renderTime = clock.restart().asSeconds();
 
 		earth.setTransform(earthTransformOriginal);          //return to original transformation
-		angle +=0.5*renderTime;                              //increment angle
+		angle +=0.03;                                        //increment angle
 
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;

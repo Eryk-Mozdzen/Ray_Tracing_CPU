@@ -40,6 +40,9 @@ std::vector<double> solveQuarticEquation(const double &a, const double &b, const
 
     std::vector<double> realSolutions;
     for(int i=0; i<complexSolutions.size(); i++) {
+        //std::cout << complexSolutions[i] << std::endl;
+        //std::cout << std::abs(complexSolutions[i].imag()) << std::endl;
+
         if(std::abs(complexSolutions[i].imag())<EPSILON)
             realSolutions.push_back(complexSolutions[i].real());
     }

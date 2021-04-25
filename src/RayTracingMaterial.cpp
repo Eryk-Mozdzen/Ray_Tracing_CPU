@@ -6,7 +6,7 @@ Material::Material() {
     this->textureWrap = false;
     this->textureSize = sf::Vector2u(0, 0);
 
-    this->setAmbient(0.4);
+    this->setAmbient(0.3);
     this->setDiffuse(0.2);
     this->setSpecular(0.2);
     this->setShininess(5);
