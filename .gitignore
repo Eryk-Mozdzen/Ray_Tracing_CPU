@@ -1,5 +1,4 @@
-bin/*
-obj/*
-RayTracingCPU.*
-sfml-*
-openal32.dll
+build/*
+!build/Makefile
+
+.vscode/*

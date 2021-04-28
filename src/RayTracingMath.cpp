@@ -1,4 +1,4 @@
-#include "../include/RayTracingMath.h"
+#include "RayTracingMath.h"
 
 double solveLinearEquation(const double &a, const double &b) {
     if(std::abs(a)<EPSILON && std::abs(b)>EPSILON)
@@ -39,7 +39,7 @@ std::vector<double> solveQuarticEquation(const double &a, const double &b, const
     };
 
     std::vector<double> realSolutions;
-    for(int i=0; i<complexSolutions.size(); i++) {
+    for(unsigned int i=0; i<complexSolutions.size(); i++) {
         //std::cout << complexSolutions[i] << std::endl;
         //std::cout << std::abs(complexSolutions[i].imag()) << std::endl;
 
@@ -55,7 +55,7 @@ Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
     assert(A.getCols()==b.getRows());
     assert(b.getCols()==1);
 
-    const int n = b.getRows();
+    const unsigned int n = b.getRows();
 
     Matrix x(n, 1);
 
@@ -65,10 +65,10 @@ Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
         return x;
 
     Matrix A_i;
-    for(int i=0; i<n; i++) {
+    for(unsigned int i=0; i<n; i++) {
         A_i = A;
 
-        for(int j=0; j<n; j++)
+        for(unsigned int j=0; j<n; j++)
             A_i(j, i) = b(j, 0);
 
         x(i, 0) = Matrix::Det(A_i)/W;
@@ -82,12 +82,12 @@ Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
     assert(A.getCols()==b.getRows());
     assert(b.getCols()==1);
 
-    const int n = b.getRows();
+    const unsigned int n = b.getRows();
 
     double diagonal = 0;
     double other = 0;
-    for(int i=0; i<n; i++) {
-        for(int j=0; j<n; j++) {
+    for(unsigned int i=0; i<n; i++) {
+        for(unsigned int j=0; j<n; j++) {
             if(j!=i)
                 other +=std::abs(A(i, j));
         }
@@ -103,10 +103,10 @@ Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
 
     Matrix x(n, 1);
 
-    for(int k=0; k<10; k++) {
-        for(int i=0; i<n; i++) {
+    for(unsigned int k=0; k<10; k++) {
+        for(unsigned int i=0; i<n; i++) {
             double sigma = 0;
-            for(int j=0; j<n; j++) {
+            for(unsigned int j=0; j<n; j++) {
                 if(j!=i)
                     sigma +=A(i, j)*x(j, 0);
             }

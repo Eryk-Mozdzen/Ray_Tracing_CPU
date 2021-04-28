@@ -1,4 +1,4 @@
-#include "../include/RayTracing.h"
+#include "RayTracing.h"
 
 View::View() {
     this->distance = 1;
@@ -88,7 +88,7 @@ const unsigned int & RenderScene::getRenderResolutionHeight() const {
 CollisionData RenderScene::trace(const Ray &ray) const {
     CollisionData tmp, data;
 
-    for(int i=0; i<this->objects.size(); i++) {
+    for(unsigned int i=0; i<this->objects.size(); i++) {
         if(this->objects[i]->intersect(ray, tmp)) {
             if(tmp.distance>EPSILON) {
                 if(tmp.distance<data.distance) {
@@ -117,7 +117,7 @@ sf::Color RenderScene::evaluate(const Ray &ray, const unsigned int &depth) const
 
     sf::Color illumination = data.material.getAmbient()*data.color;
 
-    for(int i=0; i<this->lights.size(); i++) {
+    for(unsigned int i=0; i<this->lights.size(); i++) {
         const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);   //light
         const Vector3 R = normalize(2*(L*N)*N - L);                                 //reflected light from surface
 
@@ -148,8 +148,8 @@ sf::Image RenderScene::render(const View &view) const {
     sf::Image frameBuffer;
     frameBuffer.create(this->resolutionH, this->resolutionV, sf::Color::Black);
 
-    for(int i=0; i<resolutionV; i++) {
-        for(int j=0; j<resolutionH; j++) {
+    for(unsigned int i=0; i<this->resolutionV; i++) {
+        for(unsigned int j=0; j<this->resolutionH; j++) {
             Vector3 dir = normalize(
                 view.getDistanceFromProjectionPlane()*directionX +
                 (j-resolutionH/2.)/this->resolutionH*aspectRatio*directionY +

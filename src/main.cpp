@@ -10,7 +10,7 @@
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "../include/RayTracing.h"
+#include "RayTracing.h"
 
 #define WINDOW_WIDTH        1280
 #define WINDOW_HEIGHT       720
@@ -136,7 +136,7 @@ public:
     }
 
     bool intersect(const Ray &ray, CollisionData &data) const {
-        //Möller–Trumbore intersection algorithm
+        //Mï¿½llerï¿½Trumbore intersection algorithm
 
         Vector3 edge1 = v1 - v0;
         Vector3 edge2 = v2 - v0;
@@ -338,9 +338,9 @@ int main() {
 	RenderScene scene;
 
 	TextureMenager menager;
-	menager.load("textures/road1.jpg");
-	menager.load("textures/earth2.jpg");
-	menager.load("textures/notexture.jpg");
+	menager.load("../textures/road1.jpg");
+	menager.load("../textures/earth2.jpg");
+	menager.load("../textures/notexture.jpg");
 
     //earth setup
     Material earthMaterial = Material(menager.getTextureReference(1));

@@ -7,9 +7,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../include/Vector.h"
-#include "../include/Matrix.h"
-#include "../include/RayTracingMath.h"
+#include "Vector.h"
+#include "Matrix.h"
+#include "RayTracingMath.h"
 
 class Transform3 : public Matrix {
 public:

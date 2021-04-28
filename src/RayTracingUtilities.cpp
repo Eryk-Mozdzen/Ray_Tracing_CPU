@@ -1,4 +1,4 @@
-#include "../include/RayTracingUtilities.h"
+#include "RayTracingUtilities.h"
 
 Ray::Ray() {}
 

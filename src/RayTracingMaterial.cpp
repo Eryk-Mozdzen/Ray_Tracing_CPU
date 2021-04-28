@@ -1,4 +1,4 @@
-#include "../include/RayTracingMaterial.h"
+#include "RayTracingMaterial.h"
 
 Material::Material() {
     this->color = sf::Color::White;

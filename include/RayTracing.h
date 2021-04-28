@@ -6,13 +6,13 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../include/Vector.h"
-#include "../include/Matrix.h"
+#include "Vector.h"
+#include "Matrix.h"
 
-#include "../include/RayTracingMath.h"
-#include "../include/RayTracingUtilities.h"
-#include "../include/RayTracingMaterial.h"
-#include "../include/RayTracingTransform.h"
+#include "RayTracingMath.h"
+#include "RayTracingUtilities.h"
+#include "RayTracingMaterial.h"
+#include "RayTracingTransform.h"
 
 class View {
 private:

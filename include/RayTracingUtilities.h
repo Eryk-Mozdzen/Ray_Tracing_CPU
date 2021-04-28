@@ -8,10 +8,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../include/Vector.h"
-#include "../include/Matrix.h"
+#include "Vector.h"
+#include "Matrix.h"
 
-#include "../include/RayTracingMaterial.h"
+#include "RayTracingMaterial.h"
 
 struct Ray {
     Vector3 origin;

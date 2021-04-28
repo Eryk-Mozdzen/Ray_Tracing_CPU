@@ -1,4 +1,4 @@
-#include "../include/RayTracingTransform.h"
+#include "RayTracingTransform.h"
 
 Transform3::Transform3() : Matrix(4, 4) {
     *this = Matrix::Identity(4);
@@ -8,8 +8,8 @@ Transform3 & Transform3::operator=(const Matrix &rhs) {
     if(rhs.getRows()!=4) throw std::string("Can't assign matrix to transform");
     if(rhs.getCols()!=4) throw std::string("Can't assign matrix to transform");
 
-    for(int i=0; i<4; i++)
-        for(int j=0; j<4; j++)
+    for(unsigned int i=0; i<4; i++)
+        for(unsigned int j=0; j<4; j++)
             (*this)(i, j) = rhs(i, j);
 
     return *this;
@@ -38,8 +38,8 @@ void Transform3::rotate(const Vector3 &axis, const double &theta) {
 
     Matrix rot = m*std::sin(theta) + (Matrix::Identity(3) - axis*axis.getTransposition())*std::cos(theta) + (axis*axis.getTransposition());
 
-    for(int i=0; i<3; i++)
-        for(int j=0; j<3; j++)
+    for(unsigned int i=0; i<3; i++)
+        for(unsigned int j=0; j<3; j++)
             transform(i, j) = rot(i, j);
 
     *this = (*this)*transform;
