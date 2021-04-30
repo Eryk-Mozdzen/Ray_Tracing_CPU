@@ -18,6 +18,9 @@ double solveLinearEquation(const double&, const double&);
 std::pair<double, double> solveQuadraticEquation(const double&, const double&, const double&);
 std::vector<double> solveQuarticEquation(const double&, const double&, const double&, const double&, const double&);
 
+double calculatePolynomial(const std::vector<double>&, const double&);
+std::vector<double> approxPolynomialRoots(const std::vector<double>&, const double&, const double&, const double&);
+
 Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
 Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <cassert>
 
 #include <SFML/Graphics.hpp>
 
@@ -30,6 +31,9 @@ struct CollisionData {
     bool exist;
 
     CollisionData();
+
+    static CollisionData min(const CollisionData&, const CollisionData&);
+    static CollisionData smin(const CollisionData&, const CollisionData&, const double&);
 };
 
 class LightSource {
@@ -43,11 +47,8 @@ public:
 
 class Object {
 public:
-    Object() {}
-
-    virtual bool intersect(const Ray&, CollisionData&) const {
-        return false;
-    }
+    virtual CollisionData intersect(const Ray&) const { return CollisionData(); }     // for ray tracing
+    virtual CollisionData distance(const Vector3&) const { return CollisionData(); }  // for sphere tracing
 };
 
 class TextureMenager {

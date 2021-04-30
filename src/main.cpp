@@ -93,7 +93,8 @@ public:
         this->material = material;
     }
 
-    bool intersect(const Ray &ray, CollisionData &data) const {
+    CollisionData intersect(const Ray &ray) const {
+        CollisionData data;
         const Vector3 center = transform.getTranslation();
 
         const double a = 1;
@@ -106,7 +107,7 @@ public:
              if(tSolution.first>EPSILON && tSolution.second<EPSILON)   tNearestPositive = tSolution.first;
         else if(tSolution.first<EPSILON && tSolution.second>EPSILON)   tNearestPositive = tSolution.second;
         else if(tSolution.first>EPSILON && tSolution.second>EPSILON)   tNearestPositive = std::min(tSolution.first, tSolution.second);
-        else return false;
+        else return data;
 
         data.point = ray.origin + tNearestPositive*normalize(ray.direction);
         data.normal = normalize(data.point - center);
@@ -115,7 +116,22 @@ public:
         data.distance = length(data.point - ray.origin);
         data.exist = true;
 
-        return true;
+        return data;
+    }
+
+    CollisionData distance(const Vector3 &point) const {
+        CollisionData data;
+        const double R = this->radius;
+        const Vector3 center = this->transform.getTranslation();
+
+        data.distance = length(point - this->transform.getTranslation()) - this->radius;
+        data.point = point;
+        data.normal = normalize(data.point - center);
+        data.color = this->getPixel(normalize(point-center)*R + center);
+        data.material = this->material;
+        data.exist = (data.distance<EPSILON);
+        
+        return data;
     }
 
 };
@@ -275,11 +291,12 @@ public:
     Vector3 getNormal(const Vector3 &point) const {
         const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
 
-        //return normalize(point - alpha*Vector3(point.x, point.y, 0));
-        return normalize(point - this->majorRadius*normalize(Vector3(point.x, point.y, 0)));
+        return normalize(point - alpha*Vector3(point.x, point.y, 0));
+        //return normalize(point - this->majorRadius*normalize(Vector3(point.x, point.y, 0)));
     }
 
-    bool intersect(const Ray &ray, CollisionData &data) const {
+    CollisionData intersect(const Ray &ray) const {
+        CollisionData data;
         const Vector3 center = this->transform.getTranslation();
         const Ray rayRelative(ray.origin - center, ray.direction);
 
@@ -296,19 +313,20 @@ public:
         const double L = D*D + (A*A - B*B);
 
         std::vector<double> tSolutions = solveQuarticEquation(J*J, 2*J*K, 2*J*L + K*K - G, 2*K*L - H, L*L - I);
+        //std::vector<double> tSolutions = approxPolynomialRoots({J*J, 2*J*K, 2*J*L + K*K - G, 2*K*L - H, L*L - I}, -100, 100, 1);
         if(tSolutions.size()==0)
-            return false;
+            return data;
 
         double tNearestPositive = 1E+9;
         bool exist = false;
-        for(int i=0; i<tSolutions.size(); i++) {
+        for(unsigned int i=0; i<tSolutions.size(); i++) {
             if(tSolutions[i]>EPSILON && tSolutions[i]<tNearestPositive) {
                 tNearestPositive = tSolutions[i];
                 exist = true;
             }
         }
         if(!exist)
-            return false;
+            return data;
 
         data.point = rayRelative.origin + tNearestPositive*normalize(rayRelative.direction);
         data.normal = this->getNormal(data.point-center);
@@ -317,7 +335,25 @@ public:
         data.distance = length(data.point - rayRelative.origin);
         data.exist = true;
 
-        return true;
+        return data;
+    }
+
+    CollisionData distance(const Vector3 &point) const {
+        CollisionData data;
+        const double R = this->majorRadius;
+        const double r = this->minorRadius;
+        const Vector3 center = this->transform.getTranslation();
+
+        Vector3 t = point - center;
+
+        data.distance = length(Vector3(length(Vector3(t.x, t.y, 0)) - R, 0, t.z)) - r;
+        data.point = point;
+        data.normal = this->getNormal(data.point-center);
+        data.color = this->material.getColor();
+        data.material = this->material;
+        data.exist = (data.distance<EPSILON);
+
+        return data;
     }
 
 };
@@ -336,28 +372,22 @@ int main() {
 
 	View view(Vector3(-40, 20, 20), 1);
 	RenderScene scene;
+    scene.setRenderMode(SPHERE_TRACING_MODE);
 
 	TextureMenager menager;
-	menager.load("../textures/road1.jpg");
-	menager.load("../textures/earth2.jpg");
-	menager.load("../textures/notexture.jpg");
+	//menager.load("../textures/notexture.jpg");
 
-    //earth setup
-    Material earthMaterial = Material(menager.getTextureReference(1));
-	earthMaterial.setAmbient(0);
-	earthMaterial.setDiffuse(1);
-	earthMaterial.setSpecular(0);
-	earthMaterial.setReflection(0);
-	Sphere earth(Vector3(30, 0, 20), 7, earthMaterial);
+	Sphere earth(Vector3(0, 20, 20), 7);
 
-    //scene.addObject(&earth);
+    scene.addObject(&earth);
+    scene.addObject(new Torus(Vector3(0, 10, 10), 10, 4));
     scene.addObject(new Sphere(Vector3(0, 0, 20), 7));
-    scene.addObject(new Sphere(Vector3(0, 20, 20), 7));
-    //scene.addObject(new Torus(Vector3(0, 0, 0), 10, 4));
-    scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(2), 5000, 5000)));
+    //scene.addObject(new Sphere(Vector3(0, 10, 20), 7));
+    //scene.addObject(new Sphere(Vector3(0, 40, 20), 7));
+    //scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
 
-    scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
-    scene.addLightSource(new LightSource(Vector3(-40, 0, 20)));
+    //scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
+    //scene.addLightSource(new LightSource(Vector3(-40, 0, 20)));
 
     double angle = 0;
     double scroll = 5;
@@ -369,9 +399,14 @@ int main() {
         while(window.pollEvent(event)) {
             if(event.type==sf::Event::Closed)
                 window.close();
-            if(event.type==sf::Event::KeyPressed)
+            if(event.type==sf::Event::KeyPressed) {
                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                     window.close();
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::N))
+                    scene.setRenderMode(SPHERE_TRACING_MODE);
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+                    scene.setRenderMode(RAY_TRACING_MODE);
+            }
             if(event.type==sf::Event::MouseWheelScrolled) {
                 if(event.mouseWheelScroll.delta>0)  scroll++;
                 else                                scroll--;
@@ -388,16 +423,9 @@ int main() {
 
         viewMove(view, deltaMouse);
 
-        //simple earth orbit simulation
-		Transform3 earthTransformOriginal = earth.getTransform();       //safe original transformation
-
-		Transform3 earthTransform = earth.getTransform();
-		earthTransform.translate(Vector3(-30, 0, 0));       //move to orbit center
-		earthTransform.rotate(Vector3(0, 0, 1), angle);     //rotate by some angle in vertical axis
-		earthTransform.translate(Vector3(30, 0, 0));        //move to orbit position
-		earthTransform.rotate(Vector3(0, 0, 1), -angle);    //return to start angle
-		earthTransform.rotate(Vector3(0, 1, 1), M_PI/6);    //tilt self-rotate axis
-        earthTransform.rotate(Vector3(0, 0, 1), 5*angle);   //rotate in self axis
+		Transform3 earthTransformOriginal = earth.getTransform();
+        Transform3 earthTransform = earth.getTransform();
+		earthTransform.translate(Vector3(0, 10*std::sin(angle), 0));
         earth.setTransform(earthTransform);
 
 		clock.restart();
@@ -406,8 +434,8 @@ int main() {
 
 		double renderTime = clock.restart().asSeconds();
 
-		earth.setTransform(earthTransformOriginal);          //return to original transformation
-		angle +=0.03;                                        //increment angle
+		earth.setTransform(earthTransformOriginal);
+		angle +=0.03;
 
 		std::stringstream windowTitle;
 		windowTitle << std::setprecision(5) << std::fixed;

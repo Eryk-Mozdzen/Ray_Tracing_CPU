@@ -19,8 +19,31 @@ const Vector3 & LightSource::getPosition() const {
 
 CollisionData::CollisionData() {
     this->color = sf::Color::Transparent;
+    this->normal = Vector3(1, 0, 0);
     this->distance = 1000000;
     this->exist = false;
+}
+
+CollisionData CollisionData::min(const CollisionData &a, const CollisionData &b) {
+    return (a.distance<b.distance) ? a : b;
+}
+
+CollisionData CollisionData::smin(const CollisionData &a, const CollisionData &b, const double &k) {
+    CollisionData data = CollisionData::min(a, b);
+
+    const double h = std::max(k - std::abs(a.distance-b.distance), 0.)/k;
+    data.distance = std::min(a.distance, b.distance) - h*h*h*k*0.167;
+
+    if(data.distance<EPSILON) {
+        data.exist = true;
+    }
+
+    if(h>0) {
+        const double m = a.distance/(a.distance + b.distance);
+        data.color = color_interpolation(a.color, b.color, m);
+    }
+    
+    return data;
 }
 
 TextureMenager::TextureMenager() {}

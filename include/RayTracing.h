@@ -34,21 +34,30 @@ public:
     void rotate(const Vector3&, const double&);
 };
 
+enum RenderMode {
+    RAY_TRACING_MODE,
+    SPHERE_TRACING_MODE
+};
+
 class RenderScene {
 private:
     std::vector<Object*> objects;
     std::vector<LightSource*> lights;
     unsigned int reflectionDepth;
     unsigned int resolutionH, resolutionV;
+    RenderMode renderMode;
 
-    CollisionData trace(const Ray&) const;
-    sf::Color evaluate(const Ray&, const unsigned int&) const;
+    CollisionData rayTrace(const Ray&) const;
+    CollisionData sphereTrace(const Vector3&) const;
+    sf::Color evaluateRayTracing(const Ray&, const unsigned int&) const;
+    sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 public:
     RenderScene();
 
     void addObject(Object*);
     void addLightSource(LightSource*);
     void setReflectionDepth(const unsigned int&);
+    void setRenderMode(const RenderMode&);
     void setRenderResolution(const unsigned int&, const unsigned int&);
 
     Object* getObjectReference(const unsigned int&);

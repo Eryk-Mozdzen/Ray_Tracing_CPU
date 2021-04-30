@@ -40,11 +40,36 @@ std::vector<double> solveQuarticEquation(const double &a, const double &b, const
 
     std::vector<double> realSolutions;
     for(unsigned int i=0; i<complexSolutions.size(); i++) {
-        //std::cout << complexSolutions[i] << std::endl;
-        //std::cout << std::abs(complexSolutions[i].imag()) << std::endl;
-
         if(std::abs(complexSolutions[i].imag())<EPSILON)
             realSolutions.push_back(complexSolutions[i].real());
+    }
+
+    return realSolutions;
+}
+
+double calculatePolynomial(const std::vector<double> &coeff, const double &x) {
+    double y = 0;
+
+    for(unsigned int i=0; i<coeff.size(); i++)
+        y +=coeff[i]*std::pow(x, (double)(coeff.size()-i-1));
+
+    return y;
+}
+
+std::vector<double> approxPolynomialRoots(const std::vector<double> &coeff, const double &left, const double &right, const double &step) {
+    assert(left<right);
+
+    std::vector<double> realSolutions;
+
+    double current = left;
+    while(current<=right) {
+        const double valueL = calculatePolynomial(coeff, current);
+        const double valueR = calculatePolynomial(coeff, current+step);
+
+        if(valueL*valueR<0)
+            realSolutions.push_back((valueL+valueR)/2);
+
+        current +=step;
     }
 
     return realSolutions;

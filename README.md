@@ -65,6 +65,7 @@ Class methods:
 - overall optimalization
 - torus test implementation
 - better documentation
+- ray marching rendering
 
 #### To do:
 - code division for lib and example usage
