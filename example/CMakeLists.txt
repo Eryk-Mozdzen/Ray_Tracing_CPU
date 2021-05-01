@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19.6)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 
-project(RayTracing_CPU)
+project(RayTracingExample)
 
 add_compile_options(-Wall -pedantic)
 set(CMAKE_CXX_STANDARD 17 REQUIRED)
@@ -13,10 +13,11 @@ set(SFML_DIR "D:/Moje Wyczyny/Pliki i Repozytoria/SFML/SFML-2.5.1/lib/cmake/SFML
 #set(SFML_DIR "D:/Programy/CodeBlocks/sfml/lib/cmake/SFML")
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 
-file(GLOB SOURCE "src/*.cpp")
+file(GLOB SOURCE "src/*.cpp" "../lib/src/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCE})
 
 include_directories(include)
+include_directories(../lib/include)
 
 target_link_libraries(${PROJECT_NAME} m)
 target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
@@ -24,4 +25,4 @@ target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics sfml
 # cd build
 # cmake .. -G "Unix Makefiles"
 # make
-# RayTracing_CPU.exe
+# RayTracingExample.exe

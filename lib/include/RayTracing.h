@@ -53,7 +53,9 @@ private:
     sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 public:
     RenderScene();
-
+    RenderScene(const RenderMode&, const unsigned int&, const unsigned int&, const unsigned int&);
+    
+    void clearObjects();
     void addObject(Object*);
     void addLightSource(LightSource*);
     void setReflectionDepth(const unsigned int&);

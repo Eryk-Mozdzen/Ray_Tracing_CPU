@@ -47,6 +47,7 @@ public:
 
 class Object {
 public:
+    virtual ~Object() {};
     virtual CollisionData intersect(const Ray&) const { return CollisionData(); }     // for ray tracing
     virtual CollisionData distance(const Vector3&) const { return CollisionData(); }  // for sphere tracing
 };

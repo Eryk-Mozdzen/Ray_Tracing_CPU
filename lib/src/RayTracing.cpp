@@ -50,6 +50,18 @@ RenderScene::RenderScene() {
     this->setReflectionDepth(1);
 }
 
+RenderScene::RenderScene(const RenderMode &renderMode, const unsigned int &reflectionDepth, const unsigned int &resolutionWidgth, const unsigned int &resolutionHeight) {
+    this->setRenderMode(renderMode);
+    this->setReflectionDepth(reflectionDepth);
+    this->setRenderResolution(resolutionWidgth, resolutionHeight);
+}
+
+void RenderScene::clearObjects() {
+    //for(unsigned int i=0; i<this->objects.size(); i++)
+    //    delete this->objects[i];
+    this->objects.clear();
+}
+
 void RenderScene::addObject(Object *object_ptr) {
     this->objects.push_back(object_ptr);
 }
@@ -111,7 +123,7 @@ CollisionData RenderScene::sphereTrace(const Vector3 &point) const {
         tmp = this->objects[i]->distance(point);
 
         //data = CollisionData::min(tmp, data);
-        data = CollisionData::smin(tmp, data, 8);
+        data = CollisionData::smin(tmp, data, 3);
     }
 
     return data;
