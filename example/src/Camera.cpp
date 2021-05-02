@@ -1,11 +1,29 @@
 #include "Camera.h"
 
 Camera::Camera(const Vector3 &position, const double &distance) : View(position, distance) {
-
+    this->lastMouseCoords = sf::Mouse::getPosition();
 }
 
-void Camera::move(const sf::Vector2i &mouse) {
-    Vector3 translation(0, 0, 0);
+void Camera::rotate() {
+    sf::Vector2i deltaMouse = sf::Mouse::getPosition() - this->lastMouseCoords;
+
+    if(std::abs(deltaMouse.x)>5)
+        View::rotate(Vector3::UnitZ(), this->angularVelocity*((deltaMouse.x<0)? 1 : -1));
+
+    if(std::abs(deltaMouse.y)>5)
+        View::rotate(Vector3::UnitY(), this->angularVelocity*((deltaMouse.y>0)? 1 : -1));
+
+    double s = this->getDirectionY()*Vector3::UnitZ();
+    if(std::abs(s)>0.1)
+        View::rotate(Vector3::UnitX(), this->angularVelocity*((s<0)? 1 : -1));
+
+    //sf::Mouse::setPosition();
+    this->lastMouseCoords = sf::Mouse::getPosition();
+}
+
+void Camera::move() {
+    Vector3 translation;
+
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))         translation +=Vector3::UnitX();
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))         translation -=Vector3::UnitX();
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::A))         translation +=Vector3::UnitY();
@@ -14,14 +32,19 @@ void Camera::move(const sf::Vector2i &mouse) {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))  translation -=Vector3::UnitZ();
 
     this->translate(this->linearVelocity*normalize(translation));
+}
 
-    if(std::abs(mouse.x)>5)
-        this->rotate(Vector3::UnitZ(), this->angularVelocity*((mouse.x<0)? 1 : -1));
+void Camera::zoomIn() {
+    const double d = this->getDistanceFromProjectionPlane();
 
-    if(std::abs(mouse.y)>5)
-        this->rotate(Vector3::UnitY(), this->angularVelocity*((mouse.y>0)? 1 : -1));
+    this->setDistanceFromProjectionPlane(d + ((d<1) ? 0.1 : 1));
+}
 
-    double s = this->getDirectionY()*Vector3::UnitZ();
-    if(std::abs(s)>0.1)
-        this->rotate(Vector3::UnitX(), this->angularVelocity*((s<0)? 1 : -1));
+void Camera::zoomOut() {
+    const double d = this->getDistanceFromProjectionPlane();
+
+    if(d<=0.1+EPSILON)
+        return;
+
+    this->setDistanceFromProjectionPlane(d - ((d<=1) ? 0.1 : 1));
 }

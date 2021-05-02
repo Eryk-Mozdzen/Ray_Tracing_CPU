@@ -304,6 +304,33 @@ D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingU
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingUtilities.cpp.s
 .PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingUtilities.cpp.s
 
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.obj: D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.obj
+
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.obj
+
+# target to build an object file
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.obj
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.obj
+
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.i: D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.i
+
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.i
+
+# target to preprocess a source file
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.i
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.i
+
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.s: D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.s
+
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.s
+
+# target to generate assembly for a file
+D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.s
+.PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.cpp.s
+
 D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.obj: D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.cpp.obj
 
 .PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.obj
@@ -331,33 +358,6 @@ D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.cpp.
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.cpp.s
 .PHONY : D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.cpp.s
 
-src/Box.obj: src/Box.cpp.obj
-
-.PHONY : src/Box.obj
-
-# target to build an object file
-src/Box.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Box.cpp.obj
-.PHONY : src/Box.cpp.obj
-
-src/Box.i: src/Box.cpp.i
-
-.PHONY : src/Box.i
-
-# target to preprocess a source file
-src/Box.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Box.cpp.i
-.PHONY : src/Box.cpp.i
-
-src/Box.s: src/Box.cpp.s
-
-.PHONY : src/Box.s
-
-# target to generate assembly for a file
-src/Box.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Box.cpp.s
-.PHONY : src/Box.cpp.s
-
 src/Camera.obj: src/Camera.cpp.obj
 
 .PHONY : src/Camera.obj
@@ -384,33 +384,6 @@ src/Camera.s: src/Camera.cpp.s
 src/Camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Camera.cpp.s
 .PHONY : src/Camera.cpp.s
-
-src/Duck.obj: src/Duck.cpp.obj
-
-.PHONY : src/Duck.obj
-
-# target to build an object file
-src/Duck.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Duck.cpp.obj
-.PHONY : src/Duck.cpp.obj
-
-src/Duck.i: src/Duck.cpp.i
-
-.PHONY : src/Duck.i
-
-# target to preprocess a source file
-src/Duck.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Duck.cpp.i
-.PHONY : src/Duck.cpp.i
-
-src/Duck.s: src/Duck.cpp.s
-
-.PHONY : src/Duck.s
-
-# target to generate assembly for a file
-src/Duck.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Duck.cpp.s
-.PHONY : src/Duck.cpp.s
 
 src/Plane.obj: src/Plane.cpp.obj
 
@@ -493,33 +466,6 @@ src/Torus.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Torus.cpp.s
 .PHONY : src/Torus.cpp.s
 
-src/Triangle.obj: src/Triangle.cpp.obj
-
-.PHONY : src/Triangle.obj
-
-# target to build an object file
-src/Triangle.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Triangle.cpp.obj
-.PHONY : src/Triangle.cpp.obj
-
-src/Triangle.i: src/Triangle.cpp.i
-
-.PHONY : src/Triangle.i
-
-# target to preprocess a source file
-src/Triangle.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Triangle.cpp.i
-.PHONY : src/Triangle.cpp.i
-
-src/Triangle.s: src/Triangle.cpp.s
-
-.PHONY : src/Triangle.s
-
-# target to generate assembly for a file
-src/Triangle.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/RayTracingExample.dir/build.make CMakeFiles/RayTracingExample.dir/src/Triangle.cpp.s
-.PHONY : src/Triangle.cpp.s
-
 src/main.obj: src/main.cpp.obj
 
 .PHONY : src/main.obj
@@ -574,18 +520,15 @@ help:
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingUtilities.obj"
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingUtilities.i"
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingUtilities.s"
+	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.obj"
+	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.i"
+	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/RayTracingView.s"
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.obj"
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.i"
 	@echo "... D_/Moje_Wyczyny/My_Poor_Projects/Ray_Tracing/Ray_Tracing_CPU/lib/src/Vector.s"
-	@echo "... src/Box.obj"
-	@echo "... src/Box.i"
-	@echo "... src/Box.s"
 	@echo "... src/Camera.obj"
 	@echo "... src/Camera.i"
 	@echo "... src/Camera.s"
-	@echo "... src/Duck.obj"
-	@echo "... src/Duck.i"
-	@echo "... src/Duck.s"
 	@echo "... src/Plane.obj"
 	@echo "... src/Plane.i"
 	@echo "... src/Plane.s"
@@ -595,9 +538,6 @@ help:
 	@echo "... src/Torus.obj"
 	@echo "... src/Torus.i"
 	@echo "... src/Torus.s"
-	@echo "... src/Triangle.obj"
-	@echo "... src/Triangle.i"
-	@echo "... src/Triangle.s"
 	@echo "... src/main.obj"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

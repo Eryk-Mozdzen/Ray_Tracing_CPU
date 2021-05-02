@@ -7,7 +7,7 @@ Sphere::Sphere() {
 Sphere::Sphere(const Vector3 &center, const double &radius) {
     this->radius = radius;
     this->transform.translate(center);
-    this->material = Material(rand()%256, rand()%256, rand()%256);
+    this->material = Material(std::rand()%256, std::rand()%256, std::rand()%256);
 }
 
 Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : Sphere(center, radius) {

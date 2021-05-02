@@ -1,56 +1,13 @@
 #include "RayTracing.h"
 
-View::View() {
-    this->distance = 1;
-}
-
-View::View(const Vector3 &position, const double &distance) {
-    this->distance = distance;
-
-    this->transform.translate(position);
-}
-
-Vector3 View::getDirectionX() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitX()) - this->transform.getTranslation());
-}
-
-Vector3 View::getDirectionY() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitY()) - this->transform.getTranslation());
-}
-
-Vector3 View::getDirectionZ() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitZ()) - this->transform.getTranslation());
-}
-
-Vector3 View::getPosition() const {
-    return this->transform.getTranslation();
-}
-
-const Transform3 & View::getTransform() const {
-    return this->transform;
-}
-
-double View::getDistanceFromProjectionPlane() const {
-    return this->distance;
-}
-
-void View::setDistanceFromProjectionPlane(const double &distance) {
-    this->distance = distance;
-}
-
-void View::translate(const Vector3 &transltion) {
-    this->transform.translate(transltion);
-}
-
-void View::rotate(const Vector3 &axis, const double &theta) {
-    this->transform.rotate(axis, theta);
-}
-
 RenderScene::RenderScene() {
     this->setReflectionDepth(1);
 }
 
-RenderScene::RenderScene(const RenderMode &renderMode, const unsigned int &reflectionDepth, const unsigned int &resolutionWidgth, const unsigned int &resolutionHeight) {
+RenderScene::RenderScene(const RenderMode &renderMode, 
+                            const unsigned int &reflectionDepth, 
+                            const unsigned int &resolutionWidgth, 
+                            const unsigned int &resolutionHeight) : sf::RenderWindow(sf::VideoMode(1280, 720), "Ray Tracing") {
     this->setRenderMode(renderMode);
     this->setReflectionDepth(reflectionDepth);
     this->setRenderResolution(resolutionWidgth, resolutionHeight);
@@ -79,8 +36,7 @@ void RenderScene::setRenderMode(const RenderMode &renderMode) {
 }
 
 void RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
-    this->resolutionH = resolutionH;
-    this->resolutionV = resolutionV;
+    this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
 }
 
 Object* RenderScene::getObjectReference(const unsigned int &index) {
@@ -93,12 +49,8 @@ const unsigned int & RenderScene::getReflectionDepth() const {
     return this->reflectionDepth;
 }
 
-const unsigned int & RenderScene::getRenderResolutionWidth() const {
-    return this->resolutionH;
-}
-
-const unsigned int & RenderScene::getRenderResolutionHeight() const {
-    return this->resolutionV;
+const sf::Vector2u & RenderScene::getRenderResolution() const {
+    return this->renderResolution;
 }
 
 CollisionData RenderScene::rayTrace(const Ray &ray) const {
@@ -123,7 +75,7 @@ CollisionData RenderScene::sphereTrace(const Vector3 &point) const {
         tmp = this->objects[i]->distance(point);
 
         //data = CollisionData::min(tmp, data);
-        data = CollisionData::smin(tmp, data, 3);
+        data = CollisionData::smin(tmp, data, 10);
     }
 
     return data;
@@ -190,17 +142,19 @@ sf::Image RenderScene::render(const View &view) const {
     const Vector3 directionX = view.getDirectionX();
     const Vector3 directionY = view.getDirectionY();
     const Vector3 directionZ = view.getDirectionZ();
-    const double aspectRatio = (double)this->resolutionH/this->resolutionV;
+    const double w = this->renderResolution.x;
+    const double h = this->renderResolution.y;
+    const double aspectRatio = (double)this->renderResolution.x/this->renderResolution.y;
 
     sf::Image frameBuffer;
-    frameBuffer.create(this->resolutionH, this->resolutionV, sf::Color::Black);
+    frameBuffer.create(w, h, sf::Color::Black);
 
-    for(unsigned int i=0; i<this->resolutionV; i++) {
-        for(unsigned int j=0; j<this->resolutionH; j++) {
+    for(unsigned int i=0; i<h; i++) {
+        for(unsigned int j=0; j<w; j++) {
             Vector3 dir = normalize(
                 view.getDistanceFromProjectionPlane()*directionX +
-                (j-resolutionH/2.)/this->resolutionH*aspectRatio*directionY +
-                (i-resolutionV/2.)/this->resolutionV*directionZ
+                (j-w/2.)/w*aspectRatio*directionY +
+                (i-h/2.)/h*directionZ
             );
 
             sf::Color color;
@@ -218,6 +172,33 @@ sf::Image RenderScene::render(const View &view) const {
     return frameBuffer;
 }
 
+void RenderScene::display(const View &view) {
+    sf::Clock clock;
+    clock.restart();
+    sf::Image frameBuffer = this->render(view);
+    const double renderTime = clock.restart().asSeconds();
 
+    frameBuffer.flipVertically();
+	frameBuffer.flipHorizontally();
+
+    sf::Texture tex;
+    tex.loadFromImage(frameBuffer);
+
+    sf::Sprite sprite;
+    sprite.setTexture(tex);
+    sprite.scale((double)this->getSize().x/frameBuffer.getSize().x, (double)this->getSize().y/frameBuffer.getSize().y);
+
+    std::stringstream windowTitle;
+    windowTitle << std::setprecision(5) << std::fixed;
+    windowTitle << "Ray Tracing";
+    windowTitle << " | Resolution: " << this->renderResolution.x << "x" << this->renderResolution.y;
+    windowTitle << " | Render Time: " << renderTime << "s";
+    windowTitle << " | FPS: " << 1/renderTime;
+    windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
+    sf::RenderWindow::setTitle(windowTitle.str());
+    
+    sf::RenderWindow::draw(sprite);
+    sf::RenderWindow::display();
+}
 
 
