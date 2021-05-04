@@ -4,11 +4,17 @@ Code uses SFML library to menage basic objects like `sf::RenderWindow`, `sf::Col
 
 YouTube demonstration:
 
-[![Everything Is AWESOME](https://img.youtube.com/vi/HcqXAsXDC6k/0.jpg)](https://www.youtube.com/watch?v=HcqXAsXDC6k "Everything Is AWESOME")
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=HcqXAsXDC6k">
+    <img src="https://img.youtube.com/vi/HcqXAsXDC6k/0.jpg">
+  </a>
+</p>
 
 Ray Tracing result (left) and ray marching result (right).
 
-<img src="/readmeStuff/ray_tracing.jpg" width="470" height="300" />   <img src="/readmeStuff/ray_marching.jpg" width="470" height="300" />
+<p align="center">
+  <img src="/readmeStuff/ray_tracing.jpg" width="470" height="300" />   <img src="/readmeStuff/ray_marching.jpg" width="470" height="300" />
+</p>
 
 ## Usage
 You must change `CMakeLists.txt` file according to SFML path in your system. When you do that you can clone repo by typing:
@@ -44,16 +50,13 @@ Method must return `CollisionData` struct wih correct values in each field.
 - `.distance` type `double` (should contain distance dorm ray origin to collision point)
 - `.exist` type `bool` (should contain result of intersection test, exacly the same what method return)
 
-### Material type
-`Material` class describes character of given material in context to Phong reflection model. 
+### Classes
+`Material` class describes character of given material in context to Phong reflection model.
 
-### Transform matrix
 `Transform3` class is standard transformation matrix 4x4 to describe translation and rotation in 3d space.
 
-### Camera view
 `View` class describes position and direction of "virtual camera" on scene. It also contains distance from eye to trajectory plane.
 
-### RenderScene class
 `RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen. Class have several metods like:
 
 ## Workflow
