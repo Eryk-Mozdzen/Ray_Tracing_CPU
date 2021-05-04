@@ -8,7 +8,7 @@
 
     Controls:
         - Mouse         - camera rotation
-        - Mouse Scroll  - zoom in/out
+        - Mouse Scroll  - resolution change
         - WASD          - camera forward, left, backward, right movment
         - LShift, LCtr  - camera up, down movment
         - N/M keys      - toggling between two modes (ray/sphere tracing)
@@ -17,7 +17,7 @@
     */
 
 #include <iostream>     //for cout, endl
-#include <ctime>        //for random seed
+#include <ctime>        //for random seed, screenshot name
 
 #include "RayTracing.h"
 
@@ -41,13 +41,18 @@ void handleEvents(RenderScene &scene, Camera &camera) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::M))
                 scene.setRenderMode(RAY_TRACING_MODE);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-                scene.saveFrameToFile("../screenshot.jpg");
+                scene.saveFrameToFile("../screenshots/screenshot_" + std::to_string(time(nullptr)) + ".jpg");
                 std::cout << "Saved frame" << std::endl;
             }
         }
-        if(event.type==sf::Event::MouseWheelScrolled) {
+        /*if(event.type==sf::Event::MouseWheelScrolled) {
             if(event.mouseWheelScroll.delta>0)  camera.zoomIn();
             else                                camera.zoomOut();
+        }*/
+        if(event.type==sf::Event::MouseWheelScrolled) {
+            sf::Vector2u res = scene.getRenderResolution();
+            if(event.mouseWheelScroll.delta>0)  scene.setRenderResolution(res.x + 15, res.y + 10);
+            else                                scene.setRenderResolution(res.x - 15, res.y - 10);
         }
     }
 }

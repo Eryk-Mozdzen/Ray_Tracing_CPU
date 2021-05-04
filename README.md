@@ -1,13 +1,20 @@
 # Ray Tracing Algorithm on CPU
 Simple ray tracer created for fun and to develop object programing skills.
-Code uses SFML library to display result on `sf::RenderWindow` and menage basic objects like `sf::Color` and `sf::Image`
+Code uses SFML library to menage basic objects like `sf::RenderWindow`, `sf::Color` and `sf::Image`
 
 YouTube demonstration: https://www.youtube.com/watch?v=HcqXAsXDC6k
 
-![](/saved_frame.jpg)
+![](/readmeStuff/ray_tracing.jpg)
+![](/readmeStuff/ray_marching.jpg)
 
 ## Usage
-Example usage of all functions is presented in code, but for short explanation:
+```
+git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
+cd example/build
+make
+RayTacingExample.exe
+```
+Example usage of all functions is presented in code with comments, but for short explanation:
 
 #### Custom drawable object
 Lib does not have any pre-made classes to draw on scene. User must declare his own objects inheriting from `Object` class and overrite
@@ -63,10 +70,6 @@ Class methods:
 ## Workflow
 #### Tasks in progress:
 - overall optimalization
-- torus test implementation
-- better documentation
-- ray marching rendering
 
 #### To do:
-- code division for lib and example usage
 - transparent materials and light refraction effect
