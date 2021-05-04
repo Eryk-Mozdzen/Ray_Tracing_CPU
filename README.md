@@ -57,7 +57,7 @@ Method must return `CollisionData` struct wih correct values in each field.
 
 `View` class describes position and direction of "virtual camera" on scene. It also contains distance from eye to trajectory plane.
 
-`RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen. Class have several metods like:
+`RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen.
 
 ## Workflow
 #### Tasks in progress:
