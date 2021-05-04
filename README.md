@@ -5,7 +5,7 @@ Code uses SFML library to menage basic objects like `sf::RenderWindow`, `sf::Col
 YouTube demonstration:
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=HcqXAsXDC6k">
+  <a href="https://www.youtube.com/watch?v=VN4jbGkxlCg">
     <img src="/readmeStuff/yt2_photo_button.jpg">
   </a>
 </p>
