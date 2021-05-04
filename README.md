@@ -13,8 +13,8 @@ YouTube demonstration:
 Ray Tracing result (left) and ray marching result (right).
 
 <p align="center">
-  <img src="/readmeStuff/ray_tracing.jpg" width="450" height="300" />
-  <img src="/readmeStuff/ray_marching.jpg" width="450" height="300" />
+  <img src="/readmeStuff/ray_tracing.jpg" width="350" height="250" />
+  <img src="/readmeStuff/ray_marching.jpg" width="350" height="250" />
 </p>
 
 ## Usage
