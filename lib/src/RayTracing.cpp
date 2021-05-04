@@ -8,6 +8,7 @@ RenderScene::RenderScene(const RenderMode &renderMode,
                             const unsigned int &reflectionDepth, 
                             const unsigned int &resolutionWidgth, 
                             const unsigned int &resolutionHeight) : sf::RenderWindow(sf::VideoMode(1280, 720), "Ray Tracing") {
+
     this->setRenderMode(renderMode);
     this->setReflectionDepth(reflectionDepth);
     this->setRenderResolution(resolutionWidgth, resolutionHeight);
@@ -37,6 +38,8 @@ void RenderScene::setRenderMode(const RenderMode &renderMode) {
 
 void RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
     this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
+
+    this->frameBuffer.create(resolutionH, resolutionV, sf::Color::Black);
 }
 
 Object* RenderScene::getObjectReference(const unsigned int &index) {
@@ -137,7 +140,7 @@ sf::Color RenderScene::evaluateSphereTracing(const Ray &ray, const unsigned int 
     return data.color;
 }
 
-sf::Image RenderScene::render(const View &view) const {
+const sf::Image & RenderScene::render(const View &view) {
     const Vector3 position = view.getPosition();
     const Vector3 directionX = view.getDirectionX();
     const Vector3 directionY = view.getDirectionY();
@@ -145,9 +148,6 @@ sf::Image RenderScene::render(const View &view) const {
     const double w = this->renderResolution.x;
     const double h = this->renderResolution.y;
     const double aspectRatio = (double)this->renderResolution.x/this->renderResolution.y;
-
-    sf::Image frameBuffer;
-    frameBuffer.create(w, h, sf::Color::Black);
 
     for(unsigned int i=0; i<h; i++) {
         for(unsigned int j=0; j<w; j++) {
@@ -163,30 +163,32 @@ sf::Image RenderScene::render(const View &view) const {
                 case SPHERE_TRACING_MODE:   color = this->evaluateSphereTracing(Ray(position, dir), 0); break;
                 default: color = sf::Color::Transparent; break;
             }
+            
+            if(color==sf::Color::Transparent)
+                color = sf::Color::Black;
 
-            if(color!=sf::Color::Transparent && color!=sf::Color::Black)
-                frameBuffer.setPixel(j, i, color);
+            this->frameBuffer.setPixel(j, i, color);
         }
     }
 
-    return frameBuffer;
+    return this->frameBuffer;
 }
 
 void RenderScene::display(const View &view) {
     sf::Clock clock;
     clock.restart();
-    sf::Image frameBuffer = this->render(view);
+    this->render(view);
     const double renderTime = clock.restart().asSeconds();
 
-    frameBuffer.flipVertically();
-	frameBuffer.flipHorizontally();
+    this->frameBuffer.flipVertically();
+	this->frameBuffer.flipHorizontally();
 
     sf::Texture tex;
-    tex.loadFromImage(frameBuffer);
+    tex.loadFromImage(this->frameBuffer);
 
     sf::Sprite sprite;
     sprite.setTexture(tex);
-    sprite.scale((double)this->getSize().x/frameBuffer.getSize().x, (double)this->getSize().y/frameBuffer.getSize().y);
+    sprite.scale((double)this->getSize().x/this->frameBuffer.getSize().x, (double)this->getSize().y/this->frameBuffer.getSize().y);
 
     std::stringstream windowTitle;
     windowTitle << std::setprecision(5) << std::fixed;
@@ -195,10 +197,22 @@ void RenderScene::display(const View &view) {
     windowTitle << " | Render Time: " << renderTime << "s";
     windowTitle << " | FPS: " << 1/renderTime;
     windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
+
+    windowTitle << " | Mode: ";
+    switch(this->renderMode) {
+        case RAY_TRACING_MODE:      windowTitle << "ray tracing"; break;
+        case SPHERE_TRACING_MODE:   windowTitle << "sphere tracing"; break;
+        default: break;
+    }
+
     sf::RenderWindow::setTitle(windowTitle.str());
     
     sf::RenderWindow::draw(sprite);
     sf::RenderWindow::display();
+}
+
+void RenderScene::saveFrameToFile(const std::string &filename) const {
+    this->frameBuffer.saveToFile(filename);
 }
 
 

@@ -4,6 +4,9 @@
 #include "RayTracing.h"
 #include <SFML/Graphics.hpp>
 
+/*  User custom Camera class
+    It is used to describes player point of view.   */
+
 class Camera : public View {
 private:
     const double linearVelocity = 1.5;
@@ -12,7 +15,7 @@ private:
 public:
     Camera(const Vector3&, const double&);
     
-    void rotate();
+    void rotate(RenderScene&);
     void move();
     void zoomIn();
     void zoomOut();

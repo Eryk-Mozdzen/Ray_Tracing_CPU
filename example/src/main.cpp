@@ -1,5 +1,23 @@
-#include <iostream>
-#include <ctime>
+/*  Ray tracing example program 
+    by Eryk Możdżeń, May 2021r.
+
+    Simple usage of implemented features like:
+        - definition of user custom class
+        - ray tracing rendering for objects with intersect() method
+        - sphere tracing rendering for objects with distance() method
+
+    Controls:
+        - Mouse         - camera rotation
+        - Mouse Scroll  - zoom in/out
+        - WASD          - camera forward, left, backward, right movment
+        - LShift, LCtr  - camera up, down movment
+        - N/M keys      - toggling between two modes (ray/sphere tracing)
+        - Z key         - take a screenshot
+        - X key         - exit the application
+    */
+
+#include <iostream>     //for cout, endl
+#include <ctime>        //for random seed
 
 #include "RayTracing.h"
 
@@ -22,6 +40,10 @@ void handleEvents(RenderScene &scene, Camera &camera) {
                 scene.setRenderMode(SPHERE_TRACING_MODE);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::M))
                 scene.setRenderMode(RAY_TRACING_MODE);
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+                scene.saveFrameToFile("../screenshot.jpg");
+                std::cout << "Saved frame" << std::endl;
+            }
         }
         if(event.type==sf::Event::MouseWheelScrolled) {
             if(event.mouseWheelScroll.delta>0)  camera.zoomIn();
@@ -31,31 +53,34 @@ void handleEvents(RenderScene &scene, Camera &camera) {
 }
 
 int main() {
-    std::srand(time(nullptr));
+    std::srand(time(nullptr));      //for custom objects random objects colors, not needed for lib
 
-	Camera camera(Vector3(-40, 20, 20), 1);
-	RenderScene scene(SPHERE_TRACING_MODE, 3, 75, 60);
-	TextureMenager menager;
+    Camera camera(Vector3(-40, 20, 20), 1);
+    RenderScene scene(RAY_TRACING_MODE, 3, 75, 60);
+    TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/
 
-	menager.load("../textures/notexture.jpg");
+    scene.setMouseCursorVisible(false);
+
+    menager.load("../textures/notexture.jpg");
 
     scene.addObject(new Sphere(Vector3(10, -15, 30), 7, Material(255, 0, 0)));
-    scene.addObject(new Sphere(Vector3(0, 10, 20), 7, Material(0, 255, 0)));
+    scene.addObject(new Sphere(Vector3(0, 20, 20), 7, Material(0, 255, 0)));
     scene.addObject(new Torus(Vector3(0, 0, 20), 10, 5, Material(0, 0, 255)));
     scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
 
     scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
     scene.addLightSource(new LightSource(Vector3(20, 20, 40)));
-    
+
     double angle = 0;
+
+    /*-----------  Main loop  ---------------*/
 
     while(scene.isOpen()) {
         handleEvents(scene, camera);
 
-        //scene.setRenderResolution(15*scroll, 10*scroll);
-        camera.rotate();
+        camera.rotate(scene);
         camera.move();
 
         /*-----------  Scene objects update  ---------------*/

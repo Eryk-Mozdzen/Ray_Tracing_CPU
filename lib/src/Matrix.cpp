@@ -9,15 +9,15 @@ Matrix::Matrix(const unsigned int &rows, const unsigned int &cols) {
     this->cols = cols;
 
     this->values.resize(rows);
-    for(int i=0; i<rows; i++)
+    for(unsigned int i=0; i<rows; i++)
         this->values[i].resize(cols, 0);
 }
 
 Matrix Matrix::getTransposition() const {
     Matrix result(this->getCols(), this->getRows());
 
-    for(int i=0; i<result.getRows(); i++)
-        for(int j=0; j<result.getCols(); j++)
+    for(unsigned int i=0; i<result.getRows(); i++)
+        for(unsigned int j=0; j<result.getCols(); j++)
             result(i, j) = (*this)(j, i);
 
     return result;
@@ -30,7 +30,7 @@ Matrix Matrix::getInverse() const {
 Matrix Matrix::Inverse(const Matrix &A) {
     assert(A.getRows()==A.getCols());
 
-    int n = A.getRows();
+    unsigned int n = A.getRows();
     double det = Matrix::Det(A);
 
     if(n==1) {
@@ -39,10 +39,10 @@ Matrix Matrix::Inverse(const Matrix &A) {
         return result;
     } else {
         Matrix A_d(n, n);
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
+        for(unsigned int i=0; i<n; i++) {
+            for(unsigned int j=0; j<n; j++) {
                 Matrix tmp(n-1, n-1);
-                int index = 0, index_tmp = 0;
+                unsigned int index = 0, index_tmp = 0;
                 while(index<n*n) {
 
                     if(index%n!=j && index/n!=i) {
@@ -63,8 +63,8 @@ bool Matrix::operator==(const Matrix &rhs) const {
     assert(this->getRows()==rhs.getRows());
     assert(this->getCols()==rhs.getCols());
 
-    for(int i=0; i<this->getRows(); i++)
-        for(int j=0; j<this->getCols(); j++)
+    for(unsigned int i=0; i<this->getRows(); i++)
+        for(unsigned int j=0; j<this->getCols(); j++)
             if((*this)(i, j)!=rhs(i, j))
                 return false;
 
@@ -80,8 +80,8 @@ Matrix Matrix::operator+(const Matrix &rhs) const {
     assert(this->getCols()==rhs.getCols());
 
     Matrix result(this->getRows(), this->getCols());
-    for(int i=0; i<result.getRows(); i++)
-        for(int j=0; j<result.getCols(); j++)
+    for(unsigned int i=0; i<result.getRows(); i++)
+        for(unsigned int j=0; j<result.getCols(); j++)
             result(i, j) = (*this)(i, j) + rhs(i, j);
 
     return result;
@@ -95,9 +95,9 @@ Matrix Matrix::operator*(const Matrix &rhs) const {
     assert(this->getCols()==rhs.getRows());
 
     Matrix result(this->getRows(), rhs.getCols());
-    for(int i=0; i<result.getRows(); i++) {
-        for(int j=0; j<result.getCols(); j++) {
-            for(int k=0; k<this->cols; k++)
+    for(unsigned int i=0; i<result.getRows(); i++) {
+        for(unsigned int j=0; j<result.getCols(); j++) {
+            for(unsigned int k=0; k<this->cols; k++)
                 result(i, j) +=((*this)(i, k) * rhs(k, j));
         }
     }
@@ -108,8 +108,8 @@ Matrix Matrix::operator*(const Matrix &rhs) const {
 Matrix Matrix::operator*(const double &rhs) const {
     Matrix result(this->getRows(), this->getCols());
 
-    for(int i=0; i<result.getRows(); i++)
-        for(int j=0; j<result.getCols(); j++)
+    for(unsigned int i=0; i<result.getRows(); i++)
+        for(unsigned int j=0; j<result.getCols(); j++)
             result(i, j) = (*this)(i, j) * rhs;
 
     return result;
@@ -147,15 +147,15 @@ Matrix operator*(const double &lhs, const Matrix &rhs) {
 
 Matrix operator-(const Matrix &A) {
     Matrix result = A;
-    for(int i=0; i<result.getRows(); i++)
-        for(int j=0; j<result.getCols(); j++)
+    for(unsigned int i=0; i<result.getRows(); i++)
+        for(unsigned int j=0; j<result.getCols(); j++)
             result(i, j) = -result(i, j);
     return result;
 }
 
 Matrix Matrix::Identity(const unsigned int &n) {
     Matrix identity(n, n);
-    for(int i=0; i<n; i++)
+    for(unsigned int i=0; i<n; i++)
         identity(i, i) = 1;
     return identity;
 }
@@ -163,26 +163,26 @@ Matrix Matrix::Identity(const unsigned int &n) {
 double Matrix::Det(const Matrix &A) {
     assert(A.getRows()==A.getCols());
 
-    const int n = A.getRows();
+    const unsigned int n = A.getRows();
 
     if(n==1)
         return A(0, 0);
 
     Matrix B = A;
 
-    for(int i=0; i<n-1; i++) {
+    for(unsigned int i=0; i<n-1; i++) {
         const double top = B(i, i);
 
-        for(int j=i+1; j<n; j++) {
+        for(unsigned int j=i+1; j<n; j++) {
             const double factor = B(j, i)/top;
-            for(int k=0; k<n; k++) {
+            for(unsigned int k=0; k<n; k++) {
                 B(j, k) -=factor*B(i, k);
             }
         }
     }
 
     double det = 1;
-    for(int i=0; i<n; i++)
+    for(unsigned int i=0; i<n; i++)
         det *=B(i, i);
 
     return det;
@@ -193,11 +193,11 @@ std::ostream & operator<<(std::ostream &lhs, const Matrix &rhs) {
     lhs.setf(std::ios_base::fixed);
 
     lhs << "[";
-    for(int i=0; i<rhs.getRows(); i++) {
+    for(unsigned int i=0; i<rhs.getRows(); i++) {
         if(i!=0)
             lhs << " ";
         lhs << "[";
-        for(int j=0; j<rhs.getCols(); j++) {
+        for(unsigned int j=0; j<rhs.getCols(); j++) {
             lhs << rhs(i, j);
             if(j!=rhs.getCols()-1)
                 lhs << ",\t";

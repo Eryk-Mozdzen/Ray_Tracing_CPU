@@ -12,6 +12,11 @@
 
 #include "RayTracingTransform.h"
 
+/*  View class
+    View describes point in space where eye is
+    and direction where eye is pointing.
+    To render a frame you need to specify specific view.     */
+
 class View {
 private:
     double distance;

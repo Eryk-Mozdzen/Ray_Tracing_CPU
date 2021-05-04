@@ -6,6 +6,11 @@
 #include <cmath>
 #include <vector>
 
+/*  Matrix class
+    This is independent file, can be used in other projects.
+    Class contain basic operators overload, methods and capabilities 
+    to operate with matrices in math or physics.                        */
+
 class Matrix {
 private:
     std::vector<std::vector<double>> values;

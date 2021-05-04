@@ -7,7 +7,7 @@ Sphere::Sphere() {
 Sphere::Sphere(const Vector3 &center, const double &radius) {
     this->radius = radius;
     this->transform.translate(center);
-    this->material = Material(std::rand()%256, std::rand()%256, std::rand()%256);
+    this->material = Material(std::rand()%256, std::rand()%256, std::rand()%256);   // set random color
 }
 
 Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : Sphere(center, radius) {
@@ -18,7 +18,7 @@ sf::Color Sphere::getPixel(const Vector3 &point) const {
     if(!this->material.isTexture())
         return this->material.getColor();
 
-    Vector3 relative = this->transform.getRelativeToTransform(point);
+    Vector3 relative = this->transform.getRelativeToTransform(point);   // get position relative to base coordinates
 
     Vector3 d = normalize(relative);
 
@@ -44,8 +44,14 @@ void Sphere::setMaterial(const Material &material) {
     this->material = material;
 }
 
+/*  CollisionData CustomObject::intersect(const Ray &) const
+
+    method parameter is Ray struct, 
+    if user objects collide with that ray, should return correct CollisionData struct
+    if not, should return not changed CollisionData struct  */
+
 CollisionData Sphere::intersect(const Ray &ray) const {
-    CollisionData data;
+    CollisionData data;                     // construct fills struct with correct fields
     const Vector3 center = transform.getTranslation();
 
     const double a = 1;
@@ -58,30 +64,35 @@ CollisionData Sphere::intersect(const Ray &ray) const {
             if(tSolution.first>EPSILON && tSolution.second<EPSILON)   tNearestPositive = tSolution.first;
     else if(tSolution.first<EPSILON && tSolution.second>EPSILON)   tNearestPositive = tSolution.second;
     else if(tSolution.first>EPSILON && tSolution.second>EPSILON)   tNearestPositive = std::min(tSolution.first, tSolution.second);
-    else return data;
+    else return data;   // return not changed if there are not solutions
 
-    data.point = ray.origin + tNearestPositive*normalize(ray.direction);
-    data.normal = normalize(data.point - center);
-    data.color = this->getPixel(data.point);
-    data.material = this->getMaterial();
-    data.distance = length(data.point - ray.origin);
-    data.exist = true;
+    data.point = ray.origin + tNearestPositive*normalize(ray.direction);    // set collision point
+    data.normal = normalize(data.point - center);                           // set surface notrmal vector in collision point
+    data.color = this->getPixel(data.point);                                // set color of the object in collision point
+    data.material = this->getMaterial();                                    // set material of the objects
+    data.distance = length(data.point - ray.origin);                        // set distance from ray origin to collision point
+    data.exist = true;                                                      // collision occured? set to true
 
-    return data;
+    return data;    // return collision data
 }
 
+/*  CollisionData CustomObject::distance(const Vector3 &) const
+
+    method parameter is Vector3 class, 
+    method should return infromations about object int the nearest point */
+
 CollisionData Sphere::distance(const Vector3 &point) const {
-    CollisionData data;
+    CollisionData data;             // construct fills struct with correct fields
     const double R = this->radius;
     const Vector3 center = this->transform.getTranslation();
 
-    data.distance = length(point - this->transform.getTranslation()) - this->radius;
-    data.point = point;
-    data.normal = normalize(data.point - center);
-    data.color = this->getPixel(normalize(point-center)*R + center);
-    data.material = this->material;
-    data.exist = (data.distance<EPSILON);
+    data.distance = length(point - this->transform.getTranslation()) - this->radius;    // set distance from surface to point (with sign)
+    data.point = point;                                                                 // set point, where calculations are
+    data.normal = normalize(data.point - center);                                       // set normal in the nearest point
+    data.color = this->getPixel(normalize(point-center)*R + center);                    // set point, where calculations are
+    data.material = this->material;                                                     // set material of the objects
+    data.exist = (data.distance<EPSILON);                                               // set true if point is near enough
     
-    return data;
+    return data;    // return collision data
 }
 

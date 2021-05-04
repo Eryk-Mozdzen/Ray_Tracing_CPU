@@ -11,6 +11,12 @@
 
 #include <SFML/Graphics.hpp>
 
+/*  Material class
+    This class contains all required informations 
+    about material properties in render algorith.
+    User should use this class in custom objects to 
+    define color, texture and other properties.          */
+
 class Material {
 private:
     double ambient, diffuse, specular, shininess, reflection; //phong model

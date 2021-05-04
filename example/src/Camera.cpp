@@ -4,8 +4,10 @@ Camera::Camera(const Vector3 &position, const double &distance) : View(position,
     this->lastMouseCoords = sf::Mouse::getPosition();
 }
 
-void Camera::rotate() {
-    sf::Vector2i deltaMouse = sf::Mouse::getPosition() - this->lastMouseCoords;
+void Camera::rotate(RenderScene &scene) {
+    scene.setMouseCursorVisible(false);
+
+    sf::Vector2i deltaMouse = sf::Mouse::getPosition(scene) - this->lastMouseCoords;
 
     if(std::abs(deltaMouse.x)>5)
         View::rotate(Vector3::UnitZ(), this->angularVelocity*((deltaMouse.x<0)? 1 : -1));
@@ -17,8 +19,8 @@ void Camera::rotate() {
     if(std::abs(s)>0.1)
         View::rotate(Vector3::UnitX(), this->angularVelocity*((s<0)? 1 : -1));
 
-    //sf::Mouse::setPosition();
-    this->lastMouseCoords = sf::Mouse::getPosition();
+    sf::Mouse::setPosition(sf::Vector2i(scene.getSize().x/2, scene.getSize().y/2), scene);
+    this->lastMouseCoords = sf::Mouse::getPosition(scene);
 }
 
 void Camera::move() {

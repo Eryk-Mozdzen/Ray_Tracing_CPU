@@ -11,6 +11,10 @@
 #include "Matrix.h"
 #include "RayTracingMath.h"
 
+/*  Transform3 class
+    Class represents 3-dimensional transform matrix (4x4) to
+    describes translation and rotation of objects in scene.     */
+
 class Transform3 : public Matrix {
 public:
     Transform3();

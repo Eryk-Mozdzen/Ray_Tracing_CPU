@@ -19,16 +19,24 @@
 #include "RayTracingMaterial.h"
 #include "RayTracingTransform.h"
 
+/*  RenderMode enumerator
+    Contains all possible modes for rendering.  */
+
 enum RenderMode {
     RAY_TRACING_MODE,
     SPHERE_TRACING_MODE
 };
+
+/*  RenderWindow class
+    In this place heppend all magic.
+    It reprezent application window and all informations about scene with objects and light.*/
 
 class RenderScene : public sf::RenderWindow {
 private:
     std::vector<Object*> objects;
     std::vector<LightSource*> lights;
     sf::Vector2u renderResolution;
+    sf::Image frameBuffer;
     RenderMode renderMode;
     unsigned int reflectionDepth;
 
@@ -51,8 +59,10 @@ public:
     const unsigned int & getReflectionDepth() const;
     const sf::Vector2u & getRenderResolution() const;
 
-    sf::Image render(const View&) const;
+    const sf::Image & render(const View&);
     void display(const View&);
+    
+    void saveFrameToFile(const std::string&) const;
 };
 
 #endif

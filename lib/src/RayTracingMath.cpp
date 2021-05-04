@@ -56,25 +56,6 @@ double calculatePolynomial(const std::vector<double> &coeff, const double &x) {
     return y;
 }
 
-std::vector<double> approxPolynomialRoots(const std::vector<double> &coeff, const double &left, const double &right, const double &step) {
-    assert(left<right);
-
-    std::vector<double> realSolutions;
-
-    double current = left;
-    while(current<=right) {
-        const double valueL = calculatePolynomial(coeff, current);
-        const double valueR = calculatePolynomial(coeff, current+step);
-
-        if(valueL*valueR<0)
-            realSolutions.push_back((valueL+valueR)/2);
-
-        current +=step;
-    }
-
-    return realSolutions;
-}
-
 Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
     assert(A.getRows()==A.getCols());
     assert(A.getCols()==b.getRows());

@@ -5,6 +5,11 @@
 #include <cassert>
 #include "Matrix.h"
 
+/*  Vector class (3-dimensions only)
+    This is not independent file, it requires Matrix class to work.
+    Class contain basic operators overload, methods and capabilities 
+    to operate with 3-dimensional vectors and matrices in math or physics.  */
+
 class Vector3 {
 public:
     double x, y, z;
