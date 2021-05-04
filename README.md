@@ -19,6 +19,7 @@ Ray Tracing result (left) and ray marching result (right).
 
 ## Usage
 You must change `CMakeLists.txt` file according to SFML path in your system. When you do that you can clone repo by typing:
+
 Windows:
 ```
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
