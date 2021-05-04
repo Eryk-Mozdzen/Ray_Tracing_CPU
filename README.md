@@ -6,7 +6,7 @@ YouTube demonstration:
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=HcqXAsXDC6k">
-    <img src="https://img.youtube.com/vi/HcqXAsXDC6k/0.jpg">
+    <img src="/readmeStuff/yt2_photo_button.jpg">
   </a>
 </p>
 
