@@ -6,35 +6,41 @@ YouTube demonstration:
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=VN4jbGkxlCg">
-    <img src="/readmeStuff/yt2_photo_button.jpg">
+    <img src="/docs/readme/yt2_photo_button.jpg">
   </a>
 </p>
 
 Ray Tracing result (left) and ray marching result (right).
 
 <p align="center">
-  <img src="/readmeStuff/ray_tracing.jpg" width="350" height="250" />
-  <img src="/readmeStuff/ray_marching.jpg" width="350" height="250" />
+  <img src="/docs/readme/ray_tracing.jpg" width="350" height="250" />
+  <img src="/docs/readme/ray_marching.jpg" width="350" height="250" />
 </p>
 
 ## Usage
-You must change `CMakeLists.txt` file according to SFML path in your system. When you do that you can clone repo by typing:
 
 Windows:
 ```
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
-cd example/build
-cmake .. -G "Unix Makefiles"
+cd RayTracing_CPU/external
+git submodule init SFML
+git submodule update
+
+mkdir build
+cd build
+cmake -S ../SFML/ -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+make
+
+cd ../example
+mkdir build
+cd build
+cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
 make
 RayTracingExample.exe
 ```
 Linux:
 ```
-git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
-cd ./example/build
-cmake ..
-make
-./RayTracingExample
+soming soon
 ```
 Example usage of all functions is presented in code with comments, but for short explanation:
 
