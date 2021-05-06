@@ -40,6 +40,13 @@ RayTracingExample.exe
 ```
 Linux:
 ```
+sudo apt install libudev-dev
+sudo apt install libopenal-dev
+sudo apt install libvorbis-dev
+sudo apt install libflac-dev
+sudo apt install libgl1-mesa-dev
+sudo apt install xorg-dev
+
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
 cd ./Ray_Tracing_CPU/external
 git submodule init SFML
@@ -47,13 +54,13 @@ git submodule update
 
 mkdir ./build
 cd ./build
-cmake -S ../SFML/ -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+cmake -S ../SFML/ -B . -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
 make
 
 cd ../../example
 mkdir ./build
 cd ./build
-cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+cmake -S .. -B . -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
 make
 ./RayTracingExample
 ```
