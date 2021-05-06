@@ -22,7 +22,7 @@ Ray Tracing result (left) and ray marching result (right).
 Windows:
 ```
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
-cd RayTracing_CPU/external
+cd Ray_Tracing_CPU/external
 git submodule init SFML
 git submodule update
 
@@ -31,7 +31,7 @@ cd build
 cmake -S ../SFML/ -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
 make
 
-cd ../example
+cd ../../example
 mkdir build
 cd build
 cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
@@ -40,7 +40,22 @@ RayTracingExample.exe
 ```
 Linux:
 ```
-soming soon
+git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
+cd ./Ray_Tracing_CPU/external
+git submodule init SFML
+git submodule update
+
+mkdir ./build
+cd ./build
+cmake -S ../SFML/ -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+make
+
+cd ../../example
+mkdir ./build
+cd ./build
+cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+make
+./RayTracingExample
 ```
 Example usage of all functions is presented in code with comments, but for short explanation:
 
