@@ -1,5 +1,4 @@
-#ifndef PLANE_H
-#define PLANE_H
+#pragma once
 
 #include "RayTracing.h"
 
@@ -20,6 +19,3 @@ public:
     CollisionData intersect(const Ray&) const;      // method overrite for ray tracing
     CollisionData distance(const Vector3&) const;   // method override for sphere tracing
 };
-
-
-#endif

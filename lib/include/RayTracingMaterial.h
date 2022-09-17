@@ -1,15 +1,11 @@
-#ifndef RAY_TRACING_MATERIAL_H
-#define RAY_TRACING_MATERIAL_H
-
-#ifndef EPSILON
-    #define EPSILON     0.0001
-#endif
+#pragma once
 
 #include <iostream>
 #include <cassert>
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
+#include "RayTracingMath.h"
 
 /*  Material class
     This class contains all required informations 
@@ -47,5 +43,3 @@ public:
     sf::Color getColor() const;
     sf::Color getColorAt(const double&, const double&) const;
 };
-
-#endif

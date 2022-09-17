@@ -17,7 +17,6 @@
     */
 
 #include <iostream>     //for cout, endl
-#include <ctime>        //for random seed, screenshot name
 
 #include "RayTracing.h"
 
@@ -51,17 +50,18 @@ void handleEvents(RenderScene &scene, Camera &camera) {
         }*/
         if(event.type==sf::Event::MouseWheelScrolled) {
             sf::Vector2u res = scene.getRenderResolution();
-            if(event.mouseWheelScroll.delta>0)  scene.setRenderResolution(res.x + 15, res.y + 10);
-            else                                scene.setRenderResolution(res.x - 15, res.y - 10);
+            if(event.mouseWheelScroll.delta>0)
+				scene.setRenderResolution(res.x + 15, res.y + 10);
+            else
+				scene.setRenderResolution(res.x - 15, res.y - 10);
         }
     }
 }
 
 int main() {
-    std::srand(time(nullptr));      //for custom objects random objects colors, not needed for lib
 
     Camera camera(Vector3(-40, 20, 20), 1);
-    RenderScene scene(RAY_TRACING_MODE, 3, 75, 60);
+    RenderScene scene(RAY_TRACING_MODE, 3, 180, 130);
     TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/
@@ -70,13 +70,15 @@ int main() {
 
     menager.load("../textures/notexture.jpg");
 
-    scene.addObject(new Sphere(Vector3(10, -15, 30), 7, Material(255, 0, 0)));
-    scene.addObject(new Sphere(Vector3(0, 20, 20), 7, Material(0, 255, 0)));
-    scene.addObject(new Torus(Vector3(0, 0, 20), 10, 5, Material(0, 0, 255)));
-    scene.addObject(new Plane(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Vector3(10, -15, 30), 7, Material(255, 0, 0));
 
-    scene.addLightSource(new LightSource(Vector3(0, 0, 40)));
-    scene.addLightSource(new LightSource(Vector3(20, 20, 40)));
+    scene.addObject(sphere);
+    scene.addObject(std::make_shared<Sphere>(Vector3(0, 20, 20), 7, Material(0, 255, 0)));
+    scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 20), 10, 5, Material(0, 0, 255)));
+    scene.addObject(std::make_shared<Plane>(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
+
+    scene.addLight(std::make_shared<LightSource>(Vector3(0, 0, 40)));
+    scene.addLight(std::make_shared<LightSource>(Vector3(20, 20, 40)));
 
     double angle = 0;
 
@@ -90,12 +92,11 @@ int main() {
 
         /*-----------  Scene objects update  ---------------*/
 
-        Sphere *sphere = dynamic_cast<Sphere*>(scene.getObjectReference(0));
         Transform3 tr = sphere->getTransform();
 
         tr.translate(Vector3(0, 2*std::sin(angle), 0));
 
-        sphere->setTransform(tr);
+        //sphere->setTransform(tr);
         angle +=0.1;
 
         /*-----------  Scene render  ---------------*/

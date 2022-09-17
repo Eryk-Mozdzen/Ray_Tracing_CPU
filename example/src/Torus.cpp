@@ -34,7 +34,7 @@ Vector3 Torus::getNormal(const Vector3 &point) const {
     if user objects collide with that ray, should return correct CollisionData struct
     if not, should return not changed CollisionData struct,  
 
-    If user want to test it, be free, but floating point errors are very big here
+    If user want to test it, be free, but doubleing point errors are very big here
     so overall donut is not looking good (but idea of this method is the same).    */
 
 /*

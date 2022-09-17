@@ -1,5 +1,4 @@
-#ifndef RAY_TRACING_TRANSFORM_H
-#define RAY_TRACING_TRANSFORM_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -30,4 +29,3 @@ public:
     Matrix getRotation() const;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
 
 #include <iostream>
 #include <cassert>
@@ -44,5 +43,3 @@ Matrix operator*(const double&, const Matrix&);
 Matrix operator-(const Matrix&);
 
 std::ostream & operator<<(std::ostream&, const Matrix&);
-
-#endif

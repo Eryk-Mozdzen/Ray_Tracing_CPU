@@ -1,5 +1,4 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
 #include "RayTracing.h"
 #include <SFML/Graphics.hpp>
@@ -20,5 +19,3 @@ public:
     void zoomIn();
     void zoomOut();
 };
-
-#endif

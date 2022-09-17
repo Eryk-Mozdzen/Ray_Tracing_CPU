@@ -1,11 +1,11 @@
-#ifndef RAY_TRACING_H
-#define RAY_TRACING_H
+#pragma once
 
 #include <iomanip>
 #include <vector>
 #include <cmath>
 #include <string>
 #include <sstream>
+#include <memory>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -33,8 +33,8 @@ enum RenderMode {
 
 class RenderScene : public sf::RenderWindow {
 private:
-    std::vector<Object*> objects;
-    std::vector<LightSource*> lights;
+    std::vector<std::shared_ptr<Object>> objects;
+    std::vector<std::shared_ptr<LightSource>> lights;
     sf::Vector2u renderResolution;
     sf::Image frameBuffer;
     RenderMode renderMode;
@@ -45,17 +45,14 @@ private:
     sf::Color evaluateRayTracing(const Ray&, const unsigned int&) const;
     sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 public:
-    RenderScene();
     RenderScene(const RenderMode&, const unsigned int&, const unsigned int&, const unsigned int&);
     
-    void clearObjects();
-    void addObject(Object*);
-    void addLightSource(LightSource*);
+    void addObject(std::shared_ptr<Object>);
+    void addLight(std::shared_ptr<LightSource>);
     void setReflectionDepth(const unsigned int&);
     void setRenderMode(const RenderMode&);
     void setRenderResolution(const unsigned int&, const unsigned int&);
 
-    Object* getObjectReference(const unsigned int&);
     const unsigned int & getReflectionDepth() const;
     const sf::Vector2u & getRenderResolution() const;
 
@@ -64,5 +61,3 @@ public:
     
     void saveFrameToFile(const std::string&) const;
 };
-
-#endif

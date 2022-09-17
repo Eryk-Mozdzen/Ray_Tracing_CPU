@@ -25,8 +25,8 @@ std::pair<double, double> solveQuadraticEquation(const double &a, const double &
 
 std::vector<double> solveQuarticEquation(const double &a, const double &b, const double &c, const double &d, const double &e) {
     const std::complex<double> p1 = 2*c*c*c - 9*b*c*d + 27*a*d*d + 27*b*b*e - 72*a*c*e;
-    const std::complex<double> p2 = p1 + std::sqrt(-4*std::pow(c*c - 3*b*d + 12*a*e, 3) + p1*p1);
-    const std::complex<double> p3 = (c*c - 3.*b*d + 12*a*e)/(3*a*std::pow(p2/2., 0.333)) + (std::pow(p2/2., 0.333))/(3*a);
+    const std::complex<double> p2 = p1 + std::sqrt(-4*std::pow(c*c - 3*b*d + 12*a*e, 3.) + p1*p1);
+    const std::complex<double> p3 = (c*c - 3.f*b*d + 12*a*e)/(3*a*std::pow(p2/2., 0.333f)) + (std::pow(p2/2., 0.333))/(3*a);
     const std::complex<double> p4 = std::sqrt((b*b)/(4*a*a) - (2*c)/(3*a) + p3);
     const std::complex<double> p5 = (b*b)/(2*a*a) - (4*c)/(3*a) - p3;
     const std::complex<double> p6 = (-(b*b*b)/(a*a*a) + (4*b*c)/(a*a) - (8*d)/(a))/(4.*p4);

@@ -89,9 +89,10 @@ Method must return `CollisionData` struct wih correct values in each field.
 
 `RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen.
 
-## Workflow
-#### Tasks in progress:
+## To do:
 - overall optimalization
-
-#### To do:
 - transparent materials and light refraction effect
+- fix shadow issue
+- shorter file names
+- add namespace
+- use of `algorithm`

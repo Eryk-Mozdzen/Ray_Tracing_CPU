@@ -1,5 +1,4 @@
-#ifndef TORUS_H
-#define TORUS_H
+#pragma once
 
 #include "RayTracing.h"
 
@@ -22,5 +21,3 @@ public:
     //CollisionData intersect(const Ray&) const;      // method overrite for ray tracing (this one is not well defined, so I leave this)
     CollisionData distance(const Vector3&) const;   // method override for sphere tracing
 };
-
-#endif

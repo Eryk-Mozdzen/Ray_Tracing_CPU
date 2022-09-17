@@ -1,5 +1,4 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#pragma once
 
 #include <iostream>
 #include <cassert>
@@ -45,5 +44,3 @@ double length(const Vector3 &);
 Vector3 normalize(const Vector3 &);
 Vector3 rotate(const Vector3 &, const Vector3 &, const double &);
 std::ostream & operator<<(std::ostream &, const Vector3 &);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef RAY_TRACING_VIEW_H
-#define RAY_TRACING_VIEW_H
+#pragma once
 
 #include <vector>
 #include <cmath>
@@ -36,5 +35,3 @@ public:
     void translate(const Vector3&);
     void rotate(const Vector3&, const double&);
 };
-
-#endif

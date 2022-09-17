@@ -1,5 +1,4 @@
-#ifndef RAY_TRACING_UTILITIES_H
-#define RAY_TRACING_UTILITIES_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -89,5 +88,3 @@ public:
 std::ostream & operator<<(std::ostream&, const sf::Color&);
 sf::Color operator*(const double&, const sf::Color&);
 sf::Color color_interpolation(const sf::Color&, const sf::Color&, const double&);
-
-#endif

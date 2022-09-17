@@ -1,31 +1,22 @@
 #include "RayTracing.h"
 
-RenderScene::RenderScene() {
-    this->setReflectionDepth(1);
-}
-
 RenderScene::RenderScene(const RenderMode &renderMode, 
                             const unsigned int &reflectionDepth, 
                             const unsigned int &resolutionWidgth, 
-                            const unsigned int &resolutionHeight) : sf::RenderWindow(sf::VideoMode(1280, 720), "Ray Tracing") {
+                            const unsigned int &resolutionHeight) : 
+							sf::RenderWindow{sf::VideoMode(1280, 720), "Render Scene"},
+							renderMode{renderMode},
+							reflectionDepth{reflectionDepth} {
 
-    this->setRenderMode(renderMode);
-    this->setReflectionDepth(reflectionDepth);
     this->setRenderResolution(resolutionWidgth, resolutionHeight);
 }
 
-void RenderScene::clearObjects() {
-    //for(unsigned int i=0; i<this->objects.size(); i++)
-    //    delete this->objects[i];
-    this->objects.clear();
+void RenderScene::addObject(std::shared_ptr<Object> object_ptr) {
+    this->objects.push_back(std::move(object_ptr));
 }
 
-void RenderScene::addObject(Object *object_ptr) {
-    this->objects.push_back(object_ptr);
-}
-
-void RenderScene::addLightSource(LightSource *light) {
-    this->lights.push_back(light);
+void RenderScene::addLight(std::shared_ptr<LightSource> light) {
+    this->lights.push_back(std::move(light));
 }
 
 void RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
@@ -40,12 +31,6 @@ void RenderScene::setRenderResolution(const unsigned int &resolutionH, const uns
     this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
 
     this->frameBuffer.create(resolutionH, resolutionV, sf::Color::Black);
-}
-
-Object* RenderScene::getObjectReference(const unsigned int &index) {
-    assert(index>=0 && index<this->objects.size());
-
-    return this->objects[index];
 }
 
 const unsigned int & RenderScene::getReflectionDepth() const {
@@ -114,8 +99,8 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
                 continue;
         }
 
-        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
-        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
+        illumination +=data.material.getDiffuse()*std::max(L*N, (double)0)*data.color;
+        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, (double)0), data.material.getShininess())*sf::Color::White;
     }
 
     return illumination;
@@ -191,10 +176,10 @@ void RenderScene::display(const View &view) {
     sprite.scale((double)this->getSize().x/this->frameBuffer.getSize().x, (double)this->getSize().y/this->frameBuffer.getSize().y);
 
     std::stringstream windowTitle;
-    windowTitle << std::setprecision(5) << std::fixed;
+    windowTitle << std::setprecision(3) << std::fixed;
     windowTitle << "Ray Tracing";
     windowTitle << " | Resolution: " << this->renderResolution.x << "x" << this->renderResolution.y;
-    windowTitle << " | Render Time: " << renderTime << "s";
+    windowTitle << " | Render Time: " << renderTime*1000. << "ms";
     windowTitle << " | FPS: " << 1/renderTime;
     windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
 
