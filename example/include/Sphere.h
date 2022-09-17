@@ -11,8 +11,6 @@ private:
     Material material;      // material (for color or texture)
     Transform3 transform;   // transform matrix (position and rotation)
 public:
-    Sphere();
-    Sphere(const Vector3&, const double&);
     Sphere(const Vector3&, const double&, const Material&);
 
     sf::Color getPixel(const Vector3&) const;

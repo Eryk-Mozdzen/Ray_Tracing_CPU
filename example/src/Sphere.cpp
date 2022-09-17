@@ -1,17 +1,8 @@
 #include "Sphere.h"
 
-Sphere::Sphere() {
-    this->radius = 1;
-}
+Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : radius{radius}, material{material} {
 
-Sphere::Sphere(const Vector3 &center, const double &radius) {
-    this->radius = radius;
-    this->transform.translate(center);
-    this->material = Material(std::rand()%256, std::rand()%256, std::rand()%256);   // set random color
-}
-
-Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : Sphere(center, radius) {
-    this->material = material;
+	this->transform.translate(center);
 }
 
 sf::Color Sphere::getPixel(const Vector3 &point) const {

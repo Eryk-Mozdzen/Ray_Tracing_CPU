@@ -73,16 +73,13 @@ int main() {
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Vector3(10, -15, 30), 7, Material(255, 0, 0));
 
     scene.addObject(sphere);
-    scene.addObject(std::make_shared<Sphere>(Vector3(0, 20, 20), 7, Material(0, 255, 0)));
-    scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 20), 6, 3, Material(0, 0, 255)));
+    scene.addObject(std::make_shared<Sphere>(Vector3(0, 25, 25), 7, Material(0, 255, 0)));
+    scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 15), 6, 3, Material(0, 0, 255)));
     scene.addObject(std::make_shared<Plane>(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
 
-    scene.addLight(std::make_shared<LightSource>(Vector3(-20, 20, 20)));
-    //scene.addLight(std::make_shared<LightSource>(Vector3(0, -50, 40)));
+    scene.addLight(std::make_shared<LightSource>(Vector3(-25, 25, 25)));
 
     double angle = 0;
-
-    /*-----------  Main loop  ---------------*/
 
     while(scene.isOpen()) {
         handleEvents(scene, camera);

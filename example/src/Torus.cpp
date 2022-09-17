@@ -1,33 +1,13 @@
 #include "Torus.h"
 
-Torus::Torus() {
-    this->majorRadius = 2;
-    this->minorRadius = 1;
-}
+Torus::Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius, const Material &material) : 
+		majorRadius{majorRadius}, minorRadius{minorRadius}, material{material} {
 
-Torus::Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius) {
-    this->transform.translate(center);
-
-    this->majorRadius = majorRadius;
-    this->minorRadius = minorRadius;
-
-    this->material = Material(rand()%255, rand()%255, rand()%255);  //random color
-}
-
-Torus::Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius, const Material &material) : Torus(center, majorRadius, minorRadius) {
-    this->material = material;
-}
-
-sf::Color Torus::getPixel() const {
-    return this->material.getColor();
+	this->transform.translate(center);
 }
 
 Vector3 Torus::getNormal(const Vector3 &P) const {
-	const Vector3 point = P + this->transform.getTranslation();
-
-    const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
-	const Vector3 Q = alpha*Vector3(point.x, point.y, 0);
-
+	const Vector3 Q = normalize(Vector3(P.x, P.y, 0))*this->majorRadius;
 	return normalize(P - Q);
 }
 
@@ -43,7 +23,7 @@ Vector3 Torus::getNormal(const Vector3 &P) const {
 CollisionData Torus::intersect(const Ray &ray) const {
     CollisionData data;
 
-    const Vector3 center = this->transform.getTranslation();
+	const Vector3 center = this->transform.getTranslation();
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = this->majorRadius;
@@ -73,11 +53,11 @@ CollisionData Torus::intersect(const Ray &ray) const {
 
 	const double tNearestPositive = *std::min_element(tSolutions.begin(), tSolutions.end());
 
-    data.point = (ray.origin - center) + tNearestPositive*normalize(ray.direction);
-    data.normal = this->getNormal(data.point);
-    data.color = this->getPixel();
+	data.point = tNearestPositive*ray.direction + ray.origin;
+    data.normal = this->getNormal(data.point - center);
+    data.color = this->material.getColor();
     data.material = this->material;
-    data.distance = length(data.point - (ray.origin - center));
+    data.distance = tNearestPositive;
     data.exist = true;
 
     return data;

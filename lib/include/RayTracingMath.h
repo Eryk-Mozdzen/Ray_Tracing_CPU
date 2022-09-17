@@ -13,7 +13,7 @@
 /*  Collection of simple math solvers to make cleaner code.
     Not every one is optimalized, but every on works in some way.  */
 
-constexpr double EPSILON = 0.0001;
+constexpr double EPSILON = 0.001;
 
 double solveLinearEquation(const double&, const double&);
 std::pair<double, double> solveQuadraticEquation(const double&, const double&, const double&);

@@ -10,7 +10,6 @@ private:
     double A, B, C, D;      // mathematic definition of a plane
     Material material;      // material used to define plane texture
 public:
-    Plane(const Vector3&, const Vector3&);
     Plane(const Vector3&, const Vector3&, const Material&);
 
     sf::Color getPixel(const Vector3&) const;
