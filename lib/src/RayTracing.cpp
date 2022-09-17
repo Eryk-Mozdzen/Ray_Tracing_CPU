@@ -73,34 +73,29 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
-    CollisionData data = this->rayTrace(ray);
+    const CollisionData data = this->rayTrace(ray);
 
     if(!data.exist)
         return sf::Color::Transparent;
 
-    const Vector3 N = normalize(data.normal);               //normal
-    const Vector3 V = normalize(ray.origin - data.point);   //view
-    const Vector3 H = normalize(2*(V*N)*N + V);             //reflected view from surface
+    const Vector3 N = normalize(data.normal);       // normal
+	const Vector3 V = normalize(ray.direction);		// view
+    const Vector3 H = normalize(V - 2*(V*N)*N);		// reflected view from surface
+	
+	const sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth + 1);
 
-    sf::Color illumination = data.material.getAmbient()*data.color;
+    sf::Color illumination = data.material.getAmbient()*data.color + data.material.getReflection()*reflected;
 
-    for(unsigned int i=0; i<this->lights.size(); i++) {
-        const Vector3 L = normalize(this->lights[i]->getPosition() - data.point);   //light
-        const Vector3 R = normalize(2*(L*N)*N - L);                                 //reflected light from surface
+	for(const std::shared_ptr<LightSource> &light : this->lights) {
+        const Vector3 L = normalize(light->getPosition() - data.point);   // light
+        const Vector3 R = normalize(L - 2*(L*N)*N);                       // reflected light from surface
 
-        sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth+1);
-        illumination +=data.material.getReflection()*reflected;
+        const CollisionData shadow = this->rayTrace(Ray(data.point, L));
+		if(shadow.exist)
+			continue;
 
-        CollisionData shadow = this->rayTrace(Ray(data.point, L));
-        if(shadow.exist) {
-            const double distToLight = length(data.point - this->lights[i]->getPosition());
-            const double distToCollision = length(data.point - shadow.point);
-            if(distToCollision<distToLight)
-                continue;
-        }
-
-        illumination +=data.material.getDiffuse()*std::max(L*N, (double)0)*data.color;
-        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, (double)0), data.material.getShininess())*sf::Color::White;
+        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
+        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
     }
 
     return illumination;

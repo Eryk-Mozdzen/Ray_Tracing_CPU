@@ -61,7 +61,7 @@ void handleEvents(RenderScene &scene, Camera &camera) {
 int main() {
 
     Camera camera(Vector3(-40, 20, 20), 1);
-    RenderScene scene(RAY_TRACING_MODE, 3, 180, 130);
+    RenderScene scene(RAY_TRACING_MODE, 3, 300, 210);
     TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/
@@ -74,11 +74,11 @@ int main() {
 
     scene.addObject(sphere);
     scene.addObject(std::make_shared<Sphere>(Vector3(0, 20, 20), 7, Material(0, 255, 0)));
-    scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 20), 10, 5, Material(0, 0, 255)));
+    scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 20), 6, 3, Material(0, 0, 255)));
     scene.addObject(std::make_shared<Plane>(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
 
-    scene.addLight(std::make_shared<LightSource>(Vector3(0, 0, 40)));
-    scene.addLight(std::make_shared<LightSource>(Vector3(20, 20, 40)));
+    scene.addLight(std::make_shared<LightSource>(Vector3(-20, 20, 20)));
+    //scene.addLight(std::make_shared<LightSource>(Vector3(0, -50, 40)));
 
     double angle = 0;
 
@@ -96,7 +96,7 @@ int main() {
 
         tr.translate(Vector3(0, 2*std::sin(angle), 0));
 
-        //sphere->setTransform(tr);
+        sphere->setTransform(tr);
         angle +=0.1;
 
         /*-----------  Scene render  ---------------*/

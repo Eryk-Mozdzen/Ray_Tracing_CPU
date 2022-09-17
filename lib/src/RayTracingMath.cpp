@@ -23,26 +23,44 @@ std::pair<double, double> solveQuadraticEquation(const double &a, const double &
     return std::make_pair(x1, x2);
 }
 
-std::vector<double> solveQuarticEquation(const double &a, const double &b, const double &c, const double &d, const double &e) {
-    const std::complex<double> p1 = 2*c*c*c - 9*b*c*d + 27*a*d*d + 27*b*b*e - 72*a*c*e;
-    const std::complex<double> p2 = p1 + std::sqrt(-4*std::pow(c*c - 3*b*d + 12*a*e, 3.) + p1*p1);
-    const std::complex<double> p3 = (c*c - 3.f*b*d + 12*a*e)/(3*a*std::pow(p2/2., 0.333f)) + (std::pow(p2/2., 0.333))/(3*a);
-    const std::complex<double> p4 = std::sqrt((b*b)/(4*a*a) - (2*c)/(3*a) + p3);
-    const std::complex<double> p5 = (b*b)/(2*a*a) - (4*c)/(3*a) - p3;
-    const std::complex<double> p6 = (-(b*b*b)/(a*a*a) + (4*b*c)/(a*a) - (8*d)/(a))/(4.*p4);
+std::complex<double> complex_sqrt(const std::complex<double> &z) {
+	return std::pow(z, 1./2.);
+}
 
-    std::vector<std::complex<double>> complexSolutions = {
-        (-b/(4*a) - p4/2. - std::sqrt(p5 - p6)/2.),
-        (-b/(4*a) - p4/2. + std::sqrt(p5 - p6)/2.),
-        (-b/(4*a) + p4/2. - std::sqrt(p5 + p6)/2.),
-        (-b/(4*a) + p4/2. + std::sqrt(p5 + p6)/2.),
-    };
+std::complex<double> complex_cbrt(const std::complex<double> &z) {
+	return std::pow(z, 1./3.);
+}
+
+std::vector<double> solveQuarticEquation(double a_p, double b_p, double c_p, double d_p, double e_p) {
+	const std::complex<double> a = a_p;
+    const std::complex<double> b = b_p/a;
+    const std::complex<double> c = c_p/a;
+    const std::complex<double> d = d_p/a;
+    const std::complex<double> e = e_p/a;
+
+    const std::complex<double> Q1 = c*c - 3.*b*d + 12.*e;
+    const std::complex<double> Q2 = 2.*c*c*c - 9.*b*c*d + 27.*d*d + 27.*b*b*e - 72.*c*e;
+    const std::complex<double> Q3 = 8.*b*c - 16.*d - 2.*b*b*b;
+    const std::complex<double> Q4 = 3.*b*b - 8.*c;
+
+    const std::complex<double> Q5 = complex_cbrt(Q2/2. + complex_sqrt(Q2*Q2/4. - Q1*Q1*Q1));
+    const std::complex<double> Q6 = (Q1/Q5 + Q5)/3.;
+    const std::complex<double> Q7 = 2.*complex_sqrt(Q4/12. + Q6);
+
+	std::vector<std::complex<double>> complexSolutions = {
+		(-b - Q7 - complex_sqrt(4.*Q4/6. - 4.*Q6 - Q3/Q7))/4.,
+		(-b - Q7 + complex_sqrt(4.*Q4/6. - 4.*Q6 - Q3/Q7))/4.,
+		(-b + Q7 - complex_sqrt(4.*Q4/6. - 4.*Q6 + Q3/Q7))/4.,
+		(-b + Q7 + complex_sqrt(4.*Q4/6. - 4.*Q6 + Q3/Q7))/4.
+	};
 
     std::vector<double> realSolutions;
-    for(unsigned int i=0; i<complexSolutions.size(); i++) {
-        if(std::abs(complexSolutions[i].imag())<EPSILON)
-            realSolutions.push_back(complexSolutions[i].real());
-    }
+	realSolutions.reserve(4);
+
+	for(const std::complex<double> &solution : complexSolutions) {
+		if(std::abs(solution.imag())<EPSILON)
+            realSolutions.push_back(solution.real());
+	}
 
     return realSolutions;
 }

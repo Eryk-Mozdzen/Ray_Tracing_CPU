@@ -22,10 +22,13 @@ sf::Color Torus::getPixel() const {
     return this->material.getColor();
 }
 
-Vector3 Torus::getNormal(const Vector3 &point) const {
-    const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
+Vector3 Torus::getNormal(const Vector3 &P) const {
+	const Vector3 point = P + this->transform.getTranslation();
 
-    return normalize(point - alpha*Vector3(point.x, point.y, 0));
+    const double alpha = (this->majorRadius*this->majorRadius)/std::sqrt(point.x*point.x + point.y*point.y);
+	const Vector3 Q = alpha*Vector3(point.x, point.y, 0);
+
+	return normalize(P - Q);
 }
 
 /*  CollisionData CustomObject::intersect(const Ray &) const
@@ -37,48 +40,48 @@ Vector3 Torus::getNormal(const Vector3 &point) const {
     If user want to test it, be free, but doubleing point errors are very big here
     so overall donut is not looking good (but idea of this method is the same).    */
 
-/*
 CollisionData Torus::intersect(const Ray &ray) const {
     CollisionData data;
-    const Vector3 center = this->transform.getTranslation();
-    const Ray rayRelative(ray.origin - center, ray.direction);
 
-    //http://cosinekitty.com/raytrace/chapter13_torus.html
+    const Vector3 center = this->transform.getTranslation();
+
+    // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = this->majorRadius;
     const double B = this->minorRadius;
-    const Vector3 D = rayRelative.origin;
-    const Vector3 E = rayRelative.direction;
-    const double G = 4*A*A*(E.x*E.x + E.y*E.y);
-    const double H = 8*A*A*(D.x*E.x + D.y*E.y);
-    const double I = 4*A*A*(D.x*D.x + D.y*D.y);
+    const Vector3 D = ray.origin - center;
+    const Vector3 E = ray.direction;
+    const double G = 4.*A*A*(E.x*E.x + E.y*E.y);
+    const double H = 8.*A*A*(D.x*E.x + D.y*E.y);
+    const double I = 4.*A*A*(D.x*D.x + D.y*D.y);
     const double J = E*E;
-    const double K = 2*D*E;
+    const double K = 2.*D*E;
     const double L = D*D + (A*A - B*B);
 
-    std::vector<double> tSolutions = solveQuarticEquation(J*J, 2*J*K, 2*J*L + K*K - G, 2*K*L - H, L*L - I);
-    if(tSolutions.size()==0)
-        return data;
+    std::vector<double> tSolutions = solveQuarticEquation(J*J, 2.*J*K, 2.*J*L + K*K - G, 2.*K*L - H, L*L - I);
 
-    double tNearestPositive = 1E+9;
-    bool exist = false;
-    for(unsigned int i=0; i<tSolutions.size(); i++) {
-        if(tSolutions[i]>EPSILON && tSolutions[i]<tNearestPositive) {
-            tNearestPositive = tSolutions[i];
-            exist = true;
-        }
-    }
-    if(!exist)
-        return data;
+    if(!tSolutions.size()) {
+		return data;
+	}
 
-    data.point = rayRelative.origin + tNearestPositive*normalize(rayRelative.direction);    // set color of the object in collision point
-    data.normal = this->getNormal(data.point-center);                                       // set surface notrmal vector in collision point
-    data.color = this->getPixel();                                                          // set color of the object in collision point
-    data.material = this->material;                                                         // set material of the objects
-    data.distance = length(data.point - rayRelative.origin);                                // set distance from ray origin to collision point
-    data.exist = true;                                                                      // collision occured? set to true
+	std::remove_if(tSolutions.begin(), tSolutions.end(), [] (const double &solution) {
+		return solution<=EPSILON;
+	});
 
-    return data;    // return collision data
-}*/
+	if(!tSolutions.size()) {
+		return data;
+	}
+
+	const double tNearestPositive = *std::min_element(tSolutions.begin(), tSolutions.end());
+
+    data.point = (ray.origin - center) + tNearestPositive*normalize(ray.direction);
+    data.normal = this->getNormal(data.point);
+    data.color = this->getPixel();
+    data.material = this->material;
+    data.distance = length(data.point - (ray.origin - center));
+    data.exist = true;
+
+    return data;
+}
 
 /*  CollisionData CustomObject::distance(const Vector3 &) const
 

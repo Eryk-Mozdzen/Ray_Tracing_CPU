@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "RayTracing.h"
 
 /*  User custom Torus class
@@ -18,6 +20,6 @@ public:
     sf::Color getPixel() const;
     Vector3 getNormal(const Vector3&) const;
 
-    //CollisionData intersect(const Ray&) const;      // method overrite for ray tracing (this one is not well defined, so I leave this)
+    CollisionData intersect(const Ray&) const;      // method overrite for ray tracing (this one is not well defined, so I leave this)
     CollisionData distance(const Vector3&) const;   // method override for sphere tracing
 };

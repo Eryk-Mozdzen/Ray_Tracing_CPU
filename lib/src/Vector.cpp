@@ -120,6 +120,10 @@ Vector3 operator*(const Matrix &lhs, const Vector3 &rhs) {
     return Vector3(lhs*(rhs.getTransposition().getTransposition()));
 }
 
+Vector3 operator-(const Vector3 &rhs) {
+	return Vector3(-rhs.x, -rhs.y, -rhs.z);
+}
+
 double length(const Vector3 &vec) {
     return std::sqrt(std::pow(vec.x, 2) + std::pow(vec.y, 2) + std::pow(vec.z, 2));
 }

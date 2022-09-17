@@ -39,6 +39,7 @@ public:
 
 Vector3 operator*(const double &, const Vector3 &);
 Vector3 operator*(const Matrix &, const Vector3 &);
+Vector3 operator-(const Vector3 &);
 
 double length(const Vector3 &);
 Vector3 normalize(const Vector3 &);
