@@ -1,4 +1,4 @@
-#include "Torus.h"
+#include "torus.h"
 
 Torus::Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius, const Material &material) : 
 		majorRadius{majorRadius}, minorRadius{minorRadius} {
@@ -17,10 +17,7 @@ Vector3 Torus::getNormal(const Vector3 &P) const {
 
     method parameter is Ray struct, 
     if user objects collide with that ray, should return correct CollisionData struct
-    if not, should return not changed CollisionData struct,  
-
-    If user want to test it, be free, but doubleing point errors are very big here
-    so overall donut is not looking good (but idea of this method is the same).    */
+    if not, should return not changed CollisionData struct		*/
 
 CollisionData Torus::intersect(const Ray &ray) const {
 	const Vector3 origin = this->transform.getRotation()*(ray.origin - this->transform.getTranslation());
@@ -73,19 +70,20 @@ CollisionData Torus::intersect(const Ray &ray) const {
     method should return infromations about object int the nearest point */
 
 CollisionData Torus::distance(const Vector3 &point) const {
-    CollisionData data;             // construct fills struct with correct fields
     const double R = this->majorRadius;
     const double r = this->minorRadius;
-    const Vector3 center = this->transform.getTranslation();
 
-    Vector3 t = point - center;
+	const Vector3 P = this->transform.getRotation()*(point - this->transform.getTranslation());
+	const Vector3 Q = normalize(Vector3(P.x, P.y, 0))*R;
+	
+	CollisionData data;
 
-    data.distance = length(Vector3(length(Vector3(t.x, t.y, 0)) - R, 0, t.z)) - r;  // set distance from surface to point (with sign)
-    data.point = point;                                                             // set point, where calculations are
-    data.normal = this->getNormal(data.point-center);                               // set normal in the nearest point
-    data.color = this->material.getColor();                                         // set color in the nearest point
-    data.material = this->material;                                                 // set material of the objects
-    data.exist = (data.distance<EPSILON);                                           // set true if point is near enough
+	data.distance = length(P - Q) - r;		// set distance from surface to point (with sign)
+    data.point = point;                     // set point, where calculations are
+    data.normal = this->getNormal(P);		// set normal in the nearest point
+    data.color = this->material.getColor();	// set color in the nearest point
+    data.material = this->material;         // set material of the objects
+    data.exist = (data.distance<EPSILON);   // set true if point is near enough
 
-    return data;    // return collision data
+    return data;
 }

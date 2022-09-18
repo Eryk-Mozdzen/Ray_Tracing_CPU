@@ -1,5 +1,4 @@
-#include "Vector.h"
-#include <string>
+#include "vector.h"
 
 Vector3::Vector3() : Vector3(0, 0, 0) {}
 

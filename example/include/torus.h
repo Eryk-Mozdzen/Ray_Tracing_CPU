@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include "RayTracing.h"
+#include "rtrace.h"
 
 /*  User custom Torus class
     It is drawable object looks like donut.    */

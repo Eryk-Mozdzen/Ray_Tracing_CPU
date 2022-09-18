@@ -1,7 +1,6 @@
 #pragma once
 
-#include "RayTracing.h"
-#include <SFML/Graphics.hpp>
+#include "rtrace.h"
 
 /*  User custom Camera class
     It is used to describes player point of view.   */

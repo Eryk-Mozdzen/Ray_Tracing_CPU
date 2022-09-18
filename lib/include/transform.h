@@ -6,9 +6,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
-#include "RayTracingMath.h"
+#include "vector.h"
+#include "matrix.h"
+#include "tools.h"
 
 /*  Transform3 class
     Class represents 3-dimensional transform matrix (4x4) to

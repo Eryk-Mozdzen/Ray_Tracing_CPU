@@ -1,4 +1,4 @@
-#include "RayTracingView.h"
+#include "view.h"
 
 View::View() {
     this->distance = 1;

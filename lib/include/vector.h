@@ -2,7 +2,9 @@
 
 #include <iostream>
 #include <cassert>
-#include "Matrix.h"
+#include <string>
+
+#include "matrix.h"
 
 /*  Vector class (3-dimensions only)
     This is not independent file, it requires Matrix class to work.

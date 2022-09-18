@@ -1,4 +1,4 @@
-#include "RayTracingTransform.h"
+#include "transform.h"
 
 Transform3::Transform3() : Matrix(4, 4) {
     *this = Matrix::Identity(4);

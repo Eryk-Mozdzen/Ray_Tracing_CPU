@@ -6,10 +6,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
+#include "vector.h"
+#include "matrix.h"
 
-#include "RayTracingTransform.h"
+#include "transform.h"
 
 /*  View class
     View describes point in space where eye is

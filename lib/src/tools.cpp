@@ -1,4 +1,4 @@
-#include "RayTracingMath.h"
+#include "tools.h"
 
 double solveLinearEquation(const double &a, const double &b) {
     if(std::abs(a)<EPSILON && std::abs(b)>EPSILON)

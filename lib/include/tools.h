@@ -1,14 +1,13 @@
 #pragma once
 
-#include <iostream>
 #include <cassert>
 #include <cmath>
 #include <utility>
 #include <vector>
 #include <complex>
 
-#include "Vector.h"
-#include "Matrix.h"
+#include "vector.h"
+#include "matrix.h"
 
 /*  Collection of simple math solvers to make cleaner code.
     Not every one is optimalized, but every on works in some way.  */

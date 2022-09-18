@@ -1,6 +1,4 @@
-#include "Matrix.h"
-#include <string>
-#include <iomanip>
+#include "matrix.h"
 
 Matrix::Matrix() {}
 

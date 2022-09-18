@@ -1,4 +1,4 @@
-#include "Sphere.h"
+#include "sphere.h"
 
 Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : radius{radius} {
 	this->material = material;

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(RayTracingExample)
+project(rtrace-example)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -59,4 +59,4 @@ target_link_libraries(${PROJECT_NAME}
 # cd build
 # cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
 # make
-# RayTracingExample.exe
+# ./rtrace-example

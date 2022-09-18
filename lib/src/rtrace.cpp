@@ -1,4 +1,4 @@
-#include "RayTracing.h"
+#include "rtrace.h"
 
 RenderScene::RenderScene(const RenderMode &renderMode, 
                             const unsigned int &reflectionDepth, 
@@ -120,36 +120,48 @@ sf::Color RenderScene::evaluateSphereTracing(const Ray &ray, const unsigned int 
     return data.color;
 }
 
-const sf::Image & RenderScene::render(const View &view) {
-    const Vector3 position = view.getPosition();
-    const Vector3 directionX = view.getDirectionX();
-    const Vector3 directionY = view.getDirectionY();
-    const Vector3 directionZ = view.getDirectionZ();
-    const double w = this->renderResolution.x;
+sf::Color RenderScene::renderPixel(const View &view, const unsigned int &x, const unsigned int &y) const {
+	const double w = this->renderResolution.x;
     const double h = this->renderResolution.y;
     const double aspectRatio = (double)this->renderResolution.x/this->renderResolution.y;
 
-    for(unsigned int i=0; i<h; i++) {
-        for(unsigned int j=0; j<w; j++) {
-            Vector3 dir = normalize(
-                view.getDistanceFromProjectionPlane()*directionX +
-                (j-w/2.)/w*aspectRatio*directionY +
-                (i-h/2.)/h*directionZ
-            );
+	const Vector3 dir = normalize(
+		view.getDistanceFromProjectionPlane()*view.getDirectionX() +
+		(x-w/2.)/w*aspectRatio*view.getDirectionY() +
+		(y-h/2.)/h*view.getDirectionZ()
+	);
 
-            sf::Color color;
-            switch(this->renderMode) {
-                case RAY_TRACING_MODE:      color = this->evaluateRayTracing(Ray(position, dir), 0); break;
-                case SPHERE_TRACING_MODE:   color = this->evaluateSphereTracing(Ray(position, dir), 0); break;
-                default: color = sf::Color::Transparent; break;
-            }
-            
-            if(color==sf::Color::Transparent)
-                color = sf::Color::Black;
+	sf::Color color;
 
-            this->frameBuffer.setPixel(j, i, color);
+	switch(this->renderMode) {
+		case RAY_TRACING_MODE:      color = this->evaluateRayTracing(Ray(view.getPosition(), dir), 0); break;
+		case SPHERE_TRACING_MODE:   color = this->evaluateSphereTracing(Ray(view.getPosition(), dir), 0); break;
+		default: 					color = sf::Color::Transparent; break;
+	}
+	
+	if(color==sf::Color::Transparent)
+		color = sf::Color::Black;
+
+	return color;
+}
+
+const sf::Image & RenderScene::render(const View &view) {
+
+    for(unsigned int i=0; i<this->renderResolution.y; i++) {
+        for(unsigned int j=0; j<this->renderResolution.x; j++) {
+
+			sf::Color color = this->renderPixel(view, j, i);
+
+			if(color==sf::Color::Transparent)
+				color = sf::Color::Black;
+
+			this->frameBuffer.setPixel(
+				this->renderResolution.x - j - 1, 
+				this->renderResolution.y - i - 1, 
+				color
+			);
         }
-    }
+	}
 
     return this->frameBuffer;
 }
@@ -160,15 +172,13 @@ void RenderScene::display(const View &view) {
     this->render(view);
     const double renderTime = clock.restart().asSeconds();
 
-    this->frameBuffer.flipVertically();
-	this->frameBuffer.flipHorizontally();
-
     sf::Texture tex;
     tex.loadFromImage(this->frameBuffer);
 
     sf::Sprite sprite;
     sprite.setTexture(tex);
     sprite.scale((double)this->getSize().x/this->frameBuffer.getSize().x, (double)this->getSize().y/this->frameBuffer.getSize().y);
+	sf::RenderWindow::draw(sprite);
 
     std::stringstream windowTitle;
     windowTitle << std::setprecision(3) << std::fixed;
@@ -187,7 +197,6 @@ void RenderScene::display(const View &view) {
 
     sf::RenderWindow::setTitle(windowTitle.str());
     
-    sf::RenderWindow::draw(sprite);
     sf::RenderWindow::display();
 }
 

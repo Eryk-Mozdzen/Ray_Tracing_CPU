@@ -8,11 +8,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
+#include "vector.h"
+#include "matrix.h"
 
-#include "RayTracingMaterial.h"
-#include "RayTracingTransform.h"
+#include "material.h"
+#include "transform.h"
 
 /*  Ray struct  
     Struct contains origin point and normalized direction vector */

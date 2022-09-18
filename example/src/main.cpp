@@ -16,16 +16,18 @@
         - X key         - exit the application
     */
 
-#include <iostream>     //for cout, endl
+#include <iostream>     // cout, endl
 
-#include "RayTracing.h"
+/*-------------------  Lib  -----------------------*/
+
+#include "rtrace.h"
 
 /*-----------  User custom objects  ---------------*/
 
-#include "Camera.h"
-#include "Sphere.h"
-#include "Plane.h"
-#include "Torus.h"
+#include "camera.h"
+#include "sphere.h"
+#include "plane.h"
+#include "torus.h"
 
 void handleEvents(RenderScene &scene, Camera &camera) {
     sf::Event event;
@@ -83,12 +85,6 @@ int main() {
 
     double angle = 0;
 
-	{
-		Transform3 tr = torus->getTransform();
-		tr.rotate(Vector3::UnitX(), M_PI/4);
-		torus->setTransform(tr);
-	}
-
     while(scene.isOpen()) {
         handleEvents(scene, camera);
 
@@ -109,7 +105,7 @@ int main() {
 		{
 			Transform3 tr = torus->getTransform();
 
-			tr.rotate(Vector3::UnitZ(), 0.1);
+			tr.rotate(Vector3(0, 1.1, 0.75), 0.1);
 			
 			torus->setTransform(tr);
 		}

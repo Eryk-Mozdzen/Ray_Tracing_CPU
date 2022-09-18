@@ -2,22 +2,20 @@
 
 #include <iomanip>
 #include <vector>
-#include <cmath>
-#include <string>
 #include <sstream>
 #include <memory>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Vector.h"
-#include "Matrix.h"
+#include "vector.h"
+#include "matrix.h"
 
-#include "RayTracingMath.h"
-#include "RayTracingView.h"
-#include "RayTracingUtilities.h"
-#include "RayTracingMaterial.h"
-#include "RayTracingTransform.h"
+#include "tools.h"
+#include "view.h"
+#include "utils.h"
+#include "material.h"
+#include "transform.h"
 
 /*  RenderMode enumerator
     Contains all possible modes for rendering.  */
@@ -39,6 +37,8 @@ private:
     sf::Image frameBuffer;
     RenderMode renderMode;
     unsigned int reflectionDepth;
+
+	sf::Color renderPixel(const View&, const unsigned int&, const unsigned int&) const;
 
     CollisionData rayTrace(const Ray&) const;
     CollisionData sphereTrace(const Vector3&) const;

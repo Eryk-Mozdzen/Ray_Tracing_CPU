@@ -1,5 +1,5 @@
-example/build/*
-example/screenshots/*
-external/build/*
+example/build
+example/screenshots
+external/build
 
-.vscode/*
+**/.vscode/*

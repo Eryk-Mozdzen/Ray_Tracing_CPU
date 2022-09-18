@@ -1,4 +1,4 @@
-#include "Plane.h"
+#include "plane.h"
 
 Plane::Plane(const Vector3 &point, const Vector3 &normal, const Material &material) {
 	const Vector3 norm = normalize(normal);

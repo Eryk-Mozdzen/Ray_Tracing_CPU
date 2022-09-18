@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include <cassert>
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
-#include "RayTracingMath.h"
+#include "tools.h"
 
 /*  Material class
     This class contains all required informations 

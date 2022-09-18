@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "camera.h"
 
 Camera::Camera(const Vector3 &position, const double &distance) : View(position, distance) {
     this->lastMouseCoords = sf::Mouse::getPosition();

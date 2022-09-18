@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cmath>
 #include <vector>
+#include <string>
+#include <iomanip>
 
 constexpr double EPSILON = 0.01;
 
