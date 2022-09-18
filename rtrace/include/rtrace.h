@@ -30,7 +30,7 @@ namespace rtrace {
 		In this place heppend all magic.
 		It reprezent application window and all informations about scene with objects and light.*/
 
-	class RenderScene : public sf::RenderWindow {
+	class Scene : public sf::RenderWindow {
 	private:
 		std::vector<std::shared_ptr<Object>> objects;
 		std::vector<std::shared_ptr<LightSource>> lights;
@@ -46,7 +46,7 @@ namespace rtrace {
 		sf::Color evaluateRayTracing(const Ray&, const unsigned int&) const;
 		sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 	public:
-		RenderScene(const RenderMode&, const unsigned int&, const unsigned int&, const unsigned int&);
+		Scene(const RenderMode&, const unsigned int&, const unsigned int&, const unsigned int&);
 		
 		void addObject(std::shared_ptr<Object>);
 		void addLight(std::shared_ptr<LightSource>);

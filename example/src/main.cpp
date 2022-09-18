@@ -13,27 +13,24 @@
         - LShift, LCtr  - camera up, down movment
         - N/M keys      - toggling between two modes (ray/sphere tracing)
         - Z key         - take a screenshot
-        - X key         - exit the application
-    */
+        - X key         - exit the application		*/
 
 #include <iostream>     // cout, endl
 
-/*-------------------  Lib  -----------------------*/
-
 #include "rtrace.h"
-
-/*-----------  User custom objects  ---------------*/
 
 #include "camera.h"
 #include "sphere.h"
 #include "plane.h"
 #include "torus.h"
 
-void handleEvents(rtrace::RenderScene &scene, Camera &camera) {
+void handleEvents(rtrace::Scene &scene, Camera &camera) {
     sf::Event event;
+
     while(scene.pollEvent(event)) {
         if(event.type==sf::Event::Closed)
             scene.close();
+		
         if(event.type==sf::Event::KeyPressed) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                 scene.close();
@@ -46,10 +43,7 @@ void handleEvents(rtrace::RenderScene &scene, Camera &camera) {
                 std::cout << "Saved frame" << std::endl;
             }
         }
-        /*if(event.type==sf::Event::MouseWheelScrolled) {
-            if(event.mouseWheelScroll.delta>0)  camera.zoomIn();
-            else                                camera.zoomOut();
-        }*/
+
         if(event.type==sf::Event::MouseWheelScrolled) {
             sf::Vector2u res = scene.getRenderResolution();
             if(event.mouseWheelScroll.delta>0)
@@ -63,7 +57,7 @@ void handleEvents(rtrace::RenderScene &scene, Camera &camera) {
 int main() {
 
     Camera camera(rtrace::Vector3(-50, 0, 25), 1);
-    rtrace::RenderScene scene(rtrace::RAY_TRACING_MODE, 3, 135, 100);
+    rtrace::Scene scene(rtrace::RAY_TRACING_MODE, 3, 135, 100);
     rtrace::TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/

@@ -25,15 +25,14 @@ find_package(SFML 2.5 COMPONENTS
 	audio REQUIRED
 )
 
-file(GLOB SOURCE "src/*.cpp" "../lib/src/*.cpp")
+file(GLOB SOURCE "src/*.cpp" "../rtrace/src/*.cpp")
 add_executable(${PROJECT_NAME} ${SOURCE})
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
 	"include"
-	"../lib/include"
+	"../rtrace/include"
 )
 
-# linking
 target_link_libraries(${PROJECT_NAME} 
 	m
 

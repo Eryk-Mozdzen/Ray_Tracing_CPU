@@ -1,6 +1,6 @@
 #include "rtrace.h"
 
-rtrace::RenderScene::RenderScene(const rtrace::RenderMode &renderMode, 
+rtrace::Scene::Scene(const rtrace::RenderMode &renderMode, 
                             const unsigned int &reflectionDepth, 
                             const unsigned int &resolutionWidgth, 
                             const unsigned int &resolutionHeight) : 
@@ -11,37 +11,37 @@ rtrace::RenderScene::RenderScene(const rtrace::RenderMode &renderMode,
     this->setRenderResolution(resolutionWidgth, resolutionHeight);
 }
 
-void rtrace::RenderScene::addObject(std::shared_ptr<Object> object_ptr) {
+void rtrace::Scene::addObject(std::shared_ptr<Object> object_ptr) {
     this->objects.push_back(std::move(object_ptr));
 }
 
-void rtrace::RenderScene::addLight(std::shared_ptr<LightSource> light) {
+void rtrace::Scene::addLight(std::shared_ptr<LightSource> light) {
     this->lights.push_back(std::move(light));
 }
 
-void rtrace::RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
+void rtrace::Scene::setReflectionDepth(const unsigned int &reflectionDepth) {
     this->reflectionDepth = reflectionDepth;
 }
 
-void rtrace::RenderScene::setRenderMode(const rtrace::RenderMode &renderMode) {
+void rtrace::Scene::setRenderMode(const rtrace::RenderMode &renderMode) {
     this->renderMode = renderMode;
 }
 
-void rtrace::RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
+void rtrace::Scene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
     this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
 
     this->frameBuffer.create(resolutionH, resolutionV, sf::Color::Black);
 }
 
-const unsigned int & rtrace::RenderScene::getReflectionDepth() const {
+const unsigned int & rtrace::Scene::getReflectionDepth() const {
     return this->reflectionDepth;
 }
 
-const sf::Vector2u & rtrace::RenderScene::getRenderResolution() const {
+const sf::Vector2u & rtrace::Scene::getRenderResolution() const {
     return this->renderResolution;
 }
 
-rtrace::CollisionData rtrace::RenderScene::rayTrace(const rtrace::Ray &ray) const {
+rtrace::CollisionData rtrace::Scene::rayTrace(const rtrace::Ray &ray) const {
     CollisionData tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
@@ -56,7 +56,7 @@ rtrace::CollisionData rtrace::RenderScene::rayTrace(const rtrace::Ray &ray) cons
     return data;
 }
 
-rtrace::CollisionData rtrace::RenderScene::sphereTrace(const rtrace::Vector3 &point) const {
+rtrace::CollisionData rtrace::Scene::sphereTrace(const rtrace::Vector3 &point) const {
     CollisionData tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
@@ -69,7 +69,7 @@ rtrace::CollisionData rtrace::RenderScene::sphereTrace(const rtrace::Vector3 &po
     return data;
 }
 
-sf::Color rtrace::RenderScene::evaluateRayTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
+sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
@@ -101,7 +101,7 @@ sf::Color rtrace::RenderScene::evaluateRayTracing(const rtrace::Ray &ray, const 
     return illumination;
 }
 
-sf::Color rtrace::RenderScene::evaluateSphereTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
+sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
@@ -120,7 +120,7 @@ sf::Color rtrace::RenderScene::evaluateSphereTracing(const rtrace::Ray &ray, con
     return data.color;
 }
 
-sf::Color rtrace::RenderScene::renderPixel(const rtrace::View &view, const unsigned int &x, const unsigned int &y) const {
+sf::Color rtrace::Scene::renderPixel(const rtrace::View &view, const unsigned int &x, const unsigned int &y) const {
 	const double w = this->renderResolution.x;
     const double h = this->renderResolution.y;
     const double aspectRatio = (double)this->renderResolution.x/this->renderResolution.y;
@@ -145,7 +145,7 @@ sf::Color rtrace::RenderScene::renderPixel(const rtrace::View &view, const unsig
 	return color;
 }
 
-const sf::Image & rtrace::RenderScene::render(const rtrace::View &view) {
+const sf::Image & rtrace::Scene::render(const rtrace::View &view) {
 
     for(unsigned int i=0; i<this->renderResolution.y; i++) {
         for(unsigned int j=0; j<this->renderResolution.x; j++) {
@@ -166,7 +166,7 @@ const sf::Image & rtrace::RenderScene::render(const rtrace::View &view) {
     return this->frameBuffer;
 }
 
-void rtrace::RenderScene::display(const rtrace::View &view) {
+void rtrace::Scene::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
     this->render(view);
@@ -200,7 +200,7 @@ void rtrace::RenderScene::display(const rtrace::View &view) {
     sf::RenderWindow::display();
 }
 
-void rtrace::RenderScene::saveFrameToFile(const std::string &filename) const {
+void rtrace::Scene::saveFrameToFile(const std::string &filename) const {
     this->frameBuffer.saveToFile(filename);
 }
 
