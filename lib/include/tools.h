@@ -9,14 +9,18 @@
 #include "vector.h"
 #include "matrix.h"
 
-/*  Collection of simple math solvers to make cleaner code.
-    Not every one is optimalized, but every on works in some way.  */
+namespace rtrace {
 
-double solveLinearEquation(const double&, const double&);
-std::pair<double, double> solveQuadraticEquation(const double&, const double&, const double&);
-std::vector<double> solveQuarticEquation(double, double, double, double, double);
+	/*  Collection of simple math solvers to make cleaner code.
+		Not every one is optimalized, but every on works in some way.  */
 
-double calculatePolynomial(const std::vector<double>&, const double&);
+	double solveLinearEquation(const double&, const double&);
+	std::pair<double, double> solveQuadraticEquation(const double&, const double&, const double&);
+	std::vector<double> solveQuarticEquation(double, double, double, double, double);
 
-Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
-Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
+	double calculatePolynomial(const std::vector<double>&, const double&);
+
+	Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
+	Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
+
+}

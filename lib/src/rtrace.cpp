@@ -1,6 +1,6 @@
 #include "rtrace.h"
 
-RenderScene::RenderScene(const RenderMode &renderMode, 
+rtrace::RenderScene::RenderScene(const rtrace::RenderMode &renderMode, 
                             const unsigned int &reflectionDepth, 
                             const unsigned int &resolutionWidgth, 
                             const unsigned int &resolutionHeight) : 
@@ -11,37 +11,37 @@ RenderScene::RenderScene(const RenderMode &renderMode,
     this->setRenderResolution(resolutionWidgth, resolutionHeight);
 }
 
-void RenderScene::addObject(std::shared_ptr<Object> object_ptr) {
+void rtrace::RenderScene::addObject(std::shared_ptr<Object> object_ptr) {
     this->objects.push_back(std::move(object_ptr));
 }
 
-void RenderScene::addLight(std::shared_ptr<LightSource> light) {
+void rtrace::RenderScene::addLight(std::shared_ptr<LightSource> light) {
     this->lights.push_back(std::move(light));
 }
 
-void RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
+void rtrace::RenderScene::setReflectionDepth(const unsigned int &reflectionDepth) {
     this->reflectionDepth = reflectionDepth;
 }
 
-void RenderScene::setRenderMode(const RenderMode &renderMode) {
+void rtrace::RenderScene::setRenderMode(const rtrace::RenderMode &renderMode) {
     this->renderMode = renderMode;
 }
 
-void RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
+void rtrace::RenderScene::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
     this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
 
     this->frameBuffer.create(resolutionH, resolutionV, sf::Color::Black);
 }
 
-const unsigned int & RenderScene::getReflectionDepth() const {
+const unsigned int & rtrace::RenderScene::getReflectionDepth() const {
     return this->reflectionDepth;
 }
 
-const sf::Vector2u & RenderScene::getRenderResolution() const {
+const sf::Vector2u & rtrace::RenderScene::getRenderResolution() const {
     return this->renderResolution;
 }
 
-CollisionData RenderScene::rayTrace(const Ray &ray) const {
+rtrace::CollisionData rtrace::RenderScene::rayTrace(const rtrace::Ray &ray) const {
     CollisionData tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
@@ -56,7 +56,7 @@ CollisionData RenderScene::rayTrace(const Ray &ray) const {
     return data;
 }
 
-CollisionData RenderScene::sphereTrace(const Vector3 &point) const {
+rtrace::CollisionData rtrace::RenderScene::sphereTrace(const rtrace::Vector3 &point) const {
     CollisionData tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
@@ -69,7 +69,7 @@ CollisionData RenderScene::sphereTrace(const Vector3 &point) const {
     return data;
 }
 
-sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &depth) const {
+sf::Color rtrace::RenderScene::evaluateRayTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
@@ -101,7 +101,7 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
     return illumination;
 }
 
-sf::Color RenderScene::evaluateSphereTracing(const Ray &ray, const unsigned int &depth) const {
+sf::Color rtrace::RenderScene::evaluateSphereTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
@@ -120,12 +120,12 @@ sf::Color RenderScene::evaluateSphereTracing(const Ray &ray, const unsigned int 
     return data.color;
 }
 
-sf::Color RenderScene::renderPixel(const View &view, const unsigned int &x, const unsigned int &y) const {
+sf::Color rtrace::RenderScene::renderPixel(const rtrace::View &view, const unsigned int &x, const unsigned int &y) const {
 	const double w = this->renderResolution.x;
     const double h = this->renderResolution.y;
     const double aspectRatio = (double)this->renderResolution.x/this->renderResolution.y;
 
-	const Vector3 dir = normalize(
+	const rtrace::Vector3 dir = normalize(
 		view.getDistanceFromProjectionPlane()*view.getDirectionX() +
 		(x-w/2.)/w*aspectRatio*view.getDirectionY() +
 		(y-h/2.)/h*view.getDirectionZ()
@@ -134,8 +134,8 @@ sf::Color RenderScene::renderPixel(const View &view, const unsigned int &x, cons
 	sf::Color color;
 
 	switch(this->renderMode) {
-		case RAY_TRACING_MODE:      color = this->evaluateRayTracing(Ray(view.getPosition(), dir), 0); break;
-		case SPHERE_TRACING_MODE:   color = this->evaluateSphereTracing(Ray(view.getPosition(), dir), 0); break;
+		case RAY_TRACING_MODE:      color = this->evaluateRayTracing(rtrace::Ray(view.getPosition(), dir), 0); break;
+		case SPHERE_TRACING_MODE:   color = this->evaluateSphereTracing(rtrace::Ray(view.getPosition(), dir), 0); break;
 		default: 					color = sf::Color::Transparent; break;
 	}
 	
@@ -145,7 +145,7 @@ sf::Color RenderScene::renderPixel(const View &view, const unsigned int &x, cons
 	return color;
 }
 
-const sf::Image & RenderScene::render(const View &view) {
+const sf::Image & rtrace::RenderScene::render(const rtrace::View &view) {
 
     for(unsigned int i=0; i<this->renderResolution.y; i++) {
         for(unsigned int j=0; j<this->renderResolution.x; j++) {
@@ -166,7 +166,7 @@ const sf::Image & RenderScene::render(const View &view) {
     return this->frameBuffer;
 }
 
-void RenderScene::display(const View &view) {
+void rtrace::RenderScene::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
     this->render(view);
@@ -190,8 +190,8 @@ void RenderScene::display(const View &view) {
 
     windowTitle << " | Mode: ";
     switch(this->renderMode) {
-        case RAY_TRACING_MODE:      windowTitle << "ray tracing"; break;
-        case SPHERE_TRACING_MODE:   windowTitle << "sphere tracing"; break;
+        case rtrace::RAY_TRACING_MODE:      windowTitle << "ray tracing"; break;
+        case rtrace::SPHERE_TRACING_MODE:   windowTitle << "sphere tracing"; break;
         default: break;
     }
 
@@ -200,7 +200,7 @@ void RenderScene::display(const View &view) {
     sf::RenderWindow::display();
 }
 
-void RenderScene::saveFrameToFile(const std::string &filename) const {
+void rtrace::RenderScene::saveFrameToFile(const std::string &filename) const {
     this->frameBuffer.saveToFile(filename);
 }
 

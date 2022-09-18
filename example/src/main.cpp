@@ -29,7 +29,7 @@
 #include "plane.h"
 #include "torus.h"
 
-void handleEvents(RenderScene &scene, Camera &camera) {
+void handleEvents(rtrace::RenderScene &scene, Camera &camera) {
     sf::Event event;
     while(scene.pollEvent(event)) {
         if(event.type==sf::Event::Closed)
@@ -38,9 +38,9 @@ void handleEvents(RenderScene &scene, Camera &camera) {
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
                 scene.close();
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-                scene.setRenderMode(SPHERE_TRACING_MODE);
+                scene.setRenderMode(rtrace::SPHERE_TRACING_MODE);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::M))
-                scene.setRenderMode(RAY_TRACING_MODE);
+                scene.setRenderMode(rtrace::RAY_TRACING_MODE);
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
                 scene.saveFrameToFile("../screenshots/screenshot_" + std::to_string(time(nullptr)) + ".jpg");
                 std::cout << "Saved frame" << std::endl;
@@ -62,9 +62,9 @@ void handleEvents(RenderScene &scene, Camera &camera) {
 
 int main() {
 
-    Camera camera(Vector3(-50, 0, 25), 1);
-    RenderScene scene(RAY_TRACING_MODE, 3, 135, 100);
-    TextureMenager menager;
+    Camera camera(rtrace::Vector3(-50, 0, 25), 1);
+    rtrace::RenderScene scene(rtrace::RAY_TRACING_MODE, 3, 135, 100);
+    rtrace::TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/
 
@@ -72,16 +72,16 @@ int main() {
 
     menager.load("../textures/notexture.jpg");
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Vector3(10, 0, 30), 7, Material(255, 0, 0));
-	std::shared_ptr<Torus> torus = std::make_shared<Torus>(Vector3(0, 0, 15), 6, 3, Material(0, 0, 255));
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Material(255, 0, 0));
+	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3, rtrace::Material(0, 0, 255));
 
     scene.addObject(sphere);
 	scene.addObject(torus);
-    scene.addObject(std::make_shared<Sphere>(Vector3(0, 25, 25), 7, Material(0, 255, 0)));
-    scene.addObject(std::make_shared<Plane>(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
+    scene.addObject(std::make_shared<Sphere>(rtrace::Vector3(0, 25, 25), 7, rtrace::Material(0, 255, 0)));
+    scene.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::UnitZ(), rtrace::Material(menager.getTextureReference(0), 5000, 5000)));
 
-    scene.addLight(std::make_shared<LightSource>(Vector3(-25, 0, 25)));
-	scene.addLight(std::make_shared<LightSource>(Vector3(0, 0, 50)));
+    scene.addLight(std::make_shared<rtrace::LightSource>(rtrace::Vector3(-25, 0, 25)));
+	scene.addLight(std::make_shared<rtrace::LightSource>(rtrace::Vector3(0, 0, 50)));
 
     double angle = 0;
 
@@ -94,18 +94,18 @@ int main() {
         /*-----------  Scene objects update  ---------------*/
 
 		{
-			Transform3 tr = sphere->getTransform();
+			rtrace::Transform3 tr = sphere->getTransform();
 
-			tr.translate(Vector3(0, 2*std::cos(angle), 0));
+			tr.translate(rtrace::Vector3(0, 2*std::cos(angle), 0));
 			angle +=0.1;
 
 			sphere->setTransform(tr);
 		}
 
 		{
-			Transform3 tr = torus->getTransform();
+			rtrace::Transform3 tr = torus->getTransform();
 
-			tr.rotate(Vector3(0, 1.1, 0.75), 0.1);
+			tr.rotate(rtrace::Vector3(0, 1.1, 0.75), 0.1);
 			
 			torus->setTransform(tr);
 		}

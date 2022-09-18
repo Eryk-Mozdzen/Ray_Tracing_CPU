@@ -1,56 +1,56 @@
 #include "utils.h"
 
-Ray::Ray() {}
+rtrace::Ray::Ray() {}
 
-Ray::Ray(const Vector3 &origin, const Vector3 &direction) {
+rtrace::Ray::Ray(const rtrace::Vector3 &origin, const rtrace::Vector3 &direction) {
     this->origin = origin;
     this->direction = direction;
 }
 
-LightSource::LightSource() {}
+rtrace::LightSource::LightSource() {}
 
-LightSource::LightSource(const Vector3 &position) {
+rtrace::LightSource::LightSource(const rtrace::Vector3 &position) {
     this->position = position;
 }
 
-const Vector3 & LightSource::getPosition() const {
+const rtrace::Vector3 & rtrace::LightSource::getPosition() const {
     return this->position;
 }
 
-const Transform3 & Object::getTransform() const {
+const rtrace::Transform3 & rtrace::Object::getTransform() const {
 	return this->transform;
 }
 
-const Material & Object::getMaterial() const {
+const rtrace::Material & rtrace::Object::getMaterial() const {
 	return this->material;
 }
 
-void Object::setTransform(const Transform3 &tr) {
+void rtrace::Object::setTransform(const rtrace::Transform3 &tr) {
 	this->transform = tr;
 }
 
-void Object::setMaterial(const Material &mat) {
+void rtrace::Object::setMaterial(const rtrace::Material &mat) {
 	this->material = mat;
 }
 
-CollisionData::CollisionData() {
+rtrace::CollisionData::CollisionData() {
     this->color = sf::Color::Transparent;
     this->normal = Vector3(1, 0, 0);
     this->distance = 1000000;
     this->exist = false;
 }
 
-CollisionData CollisionData::min(const CollisionData &a, const CollisionData &b) {
+rtrace::CollisionData rtrace::CollisionData::min(const rtrace::CollisionData &a, const rtrace::CollisionData &b) {
     return (a.distance<b.distance) ? a : b;
 }
 
-CollisionData CollisionData::smin(const CollisionData &a, const CollisionData &b, const double &k) {
+rtrace::CollisionData rtrace::CollisionData::smin(const rtrace::CollisionData &a, const rtrace::CollisionData &b, const double &k) {
     CollisionData data = CollisionData::min(a, b);
 
     const double h = std::max(k - std::abs(a.distance-b.distance), 0.)/k;
     data.distance = std::min(a.distance, b.distance) - h*h*h*k*0.167;
 
-    if(data.distance<EPSILON) {
+    if(data.distance<rtrace::EPSILON) {
         data.exist = true;
     }
 
@@ -62,19 +62,19 @@ CollisionData CollisionData::smin(const CollisionData &a, const CollisionData &b
     return data;
 }
 
-TextureMenager::TextureMenager() {}
+rtrace::TextureMenager::TextureMenager() {}
 
-void TextureMenager::load(const std::string &texture_str) {
+void rtrace::TextureMenager::load(const std::string &texture_str) {
     sf::Image texture;
     texture.loadFromFile(texture_str);
     textures.push_back(texture);
 }
 
-sf::Image* TextureMenager::getTextureReference(const int &index) {
+sf::Image* rtrace::TextureMenager::getTextureReference(const int &index) {
     return &textures[index];
 }
 
-std::ostream & operator<<(std::ostream &lhs, const sf::Color &rhs) {
+std::ostream & rtrace::operator<<(std::ostream &lhs, const sf::Color &rhs) {
     lhs << "(";
     lhs << (int)rhs.r << "\t";
     lhs << (int)rhs.g << "\t";
@@ -83,7 +83,7 @@ std::ostream & operator<<(std::ostream &lhs, const sf::Color &rhs) {
     return lhs;
 }
 
-sf::Color operator*(const double &lhs, const sf::Color &rhs) {
+sf::Color rtrace::operator*(const double &lhs, const sf::Color &rhs) {
     /*return sf::Color(
         std::min(std::max(0., lhs*rhs.r), 255.),
         std::min(std::max(0., lhs*rhs.g), 255.),
@@ -101,7 +101,7 @@ sf::Color operator*(const double &lhs, const sf::Color &rhs) {
     );
 }
 
-sf::Color color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {
+sf::Color rtrace::color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {
     if(color1==sf::Color::Transparent) return color2;
     if(color2==sf::Color::Transparent) return color1;
 
@@ -111,7 +111,3 @@ sf::Color color_interpolation(const sf::Color &color1, const sf::Color &color2, 
         (1.f-alpha)*color1.b + alpha*color2.b
     );
 }
-
-
-
-

@@ -92,7 +92,4 @@ Method must return `CollisionData` struct wih correct values in each field.
 ## To do:
 - overall optimalization
 - transparent materials and light refraction effect
-- fix shadow issue
-- shorter file names
-- add namespace
 - use of `algorithm`

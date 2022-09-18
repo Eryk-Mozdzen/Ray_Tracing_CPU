@@ -10,22 +10,25 @@
 #include "matrix.h"
 #include "tools.h"
 
-/*  Transform3 class
-    Class represents 3-dimensional transform matrix (4x4) to
-    describes translation and rotation of objects in scene.     */
+namespace rtrace {
 
-class Transform3 : public Matrix {
-public:
-    Transform3();
-    Transform3 & operator=(const Matrix &);
+	/*  Transform3 class
+		Class represents 3-dimensional transform matrix (4x4) to
+		describes translation and rotation of objects in scene.     */
 
-    void translate(const Vector3 &d);
-    void rotate(const Vector3&, const double&);
+	class Transform3 : public Matrix {
+	public:
+		Transform3();
+		Transform3 & operator=(const Matrix &);
 
-    Vector3 getRelativeToTransform(const Vector3&) const;
-    Vector3 getRelativeToReferenceFrame(const Vector3&) const;
+		void translate(const Vector3 &d);
+		void rotate(const Vector3&, const double&);
 
-    Vector3 getTranslation() const;
-    Matrix getRotation() const;
-};
+		Vector3 getRelativeToTransform(const Vector3&) const;
+		Vector3 getRelativeToReferenceFrame(const Vector3&) const;
 
+		Vector3 getTranslation() const;
+		Matrix getRotation() const;
+	};
+
+}

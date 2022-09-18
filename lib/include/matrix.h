@@ -7,43 +7,47 @@
 #include <string>
 #include <iomanip>
 
-constexpr double EPSILON = 0.01;
+namespace rtrace {
 
-/*  Matrix class
-    This is independent file, can be used in other projects.
-    Class contain basic operators overload, methods and capabilities 
-    to operate with matrices in math or physics.                        */
+	constexpr double EPSILON = 0.01;
 
-class Matrix {
-private:
-    std::vector<std::vector<double>> values;
-    unsigned int rows, cols;
-public:
-    Matrix();
-    Matrix(const unsigned int&, const unsigned int&);
+	/*  Matrix class
+		This is independent file, can be used in other projects.
+		Class contain basic operators overload, methods and capabilities 
+		to operate with matrices in math or physics.                        */
 
-    Matrix getTransposition() const;
-    Matrix getInverse() const;
+	class Matrix {
+	private:
+		std::vector<std::vector<double>> values;
+		unsigned int rows, cols;
+	public:
+		Matrix();
+		Matrix(const unsigned int&, const unsigned int&);
 
-    bool operator==(const Matrix&) const;
-    bool operator!=(const Matrix&) const;
-    Matrix operator+(const Matrix&) const;
-    Matrix operator-(const Matrix&) const;
-    Matrix operator*(const Matrix&) const;
-    Matrix operator*(const double&) const;
-    Matrix operator/(const double&) const;
+		Matrix getTransposition() const;
+		Matrix getInverse() const;
 
-    const double & operator()(const unsigned int&, const unsigned int&) const;
-    double & operator()(const unsigned int&, const unsigned int&);
-    const unsigned int & getRows() const;
-    const unsigned int & getCols() const;
+		bool operator==(const Matrix&) const;
+		bool operator!=(const Matrix&) const;
+		Matrix operator+(const Matrix&) const;
+		Matrix operator-(const Matrix&) const;
+		Matrix operator*(const Matrix&) const;
+		Matrix operator*(const double&) const;
+		Matrix operator/(const double&) const;
 
-    static Matrix Inverse(const Matrix&);
-    static Matrix Identity(const unsigned int&);
-    static double Det(const Matrix&);
-};
+		const double & operator()(const unsigned int&, const unsigned int&) const;
+		double & operator()(const unsigned int&, const unsigned int&);
+		const unsigned int & getRows() const;
+		const unsigned int & getCols() const;
 
-Matrix operator*(const double&, const Matrix&);
-Matrix operator-(const Matrix&);
+		static Matrix Inverse(const Matrix&);
+		static Matrix Identity(const unsigned int&);
+		static double Det(const Matrix&);
+	};
 
-std::ostream & operator<<(std::ostream&, const Matrix&);
+	Matrix operator*(const double&, const Matrix&);
+	Matrix operator-(const Matrix&);
+
+	std::ostream & operator<<(std::ostream&, const Matrix&);
+
+}

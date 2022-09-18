@@ -6,39 +6,43 @@
 #include <SFML/Graphics.hpp>
 #include "tools.h"
 
-/*  Material class
-    This class contains all required informations 
-    about material properties in render algorith.
-    User should use this class in custom objects to 
-    define color, texture and other properties.          */
+namespace rtrace {
 
-class Material {
-private:
-    double ambient, diffuse, specular, shininess, reflection; //phong model
-    sf::Color color;
-    sf::Image *texture;
-    sf::Vector2u textureSize;
-    bool textureWrap;
-public:
-	Material();
-    Material(const int&, const int&, const int&);
-    Material(sf::Image*);
-    Material(sf::Image*, const unsigned int&, const unsigned int&);
+	/*  Material class
+		This class contains all required informations 
+		about material properties in render algorith.
+		User should use this class in custom objects to 
+		define color, texture and other properties.          */
 
-    void setAmbient(const double&);
-    void setDiffuse(const double&);
-    void setSpecular(const double&);
-    void setShininess(const double&);
-    void setReflection(const double&);
+	class Material {
+	private:
+		double ambient, diffuse, specular, shininess, reflection; //phong model
+		sf::Color color;
+		sf::Image *texture;
+		sf::Vector2u textureSize;
+		bool textureWrap;
+	public:
+		Material();
+		Material(const int&, const int&, const int&);
+		Material(sf::Image*);
+		Material(sf::Image*, const unsigned int&, const unsigned int&);
 
-    const double & getAmbient() const;
-    const double & getDiffuse() const;
-    const double & getSpecular() const;
-    const double & getShininess() const;
-    const double & getReflection() const;
+		void setAmbient(const double&);
+		void setDiffuse(const double&);
+		void setSpecular(const double&);
+		void setShininess(const double&);
+		void setReflection(const double&);
 
-    bool isTexture() const;
+		const double & getAmbient() const;
+		const double & getDiffuse() const;
+		const double & getSpecular() const;
+		const double & getShininess() const;
+		const double & getReflection() const;
 
-    sf::Color getColor() const;
-    sf::Color getColorAt(const double&, const double&) const;
-};
+		bool isTexture() const;
+
+		sf::Color getColor() const;
+		sf::Color getColorAt(const double&, const double&) const;
+	};
+
+}

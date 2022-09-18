@@ -1,22 +1,22 @@
 #include "tools.h"
 
-double solveLinearEquation(const double &a, const double &b) {
-    if(std::abs(a)<EPSILON && std::abs(b)>EPSILON)
+double rtrace::solveLinearEquation(const double &a, const double &b) {
+    if(std::abs(a)<rtrace::EPSILON && std::abs(b)>rtrace::EPSILON)
         return std::nan("");
 
     return -b/a;
 }
 
-std::pair<double, double> solveQuadraticEquation(const double &a, const double &b, const double &c) {
+std::pair<double, double> rtrace::solveQuadraticEquation(const double &a, const double &b, const double &c) {
     //if(std::abs(a)<EPSILON)
     //    return std::make_pair(solveLinearEquation(b, c), std::nan(""));
 
     const double delta = b*b - 4*a*c;
 
-    if(delta<-EPSILON)
+    if(delta<-rtrace::EPSILON)
         return std::make_pair(std::nan(""), std::nan(""));
 
-    const double deltaSqrt = (delta>EPSILON) ? std::sqrt(delta) : 0;
+    const double deltaSqrt = (delta>rtrace::EPSILON) ? std::sqrt(delta) : 0;
 
     const double x1 = (-b + deltaSqrt)/(2*a);
     const double x2 = (-b - deltaSqrt)/(2*a);
@@ -31,7 +31,7 @@ std::complex<double> complex_cbrt(const std::complex<double> &z) {
 	return std::pow(z, 1./3.);
 }
 
-std::vector<double> solveQuarticEquation(double a_p, double b_p, double c_p, double d_p, double e_p) {
+std::vector<double> rtrace::solveQuarticEquation(double a_p, double b_p, double c_p, double d_p, double e_p) {
 	const std::complex<double> a = a_p;
     const std::complex<double> b = b_p/a;
     const std::complex<double> c = c_p/a;
@@ -58,14 +58,14 @@ std::vector<double> solveQuarticEquation(double a_p, double b_p, double c_p, dou
 	realSolutions.reserve(4);
 
 	for(const std::complex<double> &solution : complexSolutions) {
-		if(std::abs(solution.imag())<EPSILON)
+		if(std::abs(solution.imag())<rtrace::EPSILON)
             realSolutions.push_back(solution.real());
 	}
 
     return realSolutions;
 }
 
-double calculatePolynomial(const std::vector<double> &coeff, const double &x) {
+double rtrace::calculatePolynomial(const std::vector<double> &coeff, const double &x) {
     double y = 0;
 
     for(unsigned int i=0; i<coeff.size(); i++)
@@ -74,34 +74,34 @@ double calculatePolynomial(const std::vector<double> &coeff, const double &x) {
     return y;
 }
 
-Matrix solveLinearSystemCramersRule(const Matrix &A, const Matrix &b) {
+rtrace::Matrix rtrace::solveLinearSystemCramersRule(const rtrace::Matrix &A, const rtrace::Matrix &b) {
     assert(A.getRows()==A.getCols());
     assert(A.getCols()==b.getRows());
     assert(b.getCols()==1);
 
     const unsigned int n = b.getRows();
 
-    Matrix x(n, 1);
+    rtrace::Matrix x(n, 1);
 
-    const double W = Matrix::Det(A);
+    const double W = rtrace::Matrix::Det(A);
 
     if(std::abs(W)<EPSILON)
         return x;
 
-    Matrix A_i;
+    rtrace::Matrix A_i;
     for(unsigned int i=0; i<n; i++) {
         A_i = A;
 
         for(unsigned int j=0; j<n; j++)
             A_i(j, i) = b(j, 0);
 
-        x(i, 0) = Matrix::Det(A_i)/W;
+        x(i, 0) = rtrace::Matrix::Det(A_i)/W;
     }
 
     return x;
 }
 
-Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
+rtrace::Matrix solveLinearSystemJacobiMethod(const rtrace::Matrix &A, const rtrace::Matrix &b) {
     assert(A.getRows()==A.getCols());
     assert(A.getCols()==b.getRows());
     assert(b.getCols()==1);
@@ -122,10 +122,10 @@ Matrix solveLinearSystemJacobiMethod(const Matrix &A, const Matrix &b) {
         //std::cout << A << std:: endl;
         //std::cout << diagonal << "\t" << other << std::endl;
         //return solveLinearSystemCramersRule(A, b);
-        return Matrix(n, 1);
+        return rtrace::Matrix(n, 1);
     }
 
-    Matrix x(n, 1);
+    rtrace::Matrix x(n, 1);
 
     for(unsigned int k=0; k<10; k++) {
         for(unsigned int i=0; i<n; i++) {

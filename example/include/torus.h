@@ -6,14 +6,14 @@
 /*  User custom Torus class
     It is drawable object looks like donut.    */
 
-class Torus : public Object {
+class Torus : public rtrace::Object {
 private:
     double majorRadius, minorRadius;    // small and big radius
 
-	Vector3 getNormal(const Vector3&) const;
+	rtrace::Vector3 getNormal(const rtrace::Vector3&) const;
 public:
-    Torus(const Vector3&, const double&, const double&, const Material&);
+    Torus(const rtrace::Vector3&, const double&, const double&, const rtrace::Material&);
 
-    CollisionData intersect(const Ray&) const;      // method overrite for ray tracing
-    CollisionData distance(const Vector3&) const;   // method override for sphere tracing
+    rtrace::CollisionData intersect(const rtrace::Ray&) const;      // method overrite for ray tracing
+    rtrace::CollisionData distance(const rtrace::Vector3&) const;   // method override for sphere tracing
 };

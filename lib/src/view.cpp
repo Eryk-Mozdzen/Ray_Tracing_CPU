@@ -1,48 +1,48 @@
 #include "view.h"
 
-View::View() {
+rtrace::View::View() {
     this->distance = 1;
 }
 
-View::View(const Vector3 &position, const double &distance) {
+rtrace::View::View(const rtrace::Vector3 &position, const double &distance) {
     this->distance = distance;
 
     this->transform.translate(position);
 }
 
-Vector3 View::getDirectionX() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitX()) - this->transform.getTranslation());
+rtrace::Vector3 rtrace::View::getDirectionX() const {
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitX()) - this->transform.getTranslation());
 }
 
-Vector3 View::getDirectionY() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitY()) - this->transform.getTranslation());
+rtrace::Vector3 rtrace::View::getDirectionY() const {
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitY()) - this->transform.getTranslation());
 }
 
-Vector3 View::getDirectionZ() const {
-    return normalize(this->transform.getRelativeToReferenceFrame(Vector3::UnitZ()) - this->transform.getTranslation());
+rtrace::Vector3 rtrace::View::getDirectionZ() const {
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitZ()) - this->transform.getTranslation());
 }
 
-Vector3 View::getPosition() const {
+rtrace::Vector3 rtrace::View::getPosition() const {
     return this->transform.getTranslation();
 }
 
-const Transform3 & View::getTransform() const {
+const rtrace::Transform3 & rtrace::View::getTransform() const {
     return this->transform;
 }
 
-double View::getDistanceFromProjectionPlane() const {
+double rtrace::View::getDistanceFromProjectionPlane() const {
     return this->distance;
 }
 
-void View::setDistanceFromProjectionPlane(const double &distance) {
+void rtrace::View::setDistanceFromProjectionPlane(const double &distance) {
     this->distance = distance;
 }
 
-void View::translate(const Vector3 &transltion) {
+void rtrace::View::translate(const rtrace::Vector3 &transltion) {
     this->transform.translate(transltion);
 }
 
-void View::rotate(const Vector3 &axis, const double &theta) {
+void rtrace::View::rotate(const rtrace::Vector3 &axis, const double &theta) {
     this->transform.rotate(axis, theta);
 }
 

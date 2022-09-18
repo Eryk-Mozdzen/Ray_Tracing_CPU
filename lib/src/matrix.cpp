@@ -1,8 +1,8 @@
 #include "matrix.h"
 
-Matrix::Matrix() {}
+rtrace::Matrix::Matrix() {}
 
-Matrix::Matrix(const unsigned int &rows, const unsigned int &cols) {
+rtrace::Matrix::Matrix(const unsigned int &rows, const unsigned int &cols) {
     this->rows = rows;
     this->cols = cols;
 
@@ -11,7 +11,7 @@ Matrix::Matrix(const unsigned int &rows, const unsigned int &cols) {
         this->values[i].resize(cols, 0);
 }
 
-Matrix Matrix::getTransposition() const {
+rtrace::Matrix rtrace::Matrix::getTransposition() const {
     Matrix result(this->getCols(), this->getRows());
 
     for(unsigned int i=0; i<result.getRows(); i++)
@@ -21,23 +21,23 @@ Matrix Matrix::getTransposition() const {
     return result;
 }
 
-Matrix Matrix::getInverse() const {
-    return Matrix::Inverse(*this);
+rtrace::Matrix rtrace::Matrix::getInverse() const {
+    return rtrace::Matrix::Inverse(*this);
 }
 
-Matrix Matrix::Inverse(const Matrix &A) {
+rtrace::Matrix rtrace::Matrix::Inverse(const rtrace::Matrix &A) {
     assert(A.getRows()==A.getCols());
 
     unsigned int n = A.getRows();
-    double det = Matrix::Det(A);
+    double det = rtrace::Matrix::Det(A);
 
-	if(std::abs(det)<EPSILON) {
+	if(std::abs(det)<rtrace::EPSILON) {
 		std::cout << "Inverse matrix does not exit" << std::endl;
-		return Matrix::Identity(n);
+		return rtrace::Matrix::Identity(n);
 	}
 
     if(n==1) {
-        Matrix result(1, 1);
+        rtrace::Matrix result(1, 1);
         result(0, 0) = 1/A(0, 0);
         return result;
     }
@@ -47,7 +47,7 @@ Matrix Matrix::Inverse(const Matrix &A) {
 
 		const double invdet = 1./det;
 
-		Matrix minv(3, 3);
+		rtrace::Matrix minv(3, 3);
 		minv(0, 0) = (A(1, 1) * A(2, 2) - A(2, 1) * A(1, 2)) * invdet;
 		minv(0, 1) = (A(0, 2) * A(2, 1) - A(0, 1) * A(2, 2)) * invdet;
 		minv(0, 2) = (A(0, 1) * A(1, 2) - A(0, 2) * A(1, 1)) * invdet;
@@ -61,10 +61,10 @@ Matrix Matrix::Inverse(const Matrix &A) {
 		return minv;
 	}
 
-	Matrix A_d(n, n);
+	rtrace::Matrix A_d(n, n);
 	for(unsigned int i=0; i<n; i++) {
 		for(unsigned int j=0; j<n; j++) {
-			Matrix tmp(n-1, n-1);
+			rtrace::Matrix tmp(n-1, n-1);
 			unsigned int index = 0, index_tmp = 0;
 			while(index<n*n) {
 
@@ -75,14 +75,14 @@ Matrix Matrix::Inverse(const Matrix &A) {
 
 				index++;
 			}
-			A_d(j, i) = Matrix::Det(tmp)*std::pow(-1, i+j);
+			A_d(j, i) = rtrace::Matrix::Det(tmp)*std::pow(-1, i+j);
 		}
 	}
 
 	return (1/det)*A_d.getTransposition();
 }
 
-bool Matrix::operator==(const Matrix &rhs) const {
+bool rtrace::Matrix::operator==(const rtrace::Matrix &rhs) const {
     assert(this->getRows()==rhs.getRows());
     assert(this->getCols()==rhs.getCols());
 
@@ -94,11 +94,11 @@ bool Matrix::operator==(const Matrix &rhs) const {
     return true;
 }
 
-bool Matrix::operator!=(const Matrix &rhs) const {
+bool rtrace::Matrix::operator!=(const rtrace::Matrix &rhs) const {
     return !(*this==rhs);
 }
 
-Matrix Matrix::operator+(const Matrix &rhs) const {
+rtrace::Matrix rtrace::Matrix::operator+(const Matrix &rhs) const {
     assert(this->getRows()==rhs.getRows());
     assert(this->getCols()==rhs.getCols());
 
@@ -110,14 +110,14 @@ Matrix Matrix::operator+(const Matrix &rhs) const {
     return result;
 }
 
-Matrix Matrix::operator-(const Matrix &rhs) const {
+rtrace::Matrix rtrace::Matrix::operator-(const Matrix &rhs) const {
     return *this + (-rhs);
 }
 
-Matrix Matrix::operator*(const Matrix &rhs) const {
+rtrace::Matrix rtrace::Matrix::operator*(const rtrace::Matrix &rhs) const {
     assert(this->getCols()==rhs.getRows());
 
-    Matrix result(this->getRows(), rhs.getCols());
+    rtrace::Matrix result(this->getRows(), rhs.getCols());
     for(unsigned int i=0; i<result.getRows(); i++) {
         for(unsigned int j=0; j<result.getCols(); j++) {
             for(unsigned int k=0; k<this->cols; k++)
@@ -128,8 +128,8 @@ Matrix Matrix::operator*(const Matrix &rhs) const {
     return result;
 }
 
-Matrix Matrix::operator*(const double &rhs) const {
-    Matrix result(this->getRows(), this->getCols());
+rtrace::Matrix rtrace::Matrix::operator*(const double &rhs) const {
+    rtrace::Matrix result(this->getRows(), this->getCols());
 
     for(unsigned int i=0; i<result.getRows(); i++)
         for(unsigned int j=0; j<result.getCols(); j++)
@@ -138,52 +138,52 @@ Matrix Matrix::operator*(const double &rhs) const {
     return result;
 }
 
-Matrix Matrix::operator/(const double &rhs) const {
+rtrace::Matrix rtrace::Matrix::operator/(const double &rhs) const {
     return (*this)*(1/rhs);
 }
 
-const double & Matrix::operator()(const unsigned int &row, const unsigned int &col) const {
+const double & rtrace::Matrix::operator()(const unsigned int &row, const unsigned int &col) const {
     assert(row>=0 && row<this->getRows());
     assert(col>=0 && col<this->getCols());
 
     return this->values[row][col];
 }
 
-double & Matrix::operator()(const unsigned int &row, const unsigned int &col) {
+double & rtrace::Matrix::operator()(const unsigned int &row, const unsigned int &col) {
     assert(row>=0 && row<this->getRows());
     assert(col>=0 && col<this->getCols());
 
     return this->values[row][col];
 }
 
-const unsigned int & Matrix::getRows() const {
+const unsigned int & rtrace::Matrix::getRows() const {
     return this->rows;
 }
 
-const unsigned int & Matrix::getCols() const {
+const unsigned int & rtrace::Matrix::getCols() const {
     return this->cols;
 }
 
-Matrix operator*(const double &lhs, const Matrix &rhs) {
+rtrace::Matrix rtrace::operator*(const double &lhs, const rtrace::Matrix &rhs) {
     return rhs*lhs;
 }
 
-Matrix operator-(const Matrix &A) {
-    Matrix result = A;
+rtrace::Matrix rtrace::operator-(const rtrace::Matrix &A) {
+    rtrace::Matrix result = A;
     for(unsigned int i=0; i<result.getRows(); i++)
         for(unsigned int j=0; j<result.getCols(); j++)
             result(i, j) = -result(i, j);
     return result;
 }
 
-Matrix Matrix::Identity(const unsigned int &n) {
-    Matrix identity(n, n);
+rtrace::Matrix rtrace::Matrix::Identity(const unsigned int &n) {
+    rtrace::Matrix identity(n, n);
     for(unsigned int i=0; i<n; i++)
         identity(i, i) = 1;
     return identity;
 }
 
-double Matrix::Det(const Matrix &A) {
+double rtrace::Matrix::Det(const Matrix &A) {
     assert(A.getRows()==A.getCols());
 
     const unsigned int n = A.getRows();
@@ -191,7 +191,7 @@ double Matrix::Det(const Matrix &A) {
     if(n==1)
         return A(0, 0);
 
-    Matrix B = A;
+    rtrace::Matrix B = A;
 
     for(unsigned int i=0; i<n-1; i++) {
         const double top = B(i, i);
@@ -211,7 +211,7 @@ double Matrix::Det(const Matrix &A) {
     return det;
 }
 
-std::ostream & operator<<(std::ostream &lhs, const Matrix &rhs) {
+std::ostream & rtrace::operator<<(std::ostream &lhs, const rtrace::Matrix &rhs) {
     lhs.precision(5);
     lhs.setf(std::ios_base::fixed);
 

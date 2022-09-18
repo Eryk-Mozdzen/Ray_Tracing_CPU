@@ -1,81 +1,81 @@
 #include "material.h"
 
-Material::Material() : 
+rtrace::Material::Material() : 
 		ambient{0.3}, diffuse{0.2}, specular{0.2}, shininess{5}, reflection{0.1}, color{255, 0, 0}, 
 		texture{nullptr}, textureSize{0, 0}, textureWrap{false} {
 	
 }
 
-Material::Material(const int &r, const int &g, const int &b) : 
+rtrace::Material::Material(const int &r, const int &g, const int &b) : 
 		ambient{0.3}, diffuse{0.2}, specular{0.2}, shininess{5}, reflection{0.1}, color{(sf::Uint8)r, (sf::Uint8)g, (sf::Uint8)b}, 
 		texture{nullptr}, textureSize{0, 0}, textureWrap{false} {
 	
 }
 
-Material::Material(sf::Image *texture) : 
+rtrace::Material::Material(sf::Image *texture) : 
 		ambient{1}, diffuse{0}, specular{0}, shininess{5}, reflection{0}, color{0, 0, 0}, 
 		texture{texture}, textureWrap{true} {
 
     this->textureSize = texture->getSize();
 }
 
-Material::Material(sf::Image *texture, const unsigned int &width, const unsigned int &height) : 
+rtrace::Material::Material(sf::Image *texture, const unsigned int &width, const unsigned int &height) : 
 		ambient{1}, diffuse{0}, specular{0}, shininess{5}, reflection{0}, color{0, 0, 0}, 
 		texture{texture}, textureSize{width, height}, textureWrap{true} {
 
 }
 
-void Material::setAmbient(const double &ambient) {
+void rtrace::Material::setAmbient(const double &ambient) {
     this->ambient = ambient;
 }
 
-void Material::setDiffuse(const double &diffuse) {
+void rtrace::Material::setDiffuse(const double &diffuse) {
     this->diffuse = diffuse;
 }
 
-void Material::setSpecular(const double &specular) {
+void rtrace::Material::setSpecular(const double &specular) {
     this->specular = specular;
 }
 
-void Material::setShininess(const double &shininess) {
+void rtrace::Material::setShininess(const double &shininess) {
     this->shininess = shininess;
 }
 
-void Material::setReflection(const double &reflection) {
+void rtrace::Material::setReflection(const double &reflection) {
     this->reflection = reflection;
 }
 
-const double & Material::getAmbient() const {
+const double & rtrace::Material::getAmbient() const {
     return this->ambient;
 }
 
-const double & Material::getDiffuse() const {
+const double & rtrace::Material::getDiffuse() const {
     return this->diffuse;
 }
 
-const double & Material::getSpecular() const {
+const double & rtrace::Material::getSpecular() const {
     return this->specular;
 }
 
-const double & Material::getShininess() const {
+const double & rtrace::Material::getShininess() const {
     return this->shininess;
 }
 
-const double & Material::getReflection() const {
+const double & rtrace::Material::getReflection() const {
     return this->reflection;
 }
 
-bool Material::isTexture() const {
+bool rtrace::Material::isTexture() const {
     return (this->texture!=nullptr);
 }
 
-sf::Color Material::getColor() const {
+sf::Color rtrace::Material::getColor() const {
     assert(!this->isTexture());
 
     return this->color;
 }
 
-sf::Color Material::getColorAt(const double &x, const double &y) const {
+sf::Color rtrace::Material::getColorAt(const double &x, const double &y) const {
     if(this->texture==nullptr)
         return this->color;
 
@@ -85,10 +85,10 @@ sf::Color Material::getColorAt(const double &x, const double &y) const {
             std::fmod(y*texture->getSize().y, this->textureSize.y)
         );
 
-        if(textCoords.x<-EPSILON) textCoords.x +=this->textureSize.x;
-        if(textCoords.y<-EPSILON) textCoords.y +=this->textureSize.y;
-
-        //std::cout << textCoords.x << "\t" << x << "\t" << this->texture->getSize().x << std::endl;
+        if(textCoords.x<-EPSILON)
+			textCoords.x +=this->textureSize.x;
+        if(textCoords.y<-EPSILON)
+			textCoords.y +=this->textureSize.y;
 
         return texture->getPixel(
             (textCoords.x/this->textureSize.x)*this->texture->getSize().x,
