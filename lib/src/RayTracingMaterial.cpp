@@ -1,31 +1,28 @@
 #include "RayTracingMaterial.h"
 
-Material::Material() {
-    this->color = sf::Color::White;
-    this->texture = nullptr;
-    this->textureWrap = false;
-    this->textureSize = sf::Vector2u(0, 0);
-
-    this->setAmbient(0.3);
-    this->setDiffuse(0.2);
-    this->setSpecular(0.2);
-    this->setShininess(5);
-    this->setReflection(0.5);
+Material::Material() : 
+		ambient{0.3}, diffuse{0.2}, specular{0.2}, shininess{5}, reflection{0.1}, color{255, 0, 0}, 
+		texture{nullptr}, textureSize{0, 0}, textureWrap{false} {
+	
 }
 
-Material::Material(const int &r, const int &g, const int &b) : Material() {
-    this->color = sf::Color(r, g, b);
+Material::Material(const int &r, const int &g, const int &b) : 
+		ambient{0.3}, diffuse{0.2}, specular{0.2}, shininess{5}, reflection{0.1}, color{(sf::Uint8)r, (sf::Uint8)g, (sf::Uint8)b}, 
+		texture{nullptr}, textureSize{0, 0}, textureWrap{false} {
+	
 }
 
-Material::Material(sf::Image *texture) : Material() {
-    this->texture = texture;
+Material::Material(sf::Image *texture) : 
+		ambient{1}, diffuse{0}, specular{0}, shininess{5}, reflection{0}, color{0, 0, 0}, 
+		texture{texture}, textureWrap{true} {
+
     this->textureSize = texture->getSize();
 }
 
-Material::Material(sf::Image *texture, const int &width, const int &height) : Material() {
-    this->texture = texture;
-    this->textureWrap = true;
-    this->textureSize = sf::Vector2u(width, height);
+Material::Material(sf::Image *texture, const unsigned int &width, const unsigned int &height) : 
+		ambient{1}, diffuse{0}, specular{0}, shininess{5}, reflection{0}, color{0, 0, 0}, 
+		texture{texture}, textureSize{width, height}, textureWrap{true} {
+
 }
 
 void Material::setAmbient(const double &ambient) {

@@ -33,30 +33,55 @@ Matrix Matrix::Inverse(const Matrix &A) {
     unsigned int n = A.getRows();
     double det = Matrix::Det(A);
 
+	if(std::abs(det)<EPSILON) {
+		std::cout << "Inverse matrix does not exit" << std::endl;
+		return Matrix::Identity(n);
+	}
+
     if(n==1) {
         Matrix result(1, 1);
         result(0, 0) = 1/A(0, 0);
         return result;
-    } else {
-        Matrix A_d(n, n);
-        for(unsigned int i=0; i<n; i++) {
-            for(unsigned int j=0; j<n; j++) {
-                Matrix tmp(n-1, n-1);
-                unsigned int index = 0, index_tmp = 0;
-                while(index<n*n) {
-
-                    if(index%n!=j && index/n!=i) {
-                        tmp(index_tmp%(n-1), index_tmp/(n-1)) = A(index%n, index/n);
-                        index_tmp++;
-                    }
-
-                    index++;
-                }
-                A_d(j, i) = Matrix::Det(tmp)*std::pow(-1, i+j);
-            }
-        }
-        return (1/det)*A_d.getTransposition();
     }
+
+	if(n==3) {
+		// https://stackoverflow.com/questions/983999/simple-3x3-matrix-inverse-code-c
+
+		const double invdet = 1./det;
+
+		Matrix minv(3, 3);
+		minv(0, 0) = (A(1, 1) * A(2, 2) - A(2, 1) * A(1, 2)) * invdet;
+		minv(0, 1) = (A(0, 2) * A(2, 1) - A(0, 1) * A(2, 2)) * invdet;
+		minv(0, 2) = (A(0, 1) * A(1, 2) - A(0, 2) * A(1, 1)) * invdet;
+		minv(1, 0) = (A(1, 2) * A(2, 0) - A(1, 0) * A(2, 2)) * invdet;
+		minv(1, 1) = (A(0, 0) * A(2, 2) - A(0, 2) * A(2, 0)) * invdet;
+		minv(1, 2) = (A(1, 0) * A(0, 2) - A(0, 0) * A(1, 2)) * invdet;
+		minv(2, 0) = (A(1, 0) * A(2, 1) - A(2, 0) * A(1, 1)) * invdet;
+		minv(2, 1) = (A(2, 0) * A(0, 1) - A(0, 0) * A(2, 1)) * invdet;
+		minv(2, 2) = (A(0, 0) * A(1, 1) - A(1, 0) * A(0, 1)) * invdet;
+
+		return minv;
+	}
+
+	Matrix A_d(n, n);
+	for(unsigned int i=0; i<n; i++) {
+		for(unsigned int j=0; j<n; j++) {
+			Matrix tmp(n-1, n-1);
+			unsigned int index = 0, index_tmp = 0;
+			while(index<n*n) {
+
+				if(index%n!=j && index/n!=i) {
+					tmp(index_tmp%(n-1), index_tmp/(n-1)) = A(index%n, index/n);
+					index_tmp++;
+				}
+
+				index++;
+			}
+			A_d(j, i) = Matrix::Det(tmp)*std::pow(-1, i+j);
+		}
+	}
+
+	return (1/det)*A_d.getTransposition();
 }
 
 bool Matrix::operator==(const Matrix &rhs) const {

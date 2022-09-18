@@ -17,6 +17,22 @@ const Vector3 & LightSource::getPosition() const {
     return this->position;
 }
 
+const Transform3 & Object::getTransform() const {
+	return this->transform;
+}
+
+const Material & Object::getMaterial() const {
+	return this->material;
+}
+
+void Object::setTransform(const Transform3 &tr) {
+	this->transform = tr;
+}
+
+void Object::setMaterial(const Material &mat) {
+	this->material = mat;
+}
+
 CollisionData::CollisionData() {
     this->color = sf::Color::Transparent;
     this->normal = Vector3(1, 0, 0);

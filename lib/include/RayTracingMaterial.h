@@ -21,10 +21,10 @@ private:
     sf::Vector2u textureSize;
     bool textureWrap;
 public:
-    Material();
+	Material();
     Material(const int&, const int&, const int&);
     Material(sf::Image*);
-    Material(sf::Image*, const int&, const int&);
+    Material(sf::Image*, const unsigned int&, const unsigned int&);
 
     void setAmbient(const double&);
     void setDiffuse(const double&);

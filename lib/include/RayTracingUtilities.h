@@ -12,6 +12,7 @@
 #include "Matrix.h"
 
 #include "RayTracingMaterial.h"
+#include "RayTracingTransform.h"
 
 /*  Ray struct  
     Struct contains origin point and normalized direction vector */
@@ -63,10 +64,19 @@ public:
     then will be appear only in coresponding mode.                                  */
 
 class Object {
+protected:
+	Material material;
+	Transform3 transform;
 public:
     virtual ~Object() {};
     virtual CollisionData intersect(const Ray&) const { return CollisionData(); }     // for ray tracing
     virtual CollisionData distance(const Vector3&) const { return CollisionData(); }  // for sphere tracing
+
+	const Transform3 & getTransform() const;
+    const Material & getMaterial() const;
+    void setTransform(const Transform3&);
+    void setMaterial(const Material&);
+
 };
 
 /*  TextureMenager class

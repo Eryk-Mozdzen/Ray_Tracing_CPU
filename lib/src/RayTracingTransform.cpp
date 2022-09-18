@@ -25,7 +25,9 @@ void Transform3::translate(const Vector3 &d) {
     *this = (*this)*transform;
 }
 
-void Transform3::rotate(const Vector3 &axis, const double &theta) {
+void Transform3::rotate(const Vector3 &a, const double &theta) {
+	const Vector3 axis = normalize(a);
+
     Transform3 transform;
 
     Matrix m(3, 3);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-
 #include "RayTracing.h"
 
 /*  User custom Torus class
@@ -10,8 +9,6 @@
 class Torus : public Object {
 private:
     double majorRadius, minorRadius;    // small and big radius
-    Material material;                  // materal (for color)
-    Transform3 transform;               // transform matrix (for position)
 
 	Vector3 getNormal(const Vector3&) const;
 public:

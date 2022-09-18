@@ -5,6 +5,8 @@
 #include <cmath>
 #include <vector>
 
+constexpr double EPSILON = 0.01;
+
 /*  Matrix class
     This is independent file, can be used in other projects.
     Class contain basic operators overload, methods and capabilities 

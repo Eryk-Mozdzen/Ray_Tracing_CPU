@@ -80,7 +80,7 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
 
     const Vector3 N = normalize(data.normal);       // normal
 	const Vector3 V = normalize(ray.direction);		// view
-    const Vector3 H = normalize(V - 2*(V*N)*N);		// reflected view from surface
+    const Vector3 H = normalize(V - 2*(V*N)*N);		// view reflection
 	
 	const sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth + 1);
 
@@ -88,7 +88,7 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
 
 	for(const std::shared_ptr<LightSource> &light : this->lights) {
         const Vector3 L = normalize(light->getPosition() - data.point);   // light
-        const Vector3 R = normalize(L - 2*(L*N)*N);                       // reflected light from surface
+        const Vector3 R = normalize(L - 2*(L*N)*N);                       // light reflection
 
         const CollisionData shadow = this->rayTrace(Ray(data.point, L));
 		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))

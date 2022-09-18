@@ -1,7 +1,7 @@
 #include "Sphere.h"
 
-Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : radius{radius}, material{material} {
-
+Sphere::Sphere(const Vector3 &center, const double &radius, const Material &material) : radius{radius} {
+	this->material = material;
 	this->transform.translate(center);
 }
 
@@ -17,22 +17,6 @@ sf::Color Sphere::getPixel(const Vector3 &point) const {
     double v = 0.5f - std::asin(d.z)/M_PI;
 
     return this->material.getColorAt(u, v);
-}
-
-const Transform3 & Sphere::getTransform() const {
-    return this->transform;
-}
-
-const Material & Sphere::getMaterial() const {
-    return this->material;
-}
-
-void Sphere::setTransform(const Transform3 &transform) {
-    this->transform = transform;
-}
-
-void Sphere::setMaterial(const Material &material) {
-    this->material = material;
 }
 
 /*  CollisionData CustomObject::intersect(const Ray &) const

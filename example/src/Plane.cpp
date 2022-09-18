@@ -1,12 +1,13 @@
 #include "Plane.h"
 
-Plane::Plane(const Vector3 &point, const Vector3 &normal, const Material &material) : material{material} {
+Plane::Plane(const Vector3 &point, const Vector3 &normal, const Material &material) {
 	const Vector3 norm = normalize(normal);
-    A = norm.x;
-    B = norm.y;
-    C = norm.z;
-    D = -A*point.x - B*point.y - C*point.z;
+    this->A = norm.x;
+    this->B = norm.y;
+    this->C = norm.z;
+    this->D = -A*point.x - B*point.y - C*point.z;
 
+	this->material = material;
     this->material.setAmbient(0);
     this->material.setDiffuse(1);
     this->material.setSpecular(0);

@@ -1,9 +1,11 @@
 #include "Torus.h"
 
 Torus::Torus(const Vector3 &center, const double &majorRadius, const double &minorRadius, const Material &material) : 
-		majorRadius{majorRadius}, minorRadius{minorRadius}, material{material} {
+		majorRadius{majorRadius}, minorRadius{minorRadius} {
 
 	this->transform.translate(center);
+
+	this->material = material;
 }
 
 Vector3 Torus::getNormal(const Vector3 &P) const {
@@ -21,15 +23,15 @@ Vector3 Torus::getNormal(const Vector3 &P) const {
     so overall donut is not looking good (but idea of this method is the same).    */
 
 CollisionData Torus::intersect(const Ray &ray) const {
-    CollisionData data;
-
-	const Vector3 center = this->transform.getTranslation();
+	const Vector3 origin = this->transform.getRotation()*(ray.origin - this->transform.getTranslation());
+	//const Vector3 origin = this->transform.getRelativeToTransform(ray.origin);
+	const Vector3 dir = this->transform.getRotation()*ray.direction;
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = this->majorRadius;
     const double B = this->minorRadius;
-    const Vector3 D = ray.origin - center;
-    const Vector3 E = ray.direction;
+    const Vector3 D = origin;
+    const Vector3 E = dir;
     const double G = 4.*A*A*(E.x*E.x + E.y*E.y);
     const double H = 8.*A*A*(D.x*E.x + D.y*E.y);
     const double I = 4.*A*A*(D.x*D.x + D.y*D.y);
@@ -38,6 +40,8 @@ CollisionData Torus::intersect(const Ray &ray) const {
     const double L = D*D + (A*A - B*B);
 
     std::vector<double> tSolutions = solveQuarticEquation(J*J, 2.*J*K, 2.*J*L + K*K - G, 2.*K*L - H, L*L - I);
+	
+	CollisionData data;
 
     if(!tSolutions.size()) {
 		return data;
@@ -51,13 +55,13 @@ CollisionData Torus::intersect(const Ray &ray) const {
 		return data;
 	}
 
-	const double tNearestPositive = *std::min_element(tSolutions.begin(), tSolutions.end());
+	const double t = *std::min_element(tSolutions.begin(), tSolutions.end());
 
-	data.point = tNearestPositive*ray.direction + ray.origin;
-    data.normal = this->getNormal(data.point - center);
+	data.point = ray.origin + t*ray.direction;
+    data.normal = this->transform.getRotation().getInverse()*this->getNormal(origin + t*dir);
     data.color = this->material.getColor();
     data.material = this->material;
-    data.distance = tNearestPositive;
+    data.distance = t;
     data.exist = true;
 
     return data;
