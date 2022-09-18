@@ -91,7 +91,7 @@ sf::Color RenderScene::evaluateRayTracing(const Ray &ray, const unsigned int &de
         const Vector3 R = normalize(L - 2*(L*N)*N);                       // reflected light from surface
 
         const CollisionData shadow = this->rayTrace(Ray(data.point, L));
-		if(shadow.exist && shadow.distance<length(light->getPosition() - shadow.point))
+		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))
 			continue;
 
         illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;

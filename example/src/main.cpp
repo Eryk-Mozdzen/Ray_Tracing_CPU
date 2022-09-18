@@ -70,14 +70,15 @@ int main() {
 
     menager.load("../textures/notexture.jpg");
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Vector3(10, -15, 30), 7, Material(255, 0, 0));
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(Vector3(0, 0, 0), 7, Material(255, 0, 0));
 
     scene.addObject(sphere);
     scene.addObject(std::make_shared<Sphere>(Vector3(0, 25, 25), 7, Material(0, 255, 0)));
     scene.addObject(std::make_shared<Torus>(Vector3(0, 0, 15), 6, 3, Material(0, 0, 255)));
     scene.addObject(std::make_shared<Plane>(Vector3(0, 0, 0), Vector3::UnitZ(), Material(menager.getTextureReference(0), 5000, 5000)));
 
-    scene.addLight(std::make_shared<LightSource>(Vector3(-25, 25, 25)));
+    scene.addLight(std::make_shared<LightSource>(Vector3(-25, 0, 25)));
+	scene.addLight(std::make_shared<LightSource>(Vector3(0, 0, 50)));
 
     double angle = 0;
 
@@ -89,9 +90,8 @@ int main() {
 
         /*-----------  Scene objects update  ---------------*/
 
-        Transform3 tr = sphere->getTransform();
-
-        tr.translate(Vector3(0, 2*std::sin(angle), 0));
+        Transform3 tr;
+        tr.translate(Vector3(10, 25*std::sin(angle), 30));
 
         sphere->setTransform(tr);
         angle +=0.1;
