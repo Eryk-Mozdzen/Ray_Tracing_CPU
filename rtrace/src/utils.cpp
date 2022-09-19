@@ -7,13 +7,13 @@ rtrace::Ray::Ray(const rtrace::Vector3 &origin, const rtrace::Vector3 &direction
     this->direction = direction;
 }
 
-rtrace::LightSource::LightSource() {}
+rtrace::Light::Light() {}
 
-rtrace::LightSource::LightSource(const rtrace::Vector3 &position) {
+rtrace::Light::Light(const rtrace::Vector3 &position) {
     this->position = position;
 }
 
-const rtrace::Vector3 & rtrace::LightSource::getPosition() const {
+const rtrace::Vector3 & rtrace::Light::getPosition() const {
     return this->position;
 }
 
@@ -34,7 +34,6 @@ void rtrace::Object::setMaterial(const rtrace::Material &mat) {
 }
 
 rtrace::CollisionData::CollisionData() {
-    this->color = sf::Color::Transparent;
     this->normal = Vector3(1, 0, 0);
     this->distance = 1000000;
     this->exist = false;
@@ -56,22 +55,11 @@ rtrace::CollisionData rtrace::CollisionData::smin(const rtrace::CollisionData &a
 
     if(h>0) {
         const double m = a.distance/(a.distance + b.distance);
-        data.color = color_interpolation(a.color, b.color, m);
+		
+		data.material.setColor(color_interpolation(a.material.getColor(), b.material.getColor(), m));
     }
     
     return data;
-}
-
-rtrace::TextureMenager::TextureMenager() {}
-
-void rtrace::TextureMenager::load(const std::string &texture_str) {
-    sf::Image texture;
-    texture.loadFromFile(texture_str);
-    textures.push_back(texture);
-}
-
-sf::Image* rtrace::TextureMenager::getTextureReference(const int &index) {
-    return &textures[index];
 }
 
 std::ostream & rtrace::operator<<(std::ostream &lhs, const sf::Color &rhs) {
@@ -84,12 +72,6 @@ std::ostream & rtrace::operator<<(std::ostream &lhs, const sf::Color &rhs) {
 }
 
 sf::Color rtrace::operator*(const double &lhs, const sf::Color &rhs) {
-    /*return sf::Color(
-        std::min(std::max(0., lhs*rhs.r), 255.),
-        std::min(std::max(0., lhs*rhs.g), 255.),
-        std::min(std::max(0., lhs*rhs.b), 255.)
-    );*/
-
     const double r = lhs*(double)rhs.r;
     const double g = lhs*(double)rhs.g;
     const double b = lhs*(double)rhs.b;
@@ -102,8 +84,10 @@ sf::Color rtrace::operator*(const double &lhs, const sf::Color &rhs) {
 }
 
 sf::Color rtrace::color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {
-    if(color1==sf::Color::Transparent) return color2;
-    if(color2==sf::Color::Transparent) return color1;
+    if(color1==sf::Color::Transparent)
+		return color2;
+    if(color2==sf::Color::Transparent)
+		return color1;
 
     return sf::Color(
         (1.f-alpha)*color1.r + alpha*color2.r,

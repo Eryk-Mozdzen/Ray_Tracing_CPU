@@ -17,8 +17,6 @@
 
 #include <iostream>     // cout, endl
 
-#include "rtrace.h"
-
 #include "camera.h"
 #include "sphere.h"
 #include "plane.h"
@@ -58,13 +56,10 @@ int main() {
 
     Camera camera(rtrace::Vector3(-50, 0, 25), 1);
     rtrace::Scene scene(rtrace::RAY_TRACING_MODE, 3, 135, 100);
-    rtrace::TextureMenager menager;
 
     /*-----------  Scene setup  ---------------*/
 
     scene.setMouseCursorVisible(false);
-
-    menager.load("../textures/notexture.jpg");
 
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Material(255, 0, 0));
 	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3, rtrace::Material(0, 0, 255));
@@ -72,10 +67,10 @@ int main() {
     scene.addObject(sphere);
 	scene.addObject(torus);
     scene.addObject(std::make_shared<Sphere>(rtrace::Vector3(0, 25, 25), 7, rtrace::Material(0, 255, 0)));
-    scene.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::UnitZ(), rtrace::Material(menager.getTextureReference(0), 5000, 5000)));
+    scene.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::UnitZ(), rtrace::Material(64, 64, 64)));
 
-    scene.addLight(std::make_shared<rtrace::LightSource>(rtrace::Vector3(-25, 0, 25)));
-	scene.addLight(std::make_shared<rtrace::LightSource>(rtrace::Vector3(0, 0, 50)));
+    scene.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(-25, 0, 25)));
+	scene.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(0, 0, 50)));
 
     double angle = 0;
 

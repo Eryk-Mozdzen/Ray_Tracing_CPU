@@ -15,13 +15,6 @@ Plane::Plane(const rtrace::Vector3 &point, const rtrace::Vector3 &normal, const 
     this->material.setReflection(0.5);
 }
 
-sf::Color Plane::getPixel(const rtrace::Vector3 &point3D) const {
-    //only special case
-    sf::Vector2f point2D(point3D.x, point3D.y);
-
-    return this->material.getColorAt(point3D.x, point3D.y);
-}
-
 rtrace::Vector3 Plane::getNormal() const {
     return rtrace::Vector3(this->A, this->B, this->C);
 }
@@ -55,11 +48,11 @@ rtrace::CollisionData Plane::intersect(const rtrace::Ray &ray) const {
 
     // if ray collide with object fill data fields in correct way
     data.normal = this->getNormal();                    // set surface notrmal vector in collision point
-    data.color = this->getPixel(data.point);            // set color of the object in collision point
     data.material = this->material;                     // set material of the objects
     data.distance = rtrace::length(data.point - ray.origin);    // set distance from ray origin to collision point
     data.exist = true;                                  // collision occured? set to true
-    return data;        // return collision data
+
+    return data;
 }
 
 /*  CollisionData CustomObject::distance(const Vector3 &) const
@@ -74,12 +67,11 @@ rtrace::CollisionData Plane::distance(const rtrace::Vector3 &point) const {
     const rtrace::Vector3 N = this->getNormal();
     const rtrace::Vector3 V = point - P;
 
-    data.distance = std::abs(V*N);                          // set distance from surface to point (with sign)
-    data.point = point;                                     // set point, where calculations are
-    data.normal = N;                                        // set normal in the nearest point
-    data.material = this->material;                         // set material of the objects
-    data.color = this->getPixel(point + N*data.distance);   // set color in the nearest point
-    data.exist = (data.distance<rtrace::EPSILON);       	// set true if point is near enough
+    data.distance = std::abs(V*N);                  // set distance from surface to point (with sign)
+    data.point = point;                             // set point, where calculations are
+    data.normal = N;                                // set normal in the nearest point
+    data.material = this->material;                 // set material of the objects
+    data.exist = (data.distance<rtrace::EPSILON);	// set true if point is near enough
 
-    return data;    // return collision data
+    return data;
 }

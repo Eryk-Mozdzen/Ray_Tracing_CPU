@@ -56,7 +56,6 @@ rtrace::CollisionData Torus::intersect(const rtrace::Ray &ray) const {
 
 	data.point = ray.origin + t*ray.direction;
     data.normal = this->transform.getRotation().getInverse()*this->getNormal(origin + t*dir);
-    data.color = this->material.getColor();
     data.material = this->material;
     data.distance = t;
     data.exist = true;
@@ -81,7 +80,6 @@ rtrace::CollisionData Torus::distance(const rtrace::Vector3 &point) const {
 	data.distance = rtrace::length(P - Q) - r;		// set distance from surface to point (with sign)
     data.point = point;                     		// set point, where calculations are
     data.normal = this->getNormal(P);				// set normal in the nearest point
-    data.color = this->material.getColor();			// set color in the nearest point
     data.material = this->material;         		// set material of the objects
     data.exist = (data.distance<rtrace::EPSILON);   // set true if point is near enough
 

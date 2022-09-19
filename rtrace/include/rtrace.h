@@ -33,7 +33,7 @@ namespace rtrace {
 	class Scene : public sf::RenderWindow {
 	private:
 		std::vector<std::shared_ptr<Object>> objects;
-		std::vector<std::shared_ptr<LightSource>> lights;
+		std::vector<std::shared_ptr<Light>> lights;
 		sf::Vector2u renderResolution;
 		sf::Image frameBuffer;
 		RenderMode renderMode;
@@ -49,7 +49,7 @@ namespace rtrace {
 		Scene(const RenderMode&, const unsigned int&, const unsigned int&, const unsigned int&);
 		
 		void addObject(std::shared_ptr<Object>);
-		void addLight(std::shared_ptr<LightSource>);
+		void addLight(std::shared_ptr<Light>);
 		void setReflectionDepth(const unsigned int&);
 		void setRenderMode(const RenderMode&);
 		void setRenderResolution(const unsigned int&, const unsigned int&);

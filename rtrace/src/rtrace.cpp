@@ -15,7 +15,7 @@ void rtrace::Scene::addObject(std::shared_ptr<Object> object_ptr) {
     this->objects.push_back(std::move(object_ptr));
 }
 
-void rtrace::Scene::addLight(std::shared_ptr<LightSource> light) {
+void rtrace::Scene::addLight(std::shared_ptr<Light> light) {
     this->lights.push_back(std::move(light));
 }
 
@@ -84,9 +84,9 @@ sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsign
 	
 	const sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth + 1);
 
-    sf::Color illumination = data.material.getAmbient()*data.color + data.material.getReflection()*reflected;
+    sf::Color illumination = data.material.getAmbient()*data.material.getColor() + data.material.getReflection()*reflected;
 
-	for(const std::shared_ptr<LightSource> &light : this->lights) {
+	for(const std::shared_ptr<Light> &light : this->lights) {
         const Vector3 L = normalize(light->getPosition() - data.point);   // light
         const Vector3 R = normalize(L - 2*(L*N)*N);                       // light reflection
 
@@ -94,7 +94,7 @@ sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsign
 		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))
 			continue;
 
-        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.color;
+        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.material.getColor();
         illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
     }
 
@@ -117,7 +117,7 @@ sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const uns
     if(!data.exist)
         return sf::Color::Transparent;;
 
-    return data.color;
+    return data.material.getColor();
 }
 
 sf::Color rtrace::Scene::renderPixel(const rtrace::View &view, const unsigned int &x, const unsigned int &y) const {

@@ -10,7 +10,6 @@ private:
     double A, B, C, D;
 	
 	rtrace::Vector3 getNormal() const;
-	sf::Color getPixel(const rtrace::Vector3&) const;
 public:
     Plane(const rtrace::Vector3&, const rtrace::Vector3&, const rtrace::Material&);
 

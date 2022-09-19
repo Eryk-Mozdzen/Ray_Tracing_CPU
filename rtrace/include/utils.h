@@ -33,12 +33,11 @@ namespace rtrace {
 		be initialized by user with correct values (like in example).               */
 
 	struct CollisionData {
-		Vector3 normal;         // normalized normal to surface in specific point
-		Vector3 point;          // point of collision
-		Material material;      // material of objects where the collision occurred
-		sf::Color color;        // nearest collision object color
-		double distance;        // distance to the object
 		bool exist;             // true if collision occurred
+		Vector3 point;          // point of collision
+		Vector3 normal;         // normalized normal to surface in specific point
+		Material material;      // material of objects where the collision occurred
+		double distance;        // distance to the object
 
 		CollisionData();
 
@@ -49,12 +48,12 @@ namespace rtrace {
 	/*  LightSource class
 		It is part of the scene. At this moment describes only position of light point.     */
 
-	class LightSource {
+	class Light {
 	private:
 		Vector3 position;
 	public:
-		LightSource();
-		LightSource(const Vector3&);
+		Light();
+		Light(const Vector3&);
 		const Vector3 & getPosition() const;
 	};
 
@@ -79,20 +78,6 @@ namespace rtrace {
 		void setTransform(const Transform3&);
 		void setMaterial(const Material&);
 
-	};
-
-	/*  TextureMenager class
-		Class not connected with projects exacly,
-		but is very handy in care about texture pointers.
-		User should use one in program to store textures in one place (like in example)     */
-
-	class TextureMenager {
-	private:
-		std::vector<sf::Image> textures;
-	public:
-		TextureMenager();
-		void load(const std::string&);
-		sf::Image* getTextureReference(const int&);
 	};
 
 	/*  handy funstions for SFML native Color class     */

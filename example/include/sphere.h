@@ -8,8 +8,7 @@
 class Sphere : public rtrace::Object {
 private:
     double radius;
-	
-	sf::Color getPixel(const rtrace::Vector3&) const;
+
 public:
     Sphere(const rtrace::Vector3&, const double&, const rtrace::Material&);
 
