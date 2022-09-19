@@ -4,9 +4,9 @@
 #include <vector>
 #include <cmath>
 
-#include "vector.h"
-#include "matrix.h"
-#include "tools.h"
+#include <rtrace/vector.h>
+#include <rtrace/matrix.h>
+#include <rtrace/tools.h>
 
 namespace rtrace {
 

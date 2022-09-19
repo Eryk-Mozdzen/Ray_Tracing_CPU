@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include <rtrace/object.h>
 
 /*  User custom Plane class
     It is drawable object looks like infinity plane, flat ground.    */

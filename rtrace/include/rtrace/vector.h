@@ -4,7 +4,7 @@
 #include <cassert>
 #include <string>
 
-#include "matrix.h"
+#include <rtrace/matrix.h>
 
 namespace rtrace {
 

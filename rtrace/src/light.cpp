@@ -1,4 +1,4 @@
-#include "light.h"
+#include <rtrace/light.h>
 
 rtrace::Light::Light() {}
 

@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include <rtrace/matrix.h>
 
 rtrace::Matrix::Matrix() {}
 

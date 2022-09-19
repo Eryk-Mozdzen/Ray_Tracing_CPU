@@ -1,4 +1,4 @@
-#include "object.h"
+#include <rtrace/object.h>
 
 const rtrace::Transform3 & rtrace::Object::getTransform() const {
 	return this->transform;

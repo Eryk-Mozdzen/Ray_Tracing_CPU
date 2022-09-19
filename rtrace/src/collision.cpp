@@ -1,4 +1,4 @@
-#include "collision.h"
+#include <rtrace/collision.h>
 
 rtrace::Collision::Collision() {
     this->normal = rtrace::Vector3(1, 0, 0);

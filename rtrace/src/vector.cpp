@@ -1,4 +1,4 @@
-#include "vector.h"
+#include <rtrace/vector.h>
 
 rtrace::Vector3::Vector3() : rtrace::Vector3(0, 0, 0) {}
 

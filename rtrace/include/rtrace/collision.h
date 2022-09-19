@@ -6,9 +6,9 @@
 #include <cmath>
 #include <cassert>
 
-#include "material.h"
-#include "vector.h"
-#include "tools.h"
+#include <rtrace/material.h>
+#include <rtrace/vector.h>
+#include <rtrace/tools.h>
 
 namespace rtrace {
 

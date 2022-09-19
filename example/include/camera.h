@@ -2,7 +2,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include "view.h"
+#include <rtrace/view.h>
 
 /*  User custom Camera class
     It is used to describes player point of view.   */

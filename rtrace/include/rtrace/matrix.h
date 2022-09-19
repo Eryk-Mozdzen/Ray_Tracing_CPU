@@ -8,7 +8,7 @@
 
 namespace rtrace {
 
-	constexpr double EPSILON = 0.01;
+	constexpr double EPSILON = 0.001;
 
 	/*  Matrix class
 		This is independent file, can be used in other projects.

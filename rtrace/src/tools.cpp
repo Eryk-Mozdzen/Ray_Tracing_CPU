@@ -1,4 +1,4 @@
-#include "tools.h"
+#include <rtrace/tools.h>
 
 double rtrace::solveLinearEquation(const double &a, const double &b) {
     if(std::abs(a)<rtrace::EPSILON && std::abs(b)>rtrace::EPSILON)

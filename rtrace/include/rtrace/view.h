@@ -3,9 +3,9 @@
 #include <vector>
 #include <cmath>
 
-#include "vector.h"
-#include "matrix.h"
-#include "transform.h"
+#include <rtrace/vector.h>
+#include <rtrace/matrix.h>
+#include <rtrace/transform.h>
 
 namespace rtrace {
 

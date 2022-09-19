@@ -5,10 +5,10 @@
 #include <iomanip>
 #include <sstream>
 
-#include "view.h"
-#include "object.h"
-#include "light.h"
-#include "color.h"
+#include <rtrace/view.h>
+#include <rtrace/object.h>
+#include <rtrace/light.h>
+#include <rtrace/color.h>
 
 namespace rtrace {
 
@@ -36,7 +36,7 @@ namespace rtrace {
 		void addObject(std::shared_ptr<Object>);
 		void addLight(std::shared_ptr<Light>);
 
-		std::vector<Color> render(const View&, const unsigned int&, const unsigned int&, const Mode&, const unsigned int&) const;
+		std::vector<Color> render(const View&, const int&, const int&, const Mode&, const int&) const;
 	};
 
 }

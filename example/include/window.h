@@ -1,27 +1,17 @@
 #pragma once
 
-#include <iostream>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include "scene.h"
+#include <rtrace/scene.h>
 
 class Window : public sf::RenderWindow, public rtrace::Scene {
 private:
-	sf::Image frameBuffer;
-	sf::Vector2u renderResolution;
-	Mode renderMode;
-	unsigned int reflectionDepth;
+	int depth, width, height;
+	rtrace::Scene::Mode mode;
+	sf::Image buffer;
 public:
-	Window(const Mode&, const unsigned int&, const unsigned int&, const unsigned int&);
-	
-	void setReflectionDepth(const unsigned int&);
-	void setRenderMode(const Mode&);
-	void setRenderResolution(const unsigned int&, const unsigned int&);
-
-	const unsigned int & getReflectionDepth() const;
-	const sf::Vector2u & getRenderResolution() const;
+	Window(const rtrace::Scene::Mode&, const int&, const int&, const int&);
 
 	void handleEvents();
 	void display(const rtrace::View&);
-	void saveFrameToFile(const std::string&) const;
 };

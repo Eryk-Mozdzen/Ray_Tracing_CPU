@@ -26,17 +26,12 @@ cd Ray_Tracing_CPU/external
 git submodule init SFML
 git submodule update
 
+cd ../example
 mkdir build
 cd build
-cmake -S ../SFML/ -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+cmake .. -G "Unix Makefiles"
 make
-
-cd ../../example
-mkdir build
-cd build
-cmake -S .. -B . -G "Unix Makefiles" -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
-make
-RayTracingExample.exe
+example-ghx.exe
 ```
 Linux:
 ```
@@ -52,30 +47,24 @@ cd ./Ray_Tracing_CPU/external
 git submodule init SFML
 git submodule update
 
+cd ../example
 mkdir ./build
 cd ./build
-cmake -S ../SFML/ -B . -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
+cmake .. 
 make
-
-cd ../../example
-mkdir ./build
-cd ./build
-cmake -S .. -B . -DBUILD_SHARED_LIBS=FALSE -DSFML_USE_STATIC_STD_LIBS=TRUE
-make
-./RayTracingExample
+./example-ghx
 ```
 Example usage of all functions is presented in code with comments, but for short explanation:
 
 #### Custom drawable object
 Lib does not have any pre-made classes to draw on scene. User must declare his own objects inheriting from `Object` class and overrite
-`CollisionData intersect(const Ray &ray) const` or `CollisionData distance(const Vector3 &point)` method on it.
+`Collision intersect(const Ray &ray) const` or `Collision distance(const Vector3 &point)` method on it.
 
 Method must return `CollisionData` struct wih correct values in each field.
 
 `CollisionData` struct contains:
 - `.point` type `Vector3` (should contain coordinates of point in 3d space where collision occurs)
 - `.normal` type `Vector3` (should contain surface norma vector in collision point)
-- `.color` type `sf::Color` (should contain color of the surface in collision point)
 - `.material` type `Material` (should contain material specifications of the object)
 - `.distance` type `double` (should contain distance dorm ray origin to collision point)
 - `.exist` type `bool` (should contain result of intersection test, exacly the same what method return)
@@ -87,7 +76,7 @@ Method must return `CollisionData` struct wih correct values in each field.
 
 `View` class describes position and direction of "virtual camera" on scene. It also contains distance from eye to trajectory plane.
 
-`RenderScene` class is the core of algorithm. It contains informations about all objects and lights on screen.
+`Scene` class is the core of algorithm. It contains informations about all objects and lights on screen.
 
 ## To do:
 - overall optimalization

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "color.h"
+#include <rtrace/color.h>
 
 namespace rtrace {
 

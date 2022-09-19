@@ -1,4 +1,4 @@
-#include "view.h"
+#include <rtrace/view.h>
 
 rtrace::View::View() {
     this->distance = 1;

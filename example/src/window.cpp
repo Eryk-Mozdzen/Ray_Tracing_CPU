@@ -1,64 +1,55 @@
 #include "window.h"
 
-Window::Window(const Mode &renderMode, 
-                            const unsigned int &reflectionDepth, 
-                            const unsigned int &resolutionWidgth, 
-                            const unsigned int &resolutionHeight) : 
-							sf::RenderWindow{sf::VideoMode(1280, 720), "Render Scene"},
-							renderMode{renderMode},
-							reflectionDepth{reflectionDepth} {
+Window::Window(const rtrace::Scene::Mode &mode, 
+                            const int &depth, 
+                            const int &width, 
+                            const int &height) : 
+									sf::RenderWindow{sf::VideoMode(1280, 720), "Window"},
+									depth{depth},
+									width{width}, height{height},
+									mode{mode} {
 
-    this->setRenderResolution(resolutionWidgth, resolutionHeight);
-}
+	this->buffer.create(this->width, this->height, sf::Color::Black);
 
-void Window::setReflectionDepth(const unsigned int &reflectionDepth) {
-    this->reflectionDepth = reflectionDepth;
-}
-
-void Window::setRenderMode(const Mode &renderMode) {
-    this->renderMode = renderMode;
-}
-
-void Window::setRenderResolution(const unsigned int &resolutionH, const unsigned int &resolutionV) {
-    this->renderResolution = sf::Vector2u(resolutionH, resolutionV);
-
-    this->frameBuffer.create(resolutionH, resolutionV, sf::Color::Black);
-}
-
-const unsigned int & Window::getReflectionDepth() const {
-    return this->reflectionDepth;
-}
-
-const sf::Vector2u & Window::getRenderResolution() const {
-    return this->renderResolution;
+	sf::RenderWindow::setMouseCursorVisible(false);
 }
 
 void Window::handleEvents() {
 	sf::Event event;
 
     while(sf::RenderWindow::pollEvent(event)) {
-        if(event.type==sf::Event::Closed)
+        if(event.type==sf::Event::Closed) {
             sf::RenderWindow::close();
+		}
 		
         if(event.type==sf::Event::KeyPressed) {
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
                 sf::RenderWindow::close();
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-                this->setRenderMode(rtrace::Scene::SPHERE_TRACING);
-            if(sf::Keyboard::isKeyPressed(sf::Keyboard::M))
-                this->setRenderMode(rtrace::Scene::RAY_TRACING);
+			}
+
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
+                this->mode = rtrace::Scene::SPHERE_TRACING;
+			}
+
+            if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
+                this->mode = rtrace::Scene::RAY_TRACING;
+			}
+
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-                this->saveFrameToFile("../screenshots/screenshot_" + std::to_string(time(nullptr)) + ".jpg");
-                std::cout << "Saved frame" << std::endl;
+				this->buffer.saveToFile("../screenshots/screenshot.jpg");
             }
         }
 
         if(event.type==sf::Event::MouseWheelScrolled) {
-            sf::Vector2u res = this->getRenderResolution();
-            if(event.mouseWheelScroll.delta>0)
-				this->setRenderResolution(res.x + 15, res.y + 10);
-            else
-				this->setRenderResolution(res.x - 15, res.y - 10);
+            if(event.mouseWheelScroll.delta>0) {
+				this->width +=15;
+				this->height +=10;
+			} else {
+				this->width -=15;
+				this->height -=10;
+			}
+
+			this->buffer.create(this->width, this->height, sf::Color::Black);
         }
     }
 }
@@ -67,52 +58,46 @@ void Window::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
 
-    const std::vector<rtrace::Color> frame = this->render(view, this->renderResolution.x, this->renderResolution.y, this->renderMode, this->reflectionDepth);
+    const std::vector<rtrace::Color> frame = this->render(view, this->width, this->height, this->mode, this->depth);
 
     const double renderTime = clock.restart().asSeconds();
 
-	for(unsigned int i=0; i<this->renderResolution.y; i++) {
-        for(unsigned int j=0; j<this->renderResolution.x; j++) {
-			this->frameBuffer.setPixel(
-				this->renderResolution.x - j - 1,
-				this->renderResolution.y - i - 1,
+	for(int i=0; i<this->height; i++) {
+        for(int j=0; j<this->width; j++) {
+			this->buffer.setPixel(
+				j,
+				i,
 				sf::Color(
-					frame[i*this->renderResolution.x + j].r,
-					frame[i*this->renderResolution.x + j].g,
-					frame[i*this->renderResolution.x + j].b
+					frame[this->width*i + j].r,
+					frame[this->width*i + j].g,
+					frame[this->width*i + j].b
 				)
 			);
 		}
 	}
 
     sf::Texture tex;
-    tex.loadFromImage(this->frameBuffer);
+    tex.loadFromImage(this->buffer);
 
-    sf::Sprite sprite;
-    sprite.setTexture(tex);
-    sprite.scale((double)this->getSize().x/this->frameBuffer.getSize().x, (double)this->getSize().y/this->frameBuffer.getSize().y);
+    sf::Sprite sprite(tex);
+    sprite.scale((double)this->getSize().x/this->buffer.getSize().x, (double)this->getSize().y/this->buffer.getSize().y);
 	sf::RenderWindow::draw(sprite);
+	
+	sf::RenderWindow::display();
 
-    std::stringstream windowTitle;
-    windowTitle << std::setprecision(3) << std::fixed;
-    windowTitle << "Ray Tracing";
-    windowTitle << " | Resolution: " << this->renderResolution.x << "x" << this->renderResolution.y;
-    windowTitle << " | Render Time: " << renderTime*1000. << "ms";
-    windowTitle << " | FPS: " << 1/renderTime;
-    windowTitle << " | Zoom: " << view.getDistanceFromProjectionPlane();
+	const double drawTime = clock.restart().asSeconds();
 
-    windowTitle << " | Mode: ";
-    switch(this->renderMode) {
-        case RAY_TRACING:      windowTitle << "ray tracing";	break;
-        case SPHERE_TRACING:   windowTitle << "sphere tracing"; break;
-        default: break;
+    std::stringstream title;
+    title << std::setprecision(3) << std::fixed;
+    title << "Resolution: " << this->width << "x" << this->height;
+    title << " | Render Time: " << renderTime*1000. << "ms";
+	title << " | Draw Time: " << drawTime*1000. << "ms";
+    title << " | FPS: " << 1./(renderTime + drawTime);
+    title << " | Mode: ";
+    switch(this->mode) {
+        case RAY_TRACING:      title << "ray tracing";	break;
+        case SPHERE_TRACING:   title << "sphere tracing"; break;
     }
 
-    sf::RenderWindow::setTitle(windowTitle.str());
-    
-    sf::RenderWindow::display();
-}
-
-void Window::saveFrameToFile(const std::string &filename) const {
-    this->frameBuffer.saveToFile(filename);
+    sf::RenderWindow::setTitle(title.str());
 }

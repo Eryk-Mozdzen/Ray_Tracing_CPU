@@ -1,4 +1,4 @@
-#include "transform.h"
+#include <rtrace/transform.h>
 
 rtrace::Transform3::Transform3() : rtrace::Matrix(4, 4) {
     *this = Matrix::Identity(4);

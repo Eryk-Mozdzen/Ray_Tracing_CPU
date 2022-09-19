@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include <rtrace/object.h>
 
 /*  User custom Sphere class
     It is drawable object looks like ball. Can have color or texture.    */

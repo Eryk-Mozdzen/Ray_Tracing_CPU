@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include "object.h"
+#include <rtrace/object.h>
 
 /*  User custom Torus class
     It is drawable object looks like donut.    */

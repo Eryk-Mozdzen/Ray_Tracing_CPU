@@ -1,4 +1,4 @@
-#include "color.h"
+#include <rtrace/color.h>
 
 rtrace::Color::Color() : r{0}, g{0}, b{0}, w{0} {
 

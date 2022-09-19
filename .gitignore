@@ -2,4 +2,4 @@ example/build
 example/screenshots
 external/build
 
-**/.vscode/*
+**/.vscode

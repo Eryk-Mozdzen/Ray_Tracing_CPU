@@ -1,9 +1,9 @@
 #pragma once
 
-#include "material.h"
-#include "transform.h"
-#include "collision.h"
-#include "ray.h"
+#include <rtrace/material.h>
+#include <rtrace/transform.h>
+#include <rtrace/collision.h>
+#include <rtrace/ray.h>
 
 namespace rtrace {
 

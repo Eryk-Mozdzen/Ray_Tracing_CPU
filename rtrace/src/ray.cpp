@@ -1,4 +1,4 @@
-#include "ray.h"
+#include <rtrace/ray.h>
 
 rtrace::Ray::Ray() {}
 
