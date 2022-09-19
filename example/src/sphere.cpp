@@ -11,8 +11,8 @@ Sphere::Sphere(const rtrace::Vector3 &center, const double &radius, const rtrace
     if user objects collide with that ray, should return correct CollisionData struct
     if not, should return not changed CollisionData struct  */
 
-rtrace::CollisionData Sphere::intersect(const rtrace::Ray &ray) const {
-    rtrace::CollisionData data;                     // construct fills struct with correct fields
+rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
+    rtrace::Collision data;                     // construct fills struct with correct fields
     const rtrace::Vector3 center = transform.getTranslation();
 
     const double a = 1;
@@ -41,8 +41,8 @@ rtrace::CollisionData Sphere::intersect(const rtrace::Ray &ray) const {
     method parameter is Vector3 class, 
     method should return infromations about object int the nearest point */
 
-rtrace::CollisionData Sphere::distance(const rtrace::Vector3 &point) const {
-    rtrace::CollisionData data;
+rtrace::Collision Sphere::distance(const rtrace::Vector3 &point) const {
+    rtrace::Collision data;
 	
     const rtrace::Vector3 center = this->transform.getTranslation();
 

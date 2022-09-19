@@ -1,11 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip>
 #include <cassert>
 #include <cmath>
 #include <vector>
-#include <string>
-#include <iomanip>
 
 namespace rtrace {
 

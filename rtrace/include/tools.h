@@ -9,6 +9,8 @@
 #include "vector.h"
 #include "matrix.h"
 
+#include <SFML/Graphics.hpp>
+
 namespace rtrace {
 
 	/*  Collection of simple math solvers to make cleaner code.
@@ -22,5 +24,11 @@ namespace rtrace {
 
 	Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
 	Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
+
+	/*  handy funstions for SFML native Color class     */
+
+	std::ostream & operator<<(std::ostream&, const sf::Color&);
+	sf::Color operator*(const double&, const sf::Color&);
+	sf::Color color_interpolation(const sf::Color&, const sf::Color&, const double&);
 
 }

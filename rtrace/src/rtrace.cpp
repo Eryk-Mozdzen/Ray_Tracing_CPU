@@ -41,8 +41,8 @@ const sf::Vector2u & rtrace::Scene::getRenderResolution() const {
     return this->renderResolution;
 }
 
-rtrace::CollisionData rtrace::Scene::rayTrace(const rtrace::Ray &ray) const {
-    CollisionData tmp, data;
+rtrace::Collision rtrace::Scene::rayTrace(const rtrace::Ray &ray) const {
+    Collision tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
         tmp = this->objects[i]->intersect(ray);
@@ -56,14 +56,14 @@ rtrace::CollisionData rtrace::Scene::rayTrace(const rtrace::Ray &ray) const {
     return data;
 }
 
-rtrace::CollisionData rtrace::Scene::sphereTrace(const rtrace::Vector3 &point) const {
-    CollisionData tmp, data;
+rtrace::Collision rtrace::Scene::sphereTrace(const rtrace::Vector3 &point) const {
+    Collision tmp, data;
 
     for(unsigned int i=0; i<this->objects.size(); i++) {
         tmp = this->objects[i]->distance(point);
 
         //data = CollisionData::min(tmp, data);
-        data = CollisionData::smin(tmp, data, 10);
+        data = Collision::smin(tmp, data, 10);
     }
 
     return data;
@@ -73,7 +73,7 @@ sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsign
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
-    const CollisionData data = this->rayTrace(ray);
+    const Collision data = this->rayTrace(ray);
 
     if(!data.exist)
         return sf::Color::Transparent;
@@ -84,18 +84,18 @@ sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsign
 	
 	const sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth + 1);
 
-    sf::Color illumination = data.material.getAmbient()*data.material.getColor() + data.material.getReflection()*reflected;
+    sf::Color illumination = data.material.ambient*data.material.color + data.material.reflection*reflected;
 
 	for(const std::shared_ptr<Light> &light : this->lights) {
         const Vector3 L = normalize(light->getPosition() - data.point);   // light
         const Vector3 R = normalize(L - 2*(L*N)*N);                       // light reflection
 
-        const CollisionData shadow = this->rayTrace(Ray(data.point, L));
+        const Collision shadow = this->rayTrace(Ray(data.point, L));
 		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))
 			continue;
 
-        illumination +=data.material.getDiffuse()*std::max(L*N, 0.)*data.material.getColor();
-        illumination +=data.material.getSpecular()*std::pow(std::max(V*R, 0.), data.material.getShininess())*sf::Color::White;
+        illumination +=data.material.diffuse*std::max(L*N, 0.)*data.material.color;
+        illumination +=data.material.specular*std::pow(std::max(V*R, 0.), data.material.shininess)*sf::Color::White;
     }
 
     return illumination;
@@ -105,7 +105,7 @@ sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const uns
     if(depth>=this->reflectionDepth)
         return sf::Color::Transparent;
 
-    CollisionData data;
+    Collision data;
     const double renderView = 100;
     double dist = 0;
 
@@ -117,7 +117,7 @@ sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const uns
     if(!data.exist)
         return sf::Color::Transparent;;
 
-    return data.material.getColor();
+    return data.material.color;
 }
 
 sf::Color rtrace::Scene::renderPixel(const rtrace::View &view, const unsigned int &x, const unsigned int &y) const {

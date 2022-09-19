@@ -19,7 +19,7 @@ rtrace::Vector3 Torus::getNormal(const rtrace::Vector3 &P) const {
     if user objects collide with that ray, should return correct CollisionData struct
     if not, should return not changed CollisionData struct		*/
 
-rtrace::CollisionData Torus::intersect(const rtrace::Ray &ray) const {
+rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 	const rtrace::Vector3 origin = this->transform.getRotation()*(ray.origin - this->transform.getTranslation());
 	//const Vector3 origin = this->transform.getRelativeToTransform(ray.origin);
 	const rtrace::Vector3 dir = this->transform.getRotation()*ray.direction;
@@ -38,7 +38,7 @@ rtrace::CollisionData Torus::intersect(const rtrace::Ray &ray) const {
 
     std::vector<double> tSolutions = rtrace::solveQuarticEquation(J*J, 2.*J*K, 2.*J*L + K*K - G, 2.*K*L - H, L*L - I);
 	
-	rtrace::CollisionData data;
+	rtrace::Collision data;
 
     if(!tSolutions.size()) {
 		return data;
@@ -68,14 +68,14 @@ rtrace::CollisionData Torus::intersect(const rtrace::Ray &ray) const {
     method parameter is Vector3 class, 
     method should return infromations about object int the nearest point */
 
-rtrace::CollisionData Torus::distance(const rtrace::Vector3 &point) const {
+rtrace::Collision Torus::distance(const rtrace::Vector3 &point) const {
     const double R = this->majorRadius;
     const double r = this->minorRadius;
 
 	const rtrace::Vector3 P = this->transform.getRotation()*(point - this->transform.getTranslation());
 	const rtrace::Vector3 Q = rtrace::normalize(rtrace::Vector3(P.x, P.y, 0))*R;
 	
-	rtrace::CollisionData data;
+	rtrace::Collision data;
 
 	data.distance = rtrace::length(P - Q) - r;		// set distance from surface to point (with sign)
     data.point = point;                     		// set point, where calculations are

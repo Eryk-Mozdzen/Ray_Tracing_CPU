@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtrace.h"
+#include "object.h"
 
 /*  User custom Plane class
     It is drawable object looks like infinity plane, flat ground.    */
@@ -13,6 +13,6 @@ private:
 public:
     Plane(const rtrace::Vector3&, const rtrace::Vector3&, const rtrace::Material&);
 
-    rtrace::CollisionData intersect(const rtrace::Ray&) const;
-    rtrace::CollisionData distance(const rtrace::Vector3&) const;
+    rtrace::Collision intersect(const rtrace::Ray&) const;
+    rtrace::Collision distance(const rtrace::Vector3&) const;
 };

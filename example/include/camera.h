@@ -1,5 +1,6 @@
 #pragma once
 
+#include "view.h"
 #include "rtrace.h"
 
 /*  User custom Camera class

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rtrace.h"
+#include "object.h"
 
 /*  User custom Sphere class
     It is drawable object looks like ball. Can have color or texture.    */
@@ -12,6 +12,6 @@ private:
 public:
     Sphere(const rtrace::Vector3&, const double&, const rtrace::Material&);
 
-    rtrace::CollisionData intersect(const rtrace::Ray&) const;
-    rtrace::CollisionData distance(const rtrace::Vector3&) const;
+    rtrace::Collision intersect(const rtrace::Ray&) const;
+    rtrace::Collision distance(const rtrace::Vector3&) const;
 };

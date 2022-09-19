@@ -8,13 +8,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "vector.h"
-#include "matrix.h"
 #include "tools.h"
 #include "view.h"
-#include "utils.h"
-#include "material.h"
-#include "transform.h"
+#include "object.h"
+#include "light.h"
 
 /*  RenderMode enumerator
     Contains all possible modes for rendering.  */
@@ -28,7 +25,7 @@ namespace rtrace {
 
 	/*  RenderWindow class
 		In this place heppend all magic.
-		It reprezent application window and all informations about scene with objects and light.*/
+		It reprezent application window and all informations about scene with objects and light.	*/
 
 	class Scene : public sf::RenderWindow {
 	private:
@@ -41,8 +38,8 @@ namespace rtrace {
 
 		sf::Color renderPixel(const View&, const unsigned int&, const unsigned int&) const;
 
-		CollisionData rayTrace(const Ray&) const;
-		CollisionData sphereTrace(const Vector3&) const;
+		Collision rayTrace(const Ray&) const;
+		Collision sphereTrace(const Vector3&) const;
 		sf::Color evaluateRayTracing(const Ray&, const unsigned int&) const;
 		sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 	public:

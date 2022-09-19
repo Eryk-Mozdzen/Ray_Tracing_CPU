@@ -140,3 +140,37 @@ rtrace::Matrix solveLinearSystemJacobiMethod(const rtrace::Matrix &A, const rtra
 
     return x;
 }
+
+std::ostream & rtrace::operator<<(std::ostream &lhs, const sf::Color &rhs) {
+    lhs << "(";
+    lhs << (int)rhs.r << "\t";
+    lhs << (int)rhs.g << "\t";
+    lhs << (int)rhs.b;
+    lhs << ")";
+    return lhs;
+}
+
+sf::Color rtrace::operator*(const double &lhs, const sf::Color &rhs) {
+    const double r = lhs*(double)rhs.r;
+    const double g = lhs*(double)rhs.g;
+    const double b = lhs*(double)rhs.b;
+
+    return sf::Color(
+        ((r<255) ? ((r<0) ? 0 : (sf::Uint8)r) : 255),
+        ((g<255) ? ((g<0) ? 0 : (sf::Uint8)g) : 255),
+        ((b<255) ? ((b<0) ? 0 : (sf::Uint8)b) : 255)
+    );
+}
+
+sf::Color rtrace::color_interpolation(const sf::Color &color1, const sf::Color &color2, const double &alpha) {
+    if(color1==sf::Color::Transparent)
+		return color2;
+    if(color2==sf::Color::Transparent)
+		return color1;
+
+    return sf::Color(
+        (1.f-alpha)*color1.r + alpha*color2.r,
+        (1.f-alpha)*color1.g + alpha*color2.g,
+        (1.f-alpha)*color1.b + alpha*color2.b
+    );
+}

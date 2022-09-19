@@ -8,11 +8,11 @@ Plane::Plane(const rtrace::Vector3 &point, const rtrace::Vector3 &normal, const 
     this->D = -A*point.x - B*point.y - C*point.z;
 
 	this->material = material;
-    this->material.setAmbient(0);
-    this->material.setDiffuse(1);
-    this->material.setSpecular(0);
-    this->material.setShininess(1);
-    this->material.setReflection(0.5);
+	this->material.ambient = 0;
+	this->material.diffuse = 1;
+	this->material.specular = 0;
+	this->material.shininess = 1;
+	this->material.reflection = 0.5;
 }
 
 rtrace::Vector3 Plane::getNormal() const {
@@ -25,8 +25,8 @@ rtrace::Vector3 Plane::getNormal() const {
     if user objects collide with that ray, should return correct CollisionData struct
     if not, should return not changed CollisionData struct  */
 
-rtrace::CollisionData Plane::intersect(const rtrace::Ray &ray) const {
-    rtrace::CollisionData data;     // construct fills struct with correct fields
+rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
+    rtrace::Collision data;     // construct fills struct with correct fields
 
     const double dot = this->getNormal()*ray.direction;
     if(dot<rtrace::EPSILON && dot>-rtrace::EPSILON)
@@ -60,8 +60,8 @@ rtrace::CollisionData Plane::intersect(const rtrace::Ray &ray) const {
     method parameter is Vector3 class, 
     method should return infromations about object int the nearest point */
 
-rtrace::CollisionData Plane::distance(const rtrace::Vector3 &point) const {
-    rtrace::CollisionData data;         // construct fills struct with correct fields
+rtrace::Collision Plane::distance(const rtrace::Vector3 &point) const {
+    rtrace::Collision data;         // construct fills struct with correct fields
 
     const rtrace::Vector3 P(0, 0, -this->D/this->C);
     const rtrace::Vector3 N = this->getNormal();

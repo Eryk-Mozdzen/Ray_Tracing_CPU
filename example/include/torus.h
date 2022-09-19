@@ -1,7 +1,7 @@
 #pragma once
 
 #include <algorithm>
-#include "rtrace.h"
+#include "object.h"
 
 /*  User custom Torus class
     It is drawable object looks like donut.    */
@@ -14,6 +14,6 @@ private:
 public:
     Torus(const rtrace::Vector3&, const double&, const double&, const rtrace::Material&);
 
-    rtrace::CollisionData intersect(const rtrace::Ray&) const;
-    rtrace::CollisionData distance(const rtrace::Vector3&) const;
+    rtrace::Collision intersect(const rtrace::Ray&) const;
+    rtrace::Collision distance(const rtrace::Vector3&) const;
 };
