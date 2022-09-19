@@ -1,7 +1,7 @@
 #pragma once
 
+#include <SFML/Window.hpp>
 #include "view.h"
-#include "rtrace.h"
 
 /*  User custom Camera class
     It is used to describes player point of view.   */
@@ -12,7 +12,7 @@ private:
 public:
     Camera(const rtrace::Vector3&, const double&);
     
-    void rotate(rtrace::Scene&);
+    void rotate(sf::RenderWindow&);
     void move();
     void zoomIn();
     void zoomOut();

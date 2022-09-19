@@ -7,10 +7,10 @@ Camera::Camera(const rtrace::Vector3 &position, const double &distance) : rtrace
     this->lastMouseCoords = sf::Mouse::getPosition();
 }
 
-void Camera::rotate(rtrace::Scene &scene) {
-    scene.setMouseCursorVisible(false);
+void Camera::rotate(sf::RenderWindow &window) {
+    window.setMouseCursorVisible(false);
 
-    sf::Vector2i deltaMouse = sf::Mouse::getPosition(scene) - this->lastMouseCoords;
+    sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - this->lastMouseCoords;
 
     if(std::abs(deltaMouse.x)>5)
         View::rotate(rtrace::Vector3::UnitZ(), angularVelocity*((deltaMouse.x<0)? 1 : -1));
@@ -22,8 +22,8 @@ void Camera::rotate(rtrace::Scene &scene) {
     if(std::abs(s)>0.1)
         View::rotate(rtrace::Vector3::UnitX(), angularVelocity*((s<0)? 1 : -1));
 
-    sf::Mouse::setPosition(sf::Vector2i(scene.getSize().x/2, scene.getSize().y/2), scene);
-    this->lastMouseCoords = sf::Mouse::getPosition(scene);
+    sf::Mouse::setPosition(sf::Vector2i(window.getSize().x/2, window.getSize().y/2), window);
+    this->lastMouseCoords = sf::Mouse::getPosition(window);
 }
 
 void Camera::move() {
