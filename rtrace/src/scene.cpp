@@ -40,43 +40,43 @@ rtrace::Collision rtrace::Scene::sphereTrace(const rtrace::Vector3 &point) const
     return data;
 }
 
-sf::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
+rtrace::Color rtrace::Scene::evaluateRayTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth==0)
-        return sf::Color::Transparent;
+        return rtrace::Color();
 
     const Collision data = this->rayTrace(ray);
 
     if(!data.exist)
-        return sf::Color::Transparent;
+        return rtrace::Color();
 
-    const Vector3 N = normalize(data.normal);       // normal
-	const Vector3 V = normalize(ray.direction);		// view
-    const Vector3 H = normalize(V - 2*(V*N)*N);		// view reflection
+    const rtrace::Vector3 N = normalize(data.normal);       // normal
+	const rtrace::Vector3 V = normalize(ray.direction);		// view
+    const rtrace::Vector3 H = normalize(V - 2*(V*N)*N);		// view reflection
 	
-	const sf::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth - 1);
+	const rtrace::Color reflected = this->evaluateRayTracing(Ray(data.point, H), depth - 1);
 
-    sf::Color illumination = data.material.ambient*data.material.color + data.material.reflection*reflected;
+    rtrace::Color illumination = data.material.ambient*data.material.color + data.material.reflection*reflected;
 
 	for(const std::shared_ptr<Light> &light : this->lights) {
-        const Vector3 L = normalize(light->getPosition() - data.point);   // light
-        const Vector3 R = normalize(L - 2*(L*N)*N);                       // light reflection
+        const rtrace::Vector3 L = normalize(light->getPosition() - data.point);   // light
+        const rtrace::Vector3 R = normalize(L - 2*(L*N)*N);                       // light reflection
 
-        const Collision shadow = this->rayTrace(Ray(data.point, L));
+        const rtrace::Collision shadow = this->rayTrace(Ray(data.point, L));
 		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))
 			continue;
 
         illumination +=data.material.diffuse*std::max(L*N, 0.)*data.material.color;
-        illumination +=data.material.specular*std::pow(std::max(V*R, 0.), data.material.shininess)*sf::Color::White;
+        illumination +=data.material.specular*std::pow(std::max(V*R, 0.), data.material.shininess)*rtrace::Color(255, 255, 255);
     }
 
     return illumination;
 }
 
-sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
+rtrace::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const unsigned int &depth) const {
     if(depth==0)
-        return sf::Color::Transparent;
+        return rtrace::Color();
 
-    Collision data;
+    rtrace::Collision data;
     const double renderView = 100;
     double dist = 0;
 
@@ -86,12 +86,12 @@ sf::Color rtrace::Scene::evaluateSphereTracing(const rtrace::Ray &ray, const uns
     }
 
     if(!data.exist)
-        return sf::Color::Transparent;;
+        return rtrace::Color();
 
     return data.material.color;
 }
 
-std::vector<sf::Color> rtrace::Scene::render(const rtrace::View &view, 
+std::vector<rtrace::Color> rtrace::Scene::render(const rtrace::View &view, 
 												const unsigned int &width, 
 												const unsigned int &height, 
 												const rtrace::Scene::Mode &mode, 
@@ -99,7 +99,7 @@ std::vector<sf::Color> rtrace::Scene::render(const rtrace::View &view,
 
 	const double aspectRatio = (double)width/height;
 
-	std::vector<sf::Color> buffer(width*height, sf::Color::Black);
+	std::vector<rtrace::Color> buffer(width*height);
 
     for(unsigned int i=0; i<height; i++) {
         for(unsigned int j=0; j<width; j++) {
@@ -112,16 +112,14 @@ std::vector<sf::Color> rtrace::Scene::render(const rtrace::View &view,
 
 			const rtrace::Ray ray(view.getPosition(), dir);
 
-			sf::Color color;
+			rtrace::Color color;
 
 			switch(mode) {
 				case RAY_TRACING:      color = this->evaluateRayTracing(ray, reflectionDepth);		break;
 				case SPHERE_TRACING:   color = this->evaluateSphereTracing(ray, reflectionDepth);	break;
 			}
 
-			if(color!=sf::Color::Transparent) {
-				buffer[i*width + j] = color;
-			}
+			buffer[i*width + j] = color;
         }
 	}
 

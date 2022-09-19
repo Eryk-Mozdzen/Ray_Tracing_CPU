@@ -5,10 +5,10 @@
 #include <iomanip>
 #include <sstream>
 
-#include "tools.h"
 #include "view.h"
 #include "object.h"
 #include "light.h"
+#include "color.h"
 
 namespace rtrace {
 
@@ -23,8 +23,8 @@ namespace rtrace {
 
 		Collision rayTrace(const Ray&) const;
 		Collision sphereTrace(const Vector3&) const;
-		sf::Color evaluateRayTracing(const Ray&, const unsigned int&) const;
-		sf::Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
+		Color evaluateRayTracing(const Ray&, const unsigned int&) const;
+		Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
 	public:
 		enum Mode {
 			RAY_TRACING,
@@ -36,7 +36,7 @@ namespace rtrace {
 		void addObject(std::shared_ptr<Object>);
 		void addLight(std::shared_ptr<Light>);
 
-		std::vector<sf::Color> render(const View&, const unsigned int&, const unsigned int&, const Mode&, const unsigned int&) const;
+		std::vector<Color> render(const View&, const unsigned int&, const unsigned int&, const Mode&, const unsigned int&) const;
 	};
 
 }

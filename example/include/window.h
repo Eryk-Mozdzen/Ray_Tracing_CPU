@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include "scene.h"
 
 class Window : public sf::RenderWindow, public rtrace::Scene {

@@ -4,8 +4,6 @@
 #include <vector>
 #include <cmath>
 
-#include <SFML/Graphics.hpp>
-
 #include "vector.h"
 #include "matrix.h"
 #include "tools.h"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include "view.h"
 
 /*  User custom Camera class

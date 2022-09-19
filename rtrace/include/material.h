@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include "color.h"
 
 namespace rtrace {
 
@@ -10,10 +10,10 @@ namespace rtrace {
 
 	struct Material {
 		double ambient, diffuse, specular, shininess, reflection; //phong model
-		sf::Color color;
+		Color color;
 
 		Material();
-		Material(const unsigned int&, const unsigned int&, const unsigned int&);
+		Material(const int&, const int&, const int&);
 	};
 
 }

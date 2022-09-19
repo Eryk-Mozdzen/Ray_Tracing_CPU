@@ -23,7 +23,7 @@ rtrace::Collision rtrace::Collision::smin(const rtrace::Collision &a, const rtra
     if(h>0) {
         const double m = a.distance/(a.distance + b.distance);
 		
-		data.material.color = color_interpolation(a.material.color, b.material.color, m);
+		data.material.color = rtrace::Color::lin(a.material.color, b.material.color, m);
     }
     
     return data;

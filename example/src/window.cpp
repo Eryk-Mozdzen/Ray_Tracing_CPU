@@ -67,7 +67,7 @@ void Window::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
 
-    const std::vector<sf::Color> frame = this->render(view, this->renderResolution.x, this->renderResolution.y, this->renderMode, this->reflectionDepth);
+    const std::vector<rtrace::Color> frame = this->render(view, this->renderResolution.x, this->renderResolution.y, this->renderMode, this->reflectionDepth);
 
     const double renderTime = clock.restart().asSeconds();
 
@@ -76,7 +76,11 @@ void Window::display(const rtrace::View &view) {
 			this->frameBuffer.setPixel(
 				this->renderResolution.x - j - 1,
 				this->renderResolution.y - i - 1,
-				frame[i*this->renderResolution.x + j]
+				sf::Color(
+					frame[i*this->renderResolution.x + j].r,
+					frame[i*this->renderResolution.x + j].g,
+					frame[i*this->renderResolution.x + j].b
+				)
 			);
 		}
 	}
