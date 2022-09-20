@@ -97,29 +97,23 @@ std::vector<rtrace::Color> rtrace::Scene::render(const rtrace::View &view,
 												const rtrace::Scene::Mode &mode, 
 												const int &depth) const {
 
-	const double aspectRatio = (double)width/height;
-
 	std::vector<rtrace::Color> buffer(width*height);
+
+	const rtrace::Vector3 dirX = view.getDirectionX()*view.getDistanceFromProjectionPlane();
+	const rtrace::Vector3 dirY = view.getDirectionY()/width*width/height;
+	const rtrace::Vector3 dirZ = view.getDirectionZ()/height;
+
+	rtrace::Ray ray(view.getPosition(), rtrace::Vector3::X);
 
     for(int i=0; i<height; i++) {
         for(int j=0; j<width; j++) {
 			
-			const rtrace::Vector3 dir = normalize(
-				view.getDirectionX()*view.getDistanceFromProjectionPlane() +
-				view.getDirectionY()*(width/2. - j)/width*aspectRatio +
-				view.getDirectionZ()*(height/2. - i)/height
-			);
-
-			const rtrace::Ray ray(view.getPosition(), dir);
-
-			rtrace::Color color;
+			ray.direction = dirX + dirY*(width/2. - j) + dirZ*(height/2. - i);
 
 			switch(mode) {
-				case RAY_TRACING:      color = this->evaluateRayTracing(ray, depth);	break;
-				case SPHERE_TRACING:   color = this->evaluateSphereTracing(ray, depth);	break;
+				case RAY_TRACING:      buffer[i*width + j] = this->evaluateRayTracing(ray, depth);	break;
+				case SPHERE_TRACING:   buffer[i*width + j] = this->evaluateSphereTracing(ray, depth);	break;
 			}
-
-			buffer[i*width + j] = color;
         }
 	}
 
