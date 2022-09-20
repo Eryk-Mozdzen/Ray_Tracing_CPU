@@ -108,7 +108,7 @@ std::vector<rtrace::Color> rtrace::Scene::render(const rtrace::View &view,
     for(int i=0; i<height; i++) {
         for(int j=0; j<width; j++) {
 			
-			ray.direction = dirX + dirY*(width/2. - j) + dirZ*(height/2. - i);
+			ray.direction = rtrace::normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
 
 			switch(mode) {
 				case RAY_TRACING:      buffer[i*width + j] = this->evaluateRayTracing(ray, depth);	break;
