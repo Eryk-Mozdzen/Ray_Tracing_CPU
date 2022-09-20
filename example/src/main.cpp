@@ -23,24 +23,23 @@
 
 int main() {
 
-    Camera camera(rtrace::Vector3(-50, 0, 25), 1);
-    Window window(rtrace::Scene::RAY_TRACING, 1, 135, 90);
+    Camera camera(rtrace::Vector3(-50, 0, 15), 1);
+    Window window(rtrace::Scene::RAY_TRACING, 3, 135, 90);
 
     /*-----------  Scene setup  ---------------*/
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Material(255, 0, 0));
-	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3, rtrace::Material(0, 0, 255));
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Color::red);
+	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3, rtrace::Color::blue);
 
     window.addObject(sphere);
 	window.addObject(torus);
-    window.addObject(std::make_shared<Sphere>(rtrace::Vector3(0, 25, 25), 7, rtrace::Material(0, 255, 0)));
-    window.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::UnitZ(), rtrace::Material(64, 64, 64)));
+    window.addObject(std::make_shared<Sphere>(rtrace::Vector3(0, 25, 25), 7, rtrace::Color::green));
+    window.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::Z));
 
     window.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(-25, 0, 25)));
 	window.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(0, 0, 50)));
 
     double angle = 0;
-	rtrace::Transform3 tr;
 
     while(window.isOpen()) {
         window.handleEvents();
@@ -50,14 +49,10 @@ int main() {
 
         /*-----------  Scene objects update  ---------------*/
 
-		tr = sphere->getTransform();
-		tr.translate(rtrace::Vector3(0, 2*std::cos(angle), 0));
-		sphere->setTransform(tr);
+		sphere->transform.translate(rtrace::Vector3(0, 2*std::cos(angle), 0));
 		angle +=0.1;
 
-		tr = torus->getTransform();
-		tr.rotate(rtrace::Vector3(0, 1.1, 0.75), 0.1);
-		torus->setTransform(tr);
+		torus->transform.rotate(rtrace::Vector3(0, 1.1, 0.75), 0.1);
 
         /*-----------  Scene render  ---------------*/
 

@@ -1,5 +1,9 @@
 #include <rtrace/vector.h>
 
+const rtrace::Vector3 rtrace::Vector3::X(1, 0, 0);
+const rtrace::Vector3 rtrace::Vector3::Y(0, 1, 0);
+const rtrace::Vector3 rtrace::Vector3::Z(0, 0, 1);
+
 rtrace::Vector3::Vector3() : rtrace::Vector3(0, 0, 0) {}
 
 rtrace::Vector3::Vector3(const double &x, const double &y, const double &z) {
@@ -99,18 +103,6 @@ rtrace::Vector3 rtrace::Vector3::operator/(const double &rhs) const {
     return (*this)*(1/rhs);
 }
 
-rtrace::Vector3 rtrace::Vector3::UnitX() {
-    return  rtrace::Vector3(1, 0, 0);
-}
-
-rtrace::Vector3 rtrace::Vector3::UnitY() {
-    return  rtrace::Vector3(0, 1, 0);
-}
-
-rtrace::Vector3 rtrace::Vector3::UnitZ() {
-    return  rtrace::Vector3(0, 0, 1);
-}
-
 rtrace::Vector3 rtrace::operator*(const double &lhs, const rtrace::Vector3 &rhs) {
     return rhs*lhs;
 }
@@ -130,7 +122,7 @@ double rtrace::length(const rtrace::Vector3 &vec) {
 rtrace::Vector3 rtrace::normalize(const rtrace::Vector3 &v) {
     double len = rtrace::length(v);
 
-    if(len==0)
+    if(std::abs(len)<rtrace::EPSILON)
         return v;
 
     return (v/len);

@@ -11,15 +11,15 @@ rtrace::View::View(const rtrace::Vector3 &position, const double &distance) {
 }
 
 rtrace::Vector3 rtrace::View::getDirectionX() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitX()) - this->transform.getTranslation());
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::X) - this->transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getDirectionY() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitY()) - this->transform.getTranslation());
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::Y) - this->transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getDirectionZ() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::UnitZ()) - this->transform.getTranslation());
+    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::Z) - this->transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getPosition() const {

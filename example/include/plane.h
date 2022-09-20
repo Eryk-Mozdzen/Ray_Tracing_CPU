@@ -7,11 +7,12 @@
 
 class Plane : public rtrace::Object {
 private:
-    double A, B, C, D;
+	rtrace::Vector3 normal;
+	rtrace::Vector3 point;
 	
-	rtrace::Vector3 getNormal() const;
+	rtrace::Color getColor(double, double) const;
 public:
-    Plane(const rtrace::Vector3&, const rtrace::Vector3&, const rtrace::Material&);
+    Plane(const rtrace::Vector3&, const rtrace::Vector3&);
 
     rtrace::Collision intersect(const rtrace::Ray&) const;
     rtrace::Collision distance(const rtrace::Vector3&) const;

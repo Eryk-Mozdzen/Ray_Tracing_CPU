@@ -36,9 +36,9 @@ namespace rtrace {
 		Vector3 operator*(const double &) const;
 		Vector3 operator/(const double &) const;
 
-		static Vector3 UnitX();
-		static Vector3 UnitY();
-		static Vector3 UnitZ();
+		static const Vector3 X;
+		static const Vector3 Y;
+		static const Vector3 Z;
 	};
 
 	Vector3 operator*(const double &, const Vector3 &);

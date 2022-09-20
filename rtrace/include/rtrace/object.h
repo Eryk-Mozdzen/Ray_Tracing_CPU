@@ -1,8 +1,7 @@
 #pragma once
 
-#include <rtrace/material.h>
-#include <rtrace/transform.h>
 #include <rtrace/collision.h>
+#include <rtrace/vector.h>
 #include <rtrace/ray.h>
 
 namespace rtrace {
@@ -15,18 +14,10 @@ namespace rtrace {
 		then will be appear only in coresponding mode.                                  */
 
 	class Object {
-	protected:
-		Material material;
-		Transform3 transform;
 	public:
 		virtual ~Object() {};
 		virtual Collision intersect(const Ray&) const = 0;     // for ray tracing
 		virtual Collision distance(const Vector3&) const = 0;  // for sphere tracing
-
-		const Transform3 & getTransform() const;
-		const Material & getMaterial() const;
-		void setTransform(const Transform3&);
-		void setMaterial(const Material&);
 	};
 
 }

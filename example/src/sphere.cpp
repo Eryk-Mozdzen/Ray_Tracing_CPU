@@ -29,7 +29,7 @@ rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
 
     data.point = ray.origin + tNearestPositive*rtrace::normalize(ray.direction);    // set collision point
     data.normal = rtrace::normalize(data.point - center);                           // set surface notrmal vector in collision point
-    data.material = this->getMaterial();                                    		// set material of the objects
+    data.material = this->material;                                    				// set material of the objects
     data.distance = rtrace::length(data.point - ray.origin);                        // set distance from ray origin to collision point
     data.exist = true;                                                      		// collision occured? set to true
 

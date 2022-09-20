@@ -17,6 +17,16 @@ namespace rtrace {
 		void operator+=(const Color&);
 
 		static Color lin(const Color&, const Color&, const double&);
+
+		static const Color red;
+		static const Color green;
+		static const Color blue;
+		static const Color white;
+		static const Color black;
+		static const Color cyan;
+		static const Color magenta;
+		static const Color orange;
+		static const Color pink;
 	};
 	
 	Color operator*(const double&, const Color&);

@@ -1,5 +1,15 @@
 #include <rtrace/color.h>
 
+const rtrace::Color rtrace::Color::red(255, 0, 0);
+const rtrace::Color rtrace::Color::green(0, 255, 0);
+const rtrace::Color rtrace::Color::blue(0, 0, 255);
+const rtrace::Color rtrace::Color::white(255, 255, 255);
+const rtrace::Color rtrace::Color::black(0, 0, 0);
+const rtrace::Color rtrace::Color::cyan(0, 255, 255);
+const rtrace::Color rtrace::Color::magenta(255, 0, 255);
+const rtrace::Color rtrace::Color::orange(255, 140, 0);
+const rtrace::Color rtrace::Color::pink(255, 105, 180);
+
 rtrace::Color::Color() : r{0}, g{0}, b{0}, w{0} {
 
 }

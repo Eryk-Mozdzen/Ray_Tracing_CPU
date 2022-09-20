@@ -13,6 +13,8 @@ namespace rtrace {
 		Color color;
 
 		Material();
+		Material(const Color&);
+		Material(const Color&, const double&, const double&, const double&, const double&, const double&);
 		Material(const int&, const int&, const int&);
 	};
 
