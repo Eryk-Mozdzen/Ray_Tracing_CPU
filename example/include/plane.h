@@ -12,7 +12,7 @@ private:
 	
 	rtrace::Color getColor(double, double) const;
 public:
-    Plane(const rtrace::Vector3&, const rtrace::Vector3&);
+    Plane(rtrace::Vector3, rtrace::Vector3);
 
     rtrace::Collision intersect(const rtrace::Ray&) const;
     rtrace::Collision distance(const rtrace::Vector3&) const;

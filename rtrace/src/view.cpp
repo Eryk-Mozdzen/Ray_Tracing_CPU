@@ -26,10 +26,6 @@ rtrace::Vector3 rtrace::View::getPosition() const {
     return this->transform.getTranslation();
 }
 
-const rtrace::Transform3 & rtrace::View::getTransform() const {
-    return this->transform;
-}
-
 double rtrace::View::getDistanceFromProjectionPlane() const {
     return this->distance;
 }

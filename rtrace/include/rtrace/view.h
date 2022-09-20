@@ -26,7 +26,6 @@ namespace rtrace {
 		Vector3 getDirectionY() const;
 		Vector3 getDirectionZ() const;
 		Vector3 getPosition() const;
-		const Transform3 & getTransform() const;
 		double getDistanceFromProjectionPlane() const;
 
 		void setDistanceFromProjectionPlane(const double&);

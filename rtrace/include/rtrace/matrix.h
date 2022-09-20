@@ -6,9 +6,9 @@
 #include <cmath>
 #include <vector>
 
-namespace rtrace {
+#include <rtrace/tools.h>
 
-	constexpr double EPSILON = 0.001;
+namespace rtrace {
 
 	/*  Matrix class
 		This is independent file, can be used in other projects.
@@ -46,6 +46,9 @@ namespace rtrace {
 
 	Matrix operator*(const double&, const Matrix&);
 	Matrix operator-(const Matrix&);
+
+	Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
+	Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
 
 	std::ostream & operator<<(std::ostream&, const Matrix&);
 

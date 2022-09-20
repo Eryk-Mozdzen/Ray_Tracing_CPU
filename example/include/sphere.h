@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <rtrace/object.h>
 #include <rtrace/transform.h>
 
@@ -14,7 +15,7 @@ private:
 public:
 	rtrace::Transform3 transform;
 
-    Sphere(const rtrace::Vector3&, const double&, const rtrace::Material&);
+    Sphere(rtrace::Vector3, double, rtrace::Material);
 
     rtrace::Collision intersect(const rtrace::Ray&) const;
     rtrace::Collision distance(const rtrace::Vector3&) const;

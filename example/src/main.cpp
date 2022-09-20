@@ -24,12 +24,12 @@
 int main() {
 
     Camera camera(rtrace::Vector3(-50, 0, 15), 1);
-    Window window(rtrace::Scene::RAY_TRACING, 3, 135, 90);
+    Window window(rtrace::Scene::RAY_TRACING, 1, 135, 90);
 
     /*-----------  Scene setup  ---------------*/
 
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Color::red);
-	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3, rtrace::Color::blue);
+	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3);
 
     window.addObject(sphere);
 	window.addObject(torus);

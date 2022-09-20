@@ -1,6 +1,6 @@
 #include "plane.h"
 
-Plane::Plane(const rtrace::Vector3 &point, const rtrace::Vector3 &n) : point{point} {
+Plane::Plane(rtrace::Vector3 point, rtrace::Vector3 n) : point{point} {
 	normal = rtrace::normalize(n);
 }
 
@@ -30,10 +30,9 @@ rtrace::Color Plane::getColor(double u, double v) const {
     if not, should return not changed CollisionData struct  */
 
 rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
-    rtrace::Collision data;
 
 	if(normal*ray.direction>-rtrace::EPSILON)
-		return data;
+		return rtrace::Collision();
 
 	const rtrace::Vector3 dirU = rtrace::normalize(normal^rtrace::Vector3::X);
 	const rtrace::Vector3 dirV = rtrace::normalize(normal^dirU);
@@ -43,14 +42,16 @@ rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
 	const rtrace::Vector3 p = ray.origin + t*ray.direction;
 	const double u = (p - point)*dirU;
 	const double v = (p - point)*dirV;
+	
+	rtrace::Collision collision;
 
-	data.point = p;														// set collision point
-    data.normal = normal;    											// set surface notrmal vector in collision point
-    data.material = rtrace::Material(getColor(u, v), 0, 1, 0, 1, 0.3);	// set material in this point
-    data.distance = t; 													// set distance from ray origin to collision point
-    data.exist = true;         											// collision occured? set to true
+	collision.point = p;
+    collision.normal = normal;
+    collision.material = rtrace::Material(getColor(u, v), 0, 1, 0, 1, 0.3);
+    collision.distance = t;
+    collision.exist = true;
 
-    return data;
+    return collision;
 }
 
 /*  CollisionData CustomObject::distance(const Vector3 &) const
@@ -59,18 +60,13 @@ rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
     method should return infromations about object int the nearest point */
 
 rtrace::Collision Plane::distance(const rtrace::Vector3 &p) const {
-	rtrace::Collision data;
+	rtrace::Collision collision;
 
-	const double distance = std::abs((p - point)*normal);
+    collision.distance = std::abs((p - point)*normal);
+    collision.point = p;
+    collision.normal = normal;
+    collision.material = rtrace::Material(rtrace::Color(64, 64, 64), 0, 1, 0, 1, 0.3);
+    collision.exist = (collision.distance<rtrace::EPSILON);
 
-	if(distance<rtrace::EPSILON)
-		return data;
-
-    data.distance = distance;														// set distance from surface to point (with sign)
-    data.point = p;																	// set point, where calculations are
-    data.normal = normal;															// set normal in the nearest point
-    data.material = rtrace::Material(rtrace::Color(64, 64, 64), 0, 1, 0, 1, 0.3);	// set material of the objects
-    data.exist = true;																// set true if point is near enough
-
-    return data;
+    return collision;
 }

@@ -236,3 +236,69 @@ std::ostream & rtrace::operator<<(std::ostream &lhs, const rtrace::Matrix &rhs) 
     return lhs;
 }
 
+rtrace::Matrix rtrace::solveLinearSystemCramersRule(const rtrace::Matrix &A, const rtrace::Matrix &b) {
+    assert(A.getRows()==A.getCols());
+    assert(A.getCols()==b.getRows());
+    assert(b.getCols()==1);
+
+    const unsigned int n = b.getRows();
+
+    rtrace::Matrix x(n, 1);
+
+    const double W = rtrace::Matrix::Det(A);
+
+    if(std::abs(W)<EPSILON)
+        return x;
+
+    rtrace::Matrix A_i;
+    for(unsigned int i=0; i<n; i++) {
+        A_i = A;
+
+        for(unsigned int j=0; j<n; j++)
+            A_i(j, i) = b(j, 0);
+
+        x(i, 0) = rtrace::Matrix::Det(A_i)/W;
+    }
+
+    return x;
+}
+
+rtrace::Matrix solveLinearSystemJacobiMethod(const rtrace::Matrix &A, const rtrace::Matrix &b) {
+    assert(A.getRows()==A.getCols());
+    assert(A.getCols()==b.getRows());
+    assert(b.getCols()==1);
+
+    const unsigned int n = b.getRows();
+
+    double diagonal = 0;
+    double other = 0;
+    for(unsigned int i=0; i<n; i++) {
+        for(unsigned int j=0; j<n; j++) {
+            if(j!=i)
+                other +=std::abs(A(i, j));
+        }
+        diagonal +=std::abs(A(i, i));
+    }
+
+    if(diagonal<other) {
+        //std::cout << A << std:: endl;
+        //std::cout << diagonal << "\t" << other << std::endl;
+        //return solveLinearSystemCramersRule(A, b);
+        return rtrace::Matrix(n, 1);
+    }
+
+    rtrace::Matrix x(n, 1);
+
+    for(unsigned int k=0; k<10; k++) {
+        for(unsigned int i=0; i<n; i++) {
+            double sigma = 0;
+            for(unsigned int j=0; j<n; j++) {
+                if(j!=i)
+                    sigma +=A(i, j)*x(j, 0);
+            }
+            x(i, 0) = (b(i, 0) - sigma)/A(i, i);
+        }
+    }
+
+    return x;
+}

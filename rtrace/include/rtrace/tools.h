@@ -1,26 +1,18 @@
 #pragma once
 
-#include <cassert>
 #include <cmath>
-#include <utility>
 #include <vector>
 #include <complex>
 
-#include <rtrace/vector.h>
-#include <rtrace/matrix.h>
-
 namespace rtrace {
+
+	constexpr double EPSILON = 0.001;
 
 	/*  Collection of simple math solvers to make cleaner code.
 		Not every one is optimalized, but every on works in some way.  */
 
-	double solveLinearEquation(const double&, const double&);
-	std::pair<double, double> solveQuadraticEquation(const double&, const double&, const double&);
-	std::vector<double> solveQuarticEquation(double, double, double, double, double);
-
-	double calculatePolynomial(const std::vector<double>&, const double&);
-
-	Matrix solveLinearSystemCramersRule(const Matrix&, const Matrix&);
-	Matrix solveLinearSystemJacobiMethod(const Matrix&, const Matrix&);
+	double findZeroPoly1(double, double);
+	std::vector<double> findZerosPoly2(double, double, double);
+	std::vector<double> findZerosPoly4(std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double>, std::complex<double>);
 
 }

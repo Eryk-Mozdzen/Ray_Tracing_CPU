@@ -1,8 +1,7 @@
 #include "sphere.h"
 
-Sphere::Sphere(const rtrace::Vector3 &center, const double &radius, const rtrace::Material &material) : radius{radius} {
-	this->material = material;
-	this->transform.translate(center);
+Sphere::Sphere(rtrace::Vector3 center, double radius, rtrace::Material material) : radius{radius}, material{material} {
+	transform.translate(center);
 }
 
 /*  CollisionData CustomObject::intersect(const Ray &) const
@@ -12,28 +11,37 @@ Sphere::Sphere(const rtrace::Vector3 &center, const double &radius, const rtrace
     if not, should return not changed CollisionData struct  */
 
 rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
-    rtrace::Collision data;                     // construct fills struct with correct fields
     const rtrace::Vector3 center = transform.getTranslation();
 
     const double a = 1;
     const double b = 2*(ray.direction*(ray.origin - center));
-    const double c = length(ray.origin - center)*length(ray.origin - center) - this->radius*this->radius;
+    const double c = length(ray.origin - center)*length(ray.origin - center) - radius*radius;
 
-    const std::pair<double, double> tSolution = rtrace::solveQuadraticEquation(a, b, c);
+    std::vector<double> tSolutions = rtrace::findZerosPoly2(a, b, c);
 
-    double tNearestPositive;
-    if(tSolution.first>rtrace::EPSILON && tSolution.second<rtrace::EPSILON)   tNearestPositive = tSolution.first;
-    else if(tSolution.first<rtrace::EPSILON && tSolution.second>rtrace::EPSILON)   tNearestPositive = tSolution.second;
-    else if(tSolution.first>rtrace::EPSILON && tSolution.second>rtrace::EPSILON)   tNearestPositive = std::min(tSolution.first, tSolution.second);
-    else return data;   // return not changed if there are not solutions
+    if(!tSolutions.size()) {
+		return rtrace::Collision();
+	}
 
-    data.point = ray.origin + tNearestPositive*rtrace::normalize(ray.direction);    // set collision point
-    data.normal = rtrace::normalize(data.point - center);                           // set surface notrmal vector in collision point
-    data.material = this->material;                                    				// set material of the objects
-    data.distance = rtrace::length(data.point - ray.origin);                        // set distance from ray origin to collision point
-    data.exist = true;                                                      		// collision occured? set to true
+	std::remove_if(tSolutions.begin(), tSolutions.end(), [] (const double &solution) {
+		return solution<rtrace::EPSILON;
+	});
 
-    return data;
+	if(!tSolutions.size()) {
+		return rtrace::Collision();
+	}
+
+	const double t = *std::min_element(tSolutions.begin(), tSolutions.end());
+	
+	rtrace::Collision collision;
+
+    collision.point = ray.origin + t*ray.direction;
+    collision.normal = rtrace::normalize(collision.point - center);
+    collision.material = material;
+    collision.distance = t;
+    collision.exist = true;
+
+    return collision;
 }
 
 /*  CollisionData CustomObject::distance(const Vector3 &) const
@@ -42,16 +50,17 @@ rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
     method should return infromations about object int the nearest point */
 
 rtrace::Collision Sphere::distance(const rtrace::Vector3 &point) const {
-    rtrace::Collision data;
-	
-    const rtrace::Vector3 center = this->transform.getTranslation();
-
-    data.distance = rtrace::length(point - this->transform.getTranslation()) - this->radius;    // set distance from surface to point (with sign)
-    data.point = point;                                                                 		// set point, where calculations are
-    data.normal = rtrace::normalize(data.point - center);                                       // set normal in the nearest point
-    data.material = this->material;                                                     		// set material of the objects
-    data.exist = (data.distance<rtrace::EPSILON);                                               // set true if point is near enough
     
-    return data;
+    const rtrace::Vector3 center = this->transform.getTranslation();
+	
+	rtrace::Collision collision;
+
+    collision.distance = rtrace::length(point - center) - this->radius;
+    collision.point = point;
+    collision.normal = rtrace::normalize(point - center);
+    collision.material = material;
+    collision.exist = (collision.distance<rtrace::EPSILON);
+    
+    return collision;
 }
 

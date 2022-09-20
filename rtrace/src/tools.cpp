@@ -1,26 +1,24 @@
 #include <rtrace/tools.h>
 
-double rtrace::solveLinearEquation(const double &a, const double &b) {
-    if(std::abs(a)<rtrace::EPSILON && std::abs(b)>rtrace::EPSILON)
-        return std::nan("");
+double findZeroPoly1(double a, double b) {
+    if(std::abs(a)<rtrace::EPSILON)
+        return 0;
 
     return -b/a;
 }
 
-std::pair<double, double> rtrace::solveQuadraticEquation(const double &a, const double &b, const double &c) {
-    //if(std::abs(a)<EPSILON)
-    //    return std::make_pair(solveLinearEquation(b, c), std::nan(""));
+std::vector<double> rtrace::findZerosPoly2(double a, double b, double c) {
+    const double delta = b*b - 4.*a*c;
 
-    const double delta = b*b - 4*a*c;
+    if(delta<0.)
+        return {};
 
-    if(delta<-rtrace::EPSILON)
-        return std::make_pair(std::nan(""), std::nan(""));
+    const double deltaSqrt = std::sqrt(delta);
 
-    const double deltaSqrt = (delta>rtrace::EPSILON) ? std::sqrt(delta) : 0;
+    const double x1 = (-b + deltaSqrt)/(2.*a);
+    const double x2 = (-b - deltaSqrt)/(2.*a);
 
-    const double x1 = (-b + deltaSqrt)/(2*a);
-    const double x2 = (-b - deltaSqrt)/(2*a);
-    return std::make_pair(x1, x2);
+    return {x1, x2};
 }
 
 std::complex<double> complex_sqrt(const std::complex<double> &z) {
@@ -31,12 +29,11 @@ std::complex<double> complex_cbrt(const std::complex<double> &z) {
 	return std::pow(z, 1./3.);
 }
 
-std::vector<double> rtrace::solveQuarticEquation(double a_p, double b_p, double c_p, double d_p, double e_p) {
-	const std::complex<double> a = a_p;
-    const std::complex<double> b = b_p/a;
-    const std::complex<double> c = c_p/a;
-    const std::complex<double> d = d_p/a;
-    const std::complex<double> e = e_p/a;
+std::vector<double> rtrace::findZerosPoly4(std::complex<double> a, std::complex<double> b, std::complex<double> c, std::complex<double> d, std::complex<double> e) {
+	b /=a;
+	c /=a;
+	d /=a;
+	e /=a;
 
     const std::complex<double> Q1 = c*c - 3.*b*d + 12.*e;
     const std::complex<double> Q2 = 2.*c*c*c - 9.*b*c*d + 27.*d*d + 27.*b*b*e - 72.*c*e;
@@ -63,80 +60,4 @@ std::vector<double> rtrace::solveQuarticEquation(double a_p, double b_p, double 
 	}
 
     return realSolutions;
-}
-
-double rtrace::calculatePolynomial(const std::vector<double> &coeff, const double &x) {
-    double y = 0;
-
-    for(unsigned int i=0; i<coeff.size(); i++)
-        y +=coeff[i]*std::pow(x, (double)(coeff.size()-i-1));
-
-    return y;
-}
-
-rtrace::Matrix rtrace::solveLinearSystemCramersRule(const rtrace::Matrix &A, const rtrace::Matrix &b) {
-    assert(A.getRows()==A.getCols());
-    assert(A.getCols()==b.getRows());
-    assert(b.getCols()==1);
-
-    const unsigned int n = b.getRows();
-
-    rtrace::Matrix x(n, 1);
-
-    const double W = rtrace::Matrix::Det(A);
-
-    if(std::abs(W)<EPSILON)
-        return x;
-
-    rtrace::Matrix A_i;
-    for(unsigned int i=0; i<n; i++) {
-        A_i = A;
-
-        for(unsigned int j=0; j<n; j++)
-            A_i(j, i) = b(j, 0);
-
-        x(i, 0) = rtrace::Matrix::Det(A_i)/W;
-    }
-
-    return x;
-}
-
-rtrace::Matrix solveLinearSystemJacobiMethod(const rtrace::Matrix &A, const rtrace::Matrix &b) {
-    assert(A.getRows()==A.getCols());
-    assert(A.getCols()==b.getRows());
-    assert(b.getCols()==1);
-
-    const unsigned int n = b.getRows();
-
-    double diagonal = 0;
-    double other = 0;
-    for(unsigned int i=0; i<n; i++) {
-        for(unsigned int j=0; j<n; j++) {
-            if(j!=i)
-                other +=std::abs(A(i, j));
-        }
-        diagonal +=std::abs(A(i, i));
-    }
-
-    if(diagonal<other) {
-        //std::cout << A << std:: endl;
-        //std::cout << diagonal << "\t" << other << std::endl;
-        //return solveLinearSystemCramersRule(A, b);
-        return rtrace::Matrix(n, 1);
-    }
-
-    rtrace::Matrix x(n, 1);
-
-    for(unsigned int k=0; k<10; k++) {
-        for(unsigned int i=0; i<n; i++) {
-            double sigma = 0;
-            for(unsigned int j=0; j<n; j++) {
-                if(j!=i)
-                    sigma +=A(i, j)*x(j, 0);
-            }
-            x(i, 0) = (b(i, 0) - sigma)/A(i, i);
-        }
-    }
-
-    return x;
 }
