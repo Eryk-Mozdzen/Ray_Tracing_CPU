@@ -12,31 +12,12 @@ rtrace::Vector3::Vector3(const double &x, const double &y, const double &z) {
     this->z = z;
 }
 
-rtrace::Vector3::Vector3(const Matrix &A) {
-    assert(A.getRows()==3);
-    assert(A.getCols()==1);
-
-    this->x = A(0, 0);
-    this->y = A(1, 0);
-    this->z = A(2, 0);
-}
-
 double rtrace::Vector3::getLength() const {
     return length(*this);
 }
 
 rtrace::Vector3 rtrace::Vector3::getNormalized() const {
     return normalize(*this);
-}
-
-rtrace::Matrix rtrace::Vector3::getTransposition() const {
-    rtrace::Matrix result(1, 3);
-
-    result(0, 0) = this->x;
-    result(0, 1) = this->y;
-    result(0, 2) = this->z;
-
-    return result;
 }
 
 bool rtrace::Vector3::operator!=(const rtrace::Vector3 &rhs) const {
@@ -75,10 +56,6 @@ rtrace::Vector3 rtrace::Vector3::operator-(const rtrace::Vector3 &rhs) const {
     );
 }
 
-rtrace::Matrix rtrace::Vector3::operator*(const rtrace::Matrix &rhs) const {
-    return this->getTransposition().getTransposition()*rhs;
-}
-
 double rtrace::Vector3::operator*(const rtrace::Vector3 &rhs) const {
     return this->x*rhs.x + this->y*rhs.y + this->z*rhs.z;
 }
@@ -107,10 +84,6 @@ rtrace::Vector3 rtrace::operator*(const double &lhs, const rtrace::Vector3 &rhs)
     return rhs*lhs;
 }
 
-rtrace::Vector3 rtrace::operator*(const rtrace::Matrix &lhs, const rtrace::Vector3 &rhs) {
-    return rtrace::Vector3(lhs*(rhs.getTransposition().getTransposition()));
-}
-
 rtrace::Vector3 rtrace::operator-(const rtrace::Vector3 &rhs) {
 	return rtrace::Vector3(-rhs.x, -rhs.y, -rhs.z);
 }
@@ -122,7 +95,7 @@ double rtrace::length(const rtrace::Vector3 &vec) {
 rtrace::Vector3 rtrace::normalize(const rtrace::Vector3 &v) {
     double len = rtrace::length(v);
 
-    if(std::abs(len)<rtrace::EPSILON)
+    if(len<0.0001)
         return v;
 
     return (v/len);

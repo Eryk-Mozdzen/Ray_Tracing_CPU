@@ -1,11 +1,12 @@
 #include "torus.h"
 
 Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) : 
+		rtrace::BoundingBox{transform, 
+			rtrace::Vector3(-majorRadius-minorRadius, -majorRadius-minorRadius, -minorRadius),
+			rtrace::Vector3(majorRadius+minorRadius, majorRadius+minorRadius, minorRadius)},
 		majorRadius{majorRadius}, minorRadius{minorRadius}, material{rtrace::Color::blue} {
 
-	this->transform.translate(center);
-
-	this->material = material;
+	transform.translate(center);
 }
 
 /*  CollisionData CustomObject::intersect(const Ray &) const
@@ -15,8 +16,12 @@ Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) :
     if not, should return not changed CollisionData struct		*/
 
 rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
-	const rtrace::Vector3 origin = this->transform.getRotation()*(ray.origin - this->transform.getTranslation());
-	const rtrace::Vector3 dir = this->transform.getRotation()*ray.direction;
+
+	if(!rtrace::BoundingBox::intersect(ray))
+		return rtrace::Collision();
+
+	const rtrace::Vector3 origin = transform.getRotation()*(ray.origin - transform.getTranslation());
+	const rtrace::Vector3 dir = transform.getRotation()*ray.direction;
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = majorRadius;
@@ -52,7 +57,7 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 	rtrace::Collision collision;
 
 	collision.point = ray.origin + t*ray.direction;
-    collision.normal = transform.getRotation().getInverse()*rtrace::normalize(P - Q);
+	collision.normal = rtrace::toVec(rtrace::solveLinearSystem(transform.getRotation(), rtrace::toMat(rtrace::normalize(P - Q))));
     collision.material = material;
     collision.distance = t;
     collision.exist = true;
@@ -74,7 +79,7 @@ rtrace::Collision Torus::distance(const rtrace::Vector3 &point) const {
 
 	collision.distance = rtrace::length(P - Q) - minorRadius;
     collision.point = point;
-    collision.normal = transform.getRotation().getInverse()*rtrace::normalize(P - Q);
+	collision.normal = rtrace::toVec(rtrace::solveLinearSystem(transform.getRotation(), rtrace::toMat(rtrace::normalize(P - Q))));
     collision.material = material;
     collision.exist = (collision.distance<rtrace::EPSILON);
 

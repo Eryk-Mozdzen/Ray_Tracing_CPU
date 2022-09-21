@@ -1,5 +1,15 @@
 #include <rtrace/tools.h>
 
+rtrace::Matrix<1, 3> rtrace::transposition(const rtrace::Vector3 &vec) {
+	rtrace::Matrix<1, 3> result;
+
+	result(0, 0) = vec.x;
+	result(0, 1) = vec.y;
+	result(0, 2) = vec.z;
+
+	return result;
+}
+
 double findZeroPoly1(double a, double b) {
     if(std::abs(a)<rtrace::EPSILON)
         return 0;
@@ -60,4 +70,41 @@ std::vector<double> rtrace::findZerosPoly4(std::complex<double> a, std::complex<
 	}
 
     return realSolutions;
+}
+
+rtrace::Vector3 rtrace::operator*(const rtrace::Matrix<3, 3> &matrix, const rtrace::Vector3 &vec) {
+    rtrace::Vector3 result;
+
+	result.x = matrix(0, 0)*vec.x + matrix(0, 1)*vec.y + matrix(0, 2)*vec.z;
+	result.y = matrix(1, 0)*vec.x + matrix(1, 1)*vec.y + matrix(1, 2)*vec.z;
+	result.z = matrix(2, 0)*vec.x + matrix(2, 1)*vec.y + matrix(2, 2)*vec.z;
+
+	return result;
+}
+
+rtrace::Matrix<3, 3> rtrace::operator*(const rtrace::Vector3 &vec, const rtrace::Matrix<1, 3> &matrix) {
+	rtrace::Matrix<3, 1> mvec;
+	mvec(0, 0) = vec.x;
+	mvec(1, 0) = vec.y;
+	mvec(2, 0) = vec.z;
+
+	return mvec*matrix;
+}
+
+rtrace::Vector3 rtrace::toVec(const rtrace::Matrix<3, 1> &matrix) {
+	return rtrace::Vector3(
+		matrix(0, 0),
+		matrix(1, 0),
+		matrix(2, 0)
+	);
+}
+
+rtrace::Matrix<3, 1> rtrace::toMat(const rtrace::Vector3 &vec) {
+	rtrace::Matrix<3, 1> mat;
+
+	mat(0, 0) = vec.x;
+	mat(1, 0) = vec.y;
+	mat(2, 0) = vec.z;
+
+	return mat;
 }

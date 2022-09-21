@@ -24,7 +24,7 @@
 int main() {
 
     Camera camera(rtrace::Vector3(-50, 0, 15), 1);
-    Window window(rtrace::Scene::RAY_TRACING, 1, 135, 90);
+    Window window(rtrace::Scene::RAY_TRACING, 3, 135, 90);
 
     /*-----------  Scene setup  ---------------*/
 

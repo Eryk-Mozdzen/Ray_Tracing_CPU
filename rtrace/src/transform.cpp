@@ -1,18 +1,21 @@
 #include <rtrace/transform.h>
 
-rtrace::Transform3::Transform3() : rtrace::Matrix(4, 4) {
-    *this = Matrix::Identity(4);
+rtrace::Transform3::Transform3() {
+	(*this)(0, 0) = 1;
+	(*this)(1, 1) = 1;
+	(*this)(2, 2) = 1;
+	(*this)(3, 3) = 1;
 }
 
-rtrace::Transform3 & rtrace::Transform3::operator=(const rtrace::Matrix &rhs) {
-    if(rhs.getRows()!=4) throw std::string("Can't assign matrix to transform");
-    if(rhs.getCols()!=4) throw std::string("Can't assign matrix to transform");
+rtrace::Transform3& rtrace::Transform3::operator=(const rtrace::Matrix<4, 4> &matrix) {
 
-    for(unsigned int i=0; i<4; i++)
-        for(unsigned int j=0; j<4; j++)
-            (*this)(i, j) = rhs(i, j);
+    for(int i=0; i<4; i++) {
+		for(int j=0; j<4; j++) {
+			(*this)(i, j) = matrix(i, j);
+		}
+	}
 
-    return *this;
+	return *this;
 }
 
 void rtrace::Transform3::translate(const rtrace::Vector3 &d) {
@@ -30,7 +33,7 @@ void rtrace::Transform3::rotate(const rtrace::Vector3 &a, const double &theta) {
 
     rtrace::Transform3 transform;
 
-    rtrace::Matrix m(3, 3);
+    rtrace::Matrix<3, 3> m;
     m(0, 1) = -axis.z;
     m(0, 2) = axis.y;
     m(1, 0) = axis.z;
@@ -38,7 +41,12 @@ void rtrace::Transform3::rotate(const rtrace::Vector3 &a, const double &theta) {
     m(2, 0) = -axis.y;
     m(2, 1) = axis.x;
 
-    rtrace::Matrix rot = m*std::sin(theta) + (rtrace::Matrix::Identity(3) - axis*axis.getTransposition())*std::cos(theta) + (axis*axis.getTransposition());
+	rtrace::Matrix<3, 3> identity;
+	identity(0, 0) = 1;
+	identity(1, 1) = 1;
+	identity(2, 2) = 1;
+
+    rtrace::Matrix<3, 3> rot = m*std::sin(theta) + (identity - axis*rtrace::transposition(axis))*std::cos(theta) + (axis*rtrace::transposition(axis));
 
     for(unsigned int i=0; i<3; i++)
         for(unsigned int j=0; j<3; j++)
@@ -48,19 +56,13 @@ void rtrace::Transform3::rotate(const rtrace::Vector3 &a, const double &theta) {
 }
 
 rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3 &v) const {
-    rtrace::Matrix p(4, 1);
+    rtrace::Matrix<4, 1> p;
     p(0, 0) = v.x;
     p(1, 0) = v.y;
     p(2, 0) = v.z;
     p(3, 0) = 1;
 
-    //not good approach (work but highly not efficient)
-    //Matrix rel = this->getInverse()*p;
-
-    rtrace::Matrix rel = solveLinearSystemCramersRule(*this, p);
-    //Matrix rel = solveLinearSystemJacobiMethod(*this, p);
-
-    //return v - this->getTranslation();
+    rtrace::Matrix rel = solveLinearSystem(*this, p);
 
     return rtrace::Vector3(
         rel(0, 0),
@@ -70,7 +72,7 @@ rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3
 }
 
 rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Vector3 &v) const {
-    rtrace::Matrix p(4, 1);
+    rtrace::Matrix<4, 1> p;
     p(0, 0) = v.x;
     p(1, 0) = v.y;
     p(2, 0) = v.z;
@@ -93,10 +95,12 @@ rtrace::Vector3 rtrace::Transform3::getTranslation() const {
     return result;
 }
 
-rtrace::Matrix rtrace::Transform3::getRotation() const {
-    rtrace::Matrix result(3, 3);
+rtrace::Matrix<3, 3> rtrace::Transform3::getRotation() const {
+    rtrace::Matrix<3, 3> result;
+
     for(int i=0; i<3; i++)
         for(int j=0; j<3; j++)
             result(i, j) = (*this)(i, j);
+	
     return result;
 }

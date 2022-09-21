@@ -1,10 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <cassert>
-#include <string>
-
-#include <rtrace/matrix.h>
+#include <cmath>
 
 namespace rtrace {
 
@@ -19,11 +16,9 @@ namespace rtrace {
 
 		Vector3();
 		Vector3(const double &, const double &, const double &);
-		Vector3(const Matrix &);
 
 		double getLength() const;
 		Vector3 getNormalized() const;
-		Matrix getTransposition() const;
 
 		bool operator!=(const Vector3 &) const;
 		Vector3 & operator+=(const Vector3 &);
@@ -32,7 +27,6 @@ namespace rtrace {
 		Vector3 operator-(const Vector3 &) const;
 		Vector3 operator^(const Vector3 &) const;
 		double operator*(const Vector3 &) const;
-		Matrix operator*(const Matrix &) const;
 		Vector3 operator*(const double &) const;
 		Vector3 operator/(const double &) const;
 
@@ -42,7 +36,6 @@ namespace rtrace {
 	};
 
 	Vector3 operator*(const double &, const Vector3 &);
-	Vector3 operator*(const Matrix &, const Vector3 &);
 	Vector3 operator-(const Vector3 &);
 
 	double length(const Vector3 &);
