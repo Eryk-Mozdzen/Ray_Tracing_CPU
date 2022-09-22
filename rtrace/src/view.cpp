@@ -1,33 +1,27 @@
 #include <rtrace/view.h>
 
-rtrace::View::View() {
-    this->distance = 1;
-}
-
-rtrace::View::View(const rtrace::Vector3 &position, const double &distance) {
-    this->distance = distance;
-
-    this->transform.translate(position);
+rtrace::View::View(const rtrace::Vector3 &position, const double &distance) : distance{distance} {
+    transform.translate(position);
 }
 
 rtrace::Vector3 rtrace::View::getDirectionX() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::X) - this->transform.getTranslation());
+    return rtrace::normalize(transform.getRelativeToReferenceFrame(rtrace::Vector3::X) - transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getDirectionY() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::Y) - this->transform.getTranslation());
+    return rtrace::normalize(transform.getRelativeToReferenceFrame(rtrace::Vector3::Y) - transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getDirectionZ() const {
-    return rtrace::normalize(this->transform.getRelativeToReferenceFrame(rtrace::Vector3::Z) - this->transform.getTranslation());
+    return rtrace::normalize(transform.getRelativeToReferenceFrame(rtrace::Vector3::Z) - transform.getTranslation());
 }
 
 rtrace::Vector3 rtrace::View::getPosition() const {
-    return this->transform.getTranslation();
+    return transform.getTranslation();
 }
 
 double rtrace::View::getDistanceFromProjectionPlane() const {
-    return this->distance;
+    return distance;
 }
 
 void rtrace::View::setDistanceFromProjectionPlane(const double &distance) {
@@ -35,12 +29,9 @@ void rtrace::View::setDistanceFromProjectionPlane(const double &distance) {
 }
 
 void rtrace::View::translate(const rtrace::Vector3 &transltion) {
-    this->transform.translate(transltion);
+    transform.translate(transltion);
 }
 
 void rtrace::View::rotate(const rtrace::Vector3 &axis, const double &theta) {
-    this->transform.rotate(axis, theta);
+    transform.rotate(axis, theta);
 }
-
-
-

@@ -11,10 +11,8 @@ class Camera : public rtrace::View {
 private:
     sf::Vector2i lastMouseCoords;
 public:
-    Camera(const rtrace::Vector3&, const double&);
+    Camera(rtrace::Vector3);
     
     void rotate(sf::RenderWindow&);
     void move();
-    void zoomIn();
-    void zoomOut();
 };

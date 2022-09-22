@@ -12,18 +12,6 @@ rtrace::Vector3::Vector3(const double &x, const double &y, const double &z) : x{
 
 }
 
-double rtrace::Vector3::getLength() const {
-    return length(*this);
-}
-
-rtrace::Vector3 rtrace::Vector3::getNormalized() const {
-    return normalize(*this);
-}
-
-bool rtrace::Vector3::operator!=(const rtrace::Vector3 &rhs) const {
-    return (length(*this - rhs)>0.0001);
-}
-
 rtrace::Vector3 & rtrace::Vector3::operator+=(const rtrace::Vector3 &rhs) {
     x +=rhs.x;
     y +=rhs.y;
@@ -77,38 +65,27 @@ rtrace::Vector3 rtrace::Vector3::operator*(const double &rhs) const {
 }
 
 rtrace::Vector3 rtrace::Vector3::operator/(const double &rhs) const {
-    return (*this)*(1/rhs);
+    return Vector3(
+        x/rhs,
+        y/rhs,
+        z/rhs
+    );
 }
 
 rtrace::Vector3 rtrace::operator*(const double &lhs, const rtrace::Vector3 &rhs) {
-    return rhs*lhs;
+    return Vector3(
+        lhs*rhs.x,
+        lhs*rhs.y,
+        lhs*rhs.z
+    );
 }
 
 rtrace::Vector3 rtrace::operator-(const rtrace::Vector3 &rhs) {
-	return rtrace::Vector3(-rhs.x, -rhs.y, -rhs.z);
-}
-
-double rtrace::length(const rtrace::Vector3 &vec) {
-    return std::sqrt(std::pow(vec.x, 2) + std::pow(vec.y, 2) + std::pow(vec.z, 2));
-}
-
-rtrace::Vector3 rtrace::normalize(const rtrace::Vector3 &v) {
-    double len = rtrace::length(v);
-
-    if(len<0.0001)
-        return v;
-
-    return (v/len);
-}
-
-rtrace::Vector3 rtrace::rotate(const rtrace::Vector3 &axis, const rtrace::Vector3 &v, const double &theta) {
-    rtrace::Vector3 k = rtrace::normalize(axis);
-
-    double c = std::cos(theta);
-    double s = std::sin(theta);
-
-    //Rodrigues' rotation formula
-    return (c*v + s*(k^v) + (k*v)*(1.f-c)*k);
+	return rtrace::Vector3(
+		-rhs.x, 
+		-rhs.y, 
+		-rhs.z
+	);
 }
 
 std::ostream & rtrace::operator<<(std::ostream &lhs, const rtrace::Vector3 &rhs) {
@@ -120,3 +97,19 @@ std::ostream & rtrace::operator<<(std::ostream &lhs, const rtrace::Vector3 &rhs)
     return lhs;
 }
 
+double rtrace::length(const rtrace::Vector3 &vec) {
+    return std::sqrt(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z);
+}
+
+rtrace::Vector3 rtrace::normalize(const rtrace::Vector3 &vec) {
+    const double len = rtrace::length(vec);
+
+    if(len<0.0001)
+        return rtrace::Vector3();
+
+    return Vector3(
+        vec.x/len,
+        vec.y/len,
+        vec.z/len
+    );
+}

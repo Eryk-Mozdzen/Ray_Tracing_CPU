@@ -6,11 +6,12 @@
 
 class Window : public sf::RenderWindow, public rtrace::Scene {
 private:
-	int depth, width, height;
+	int width, height;
 	rtrace::Scene::Mode mode;
+	int depth;
 	sf::Image buffer;
 public:
-	Window(const rtrace::Scene::Mode&, const int&, const int&, const int&);
+	Window(int, int, int);
 
 	void handleEvents();
 	void display(const rtrace::View&);

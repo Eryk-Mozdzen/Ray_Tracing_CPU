@@ -17,10 +17,6 @@ namespace rtrace {
 		Vector3();
 		Vector3(const double &, const double &, const double &);
 
-		double getLength() const;
-		Vector3 getNormalized() const;
-
-		bool operator!=(const Vector3 &) const;
 		Vector3 & operator+=(const Vector3 &);
 		Vector3 & operator-=(const Vector3 &);
 		Vector3 operator+(const Vector3 &) const;
@@ -37,10 +33,9 @@ namespace rtrace {
 
 	Vector3 operator*(const double &, const Vector3 &);
 	Vector3 operator-(const Vector3 &);
+	std::ostream & operator<<(std::ostream &, const Vector3 &);
 
 	double length(const Vector3 &);
 	Vector3 normalize(const Vector3 &);
-	Vector3 rotate(const Vector3 &, const Vector3 &, const double &);
-	std::ostream & operator<<(std::ostream &, const Vector3 &);
 
 }

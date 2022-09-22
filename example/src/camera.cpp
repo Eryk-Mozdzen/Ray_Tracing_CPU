@@ -3,12 +3,12 @@
 constexpr double linearVelocity = 1.5;
 constexpr double angularVelocity = 0.1;
 
-Camera::Camera(const rtrace::Vector3 &position, const double &distance) : rtrace::View(position, distance) {
-    this->lastMouseCoords = sf::Mouse::getPosition();
+Camera::Camera(rtrace::Vector3 position) : rtrace::View(position, 1) {
+    lastMouseCoords = sf::Mouse::getPosition();
 }
 
 void Camera::rotate(sf::RenderWindow &window) {
-    sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - this->lastMouseCoords;
+    sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - lastMouseCoords;
 
     if(std::abs(deltaMouse.x)>5) {
         View::rotate(rtrace::Vector3::Z, angularVelocity*((deltaMouse.x<0)? 1 : -1));
@@ -25,7 +25,7 @@ void Camera::rotate(sf::RenderWindow &window) {
 
 	sf::Mouse::setPosition(sf::Vector2i(window.getSize().x/2, window.getSize().y/2), window);
 
-	this->lastMouseCoords = sf::Mouse::getPosition(window);
+	lastMouseCoords = sf::Mouse::getPosition(window);
 }
 
 void Camera::move() {
@@ -55,20 +55,5 @@ void Camera::move() {
 		translation -=rtrace::Vector3::Z;
 	}
 
-    this->translate(linearVelocity*rtrace::normalize(translation));
-}
-
-void Camera::zoomIn() {
-    const double d = this->getDistanceFromProjectionPlane();
-
-    this->setDistanceFromProjectionPlane(d + ((d<1) ? 0.1 : 1));
-}
-
-void Camera::zoomOut() {
-    const double d = this->getDistanceFromProjectionPlane();
-
-    if(d<=0.1+rtrace::EPSILON)
-        return;
-
-    this->setDistanceFromProjectionPlane(d - ((d<=1) ? 0.1 : 1));
+    translate(linearVelocity*rtrace::normalize(translation));
 }

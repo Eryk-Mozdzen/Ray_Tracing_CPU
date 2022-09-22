@@ -1,10 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <cmath>
-
-#include <rtrace/vector.h>
-#include <rtrace/matrix.h>
 #include <rtrace/transform.h>
 
 namespace rtrace {
@@ -19,7 +14,6 @@ namespace rtrace {
 		double distance;
 		Transform3 transform;
 	public:
-		View();
 		View(const Vector3&, const double&);
 
 		Vector3 getDirectionX() const;
