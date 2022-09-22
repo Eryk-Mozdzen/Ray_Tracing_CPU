@@ -62,7 +62,7 @@ rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3
     p(2, 0) = v.z;
     p(3, 0) = 1;
 
-    rtrace::Matrix rel = solveLinearSystem(*this, p);
+	rtrace::Matrix rel = solveLinearSystem(*this, p);
 
     return rtrace::Vector3(
         rel(0, 0),
@@ -78,7 +78,7 @@ rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Ve
     p(2, 0) = v.z;
     p(3, 0) = 1;
 
-    rtrace::Matrix rel = (*this)*p;
+	rtrace::Matrix rel = (*this)*p;
 
     return Vector3(
         rel(0, 0),
@@ -88,11 +88,11 @@ rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Ve
 }
 
 rtrace::Vector3 rtrace::Transform3::getTranslation() const {
-    rtrace::Vector3 result;
-    result.x = (*this)(0, 3);
-    result.y = (*this)(1, 3);
-    result.z = (*this)(2, 3);
-    return result;
+	return rtrace::Vector3(
+        (*this)(0, 3),
+        (*this)(1, 3),
+        (*this)(2, 3)
+    );
 }
 
 rtrace::Matrix<3, 3> rtrace::Transform3::getRotation() const {

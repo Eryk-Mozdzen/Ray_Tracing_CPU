@@ -108,3 +108,34 @@ rtrace::Matrix<3, 1> rtrace::toMat(const rtrace::Vector3 &vec) {
 
 	return mat;
 }
+
+rtrace::Vector3 rtrace::solveLinearSystem(const rtrace::Matrix<3, 3> &A, const rtrace::Vector3 &b) {
+    rtrace::Vector3 x;
+
+    const double W = rtrace::determinant(A);
+
+    if(std::abs(W)<EPSILON)
+        return x;
+
+    rtrace::Matrix<3, 3> A_i;
+
+	A_i = A;
+	A_i(0, 0) = b.x;
+	A_i(1, 0) = b.y;
+	A_i(2, 0) = b.z;
+	x.x = rtrace::determinant(A_i)/W;
+
+	A_i = A;
+	A_i(0, 1) = b.x;
+	A_i(1, 1) = b.y;
+	A_i(2, 1) = b.z;
+	x.y = rtrace::determinant(A_i)/W;
+
+	A_i = A;
+	A_i(0, 2) = b.x;
+	A_i(1, 2) = b.y;
+	A_i(2, 2) = b.z;
+	x.z = rtrace::determinant(A_i)/W;
+
+    return x;
+}

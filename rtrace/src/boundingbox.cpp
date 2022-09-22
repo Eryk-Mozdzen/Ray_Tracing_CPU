@@ -1,16 +1,34 @@
 #include <rtrace/boundingbox.h>
 
 rtrace::BoundingBox::BoundingBox(rtrace::Transform3 &transform, rtrace::Vector3 min, rtrace::Vector3 max) : 
-		transform{transform}, min{min}, max{max} {
+		transform{transform}, minimum{min}, maximum{max} {
 
 }
 
-bool rtrace::BoundingBox::intersect(const rtrace::Ray &ray) const {
+bool rtrace::BoundingBox::intersect(const rtrace::Ray &r) const {
 
-  	const rtrace::Ray r(transform.getRotation() *
-		(ray.origin - transform.getTranslation()),
-		transform.getRotation() * ray.direction
-	);
+	const std::vector<rtrace::Vector3> verts = {
+		transform.getRelativeToReferenceFrame({minimum.x, minimum.y, minimum.z}),
+		transform.getRelativeToReferenceFrame({maximum.x, minimum.y, minimum.z}),
+		transform.getRelativeToReferenceFrame({minimum.x, maximum.y, minimum.z}),
+		transform.getRelativeToReferenceFrame({maximum.x, maximum.y, minimum.z}),
+		transform.getRelativeToReferenceFrame({minimum.x, minimum.y, maximum.z}),
+		transform.getRelativeToReferenceFrame({maximum.x, minimum.y, maximum.z}),
+		transform.getRelativeToReferenceFrame({minimum.x, maximum.y, maximum.z}),
+		transform.getRelativeToReferenceFrame({maximum.x, maximum.y, maximum.z})
+	};
+
+	rtrace::Vector3 min = verts.front();
+	rtrace::Vector3 max = verts.front();
+	for(const rtrace::Vector3 &vert : verts) {
+		min.x = std::min(min.x, vert.x);
+		min.y = std::min(min.y, vert.y);
+		min.z = std::min(min.z, vert.z);
+
+		max.x = std::max(max.x, vert.x);
+		max.y = std::max(max.y, vert.y);
+		max.z = std::max(max.z, vert.z);
+	}
 
 	// https://www.researchgate.net/publication/220494140_An_Efficient_and_Robust_Ray-Box_Intersection_Algorithm
 

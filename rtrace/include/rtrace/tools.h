@@ -25,6 +25,8 @@ namespace rtrace {
 	Vector3 toVec(const Matrix<3, 1> &);
 	Matrix<3, 1> toMat(const Vector3 &);
 
+	Vector3 solveLinearSystem(const Matrix<3, 3>&, const Vector3&);
+
 	template<int M>
 	Matrix<M, 1> solveLinearSystem(const Matrix<M, M>&, const Matrix<M, 1>&);
 

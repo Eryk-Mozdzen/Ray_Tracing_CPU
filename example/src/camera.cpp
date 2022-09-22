@@ -18,7 +18,7 @@ void Camera::rotate(sf::RenderWindow &window) {
         View::rotate(rtrace::Vector3::Y, angularVelocity*((deltaMouse.y>0)? 1 : -1));
 	}
 
-    double s = this->getDirectionY()*rtrace::Vector3::Z;
+    double s = getDirection(rtrace::Vector3::Y)*rtrace::Vector3::Z;
     if(std::abs(s)>0.1) {
         View::rotate(rtrace::Vector3::X, angularVelocity*((s<0)? 1 : -1));
 	}

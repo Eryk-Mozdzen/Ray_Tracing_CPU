@@ -99,9 +99,9 @@ std::vector<rtrace::Color> rtrace::Scene::render(const rtrace::View &view,
 
 	std::vector<rtrace::Color> buffer(width*height);
 
-	const rtrace::Vector3 dirX = view.getDirectionX()*view.getDistanceFromProjectionPlane();
-	const rtrace::Vector3 dirY = view.getDirectionY()/width*width/height;
-	const rtrace::Vector3 dirZ = view.getDirectionZ()/height;
+	const rtrace::Vector3 dirX = view.getDirection(rtrace::Vector3::X)*view.getDistanceFromProjectionPlane();
+	const rtrace::Vector3 dirY = view.getDirection(rtrace::Vector3::Y)/width*width/height;
+	const rtrace::Vector3 dirZ = view.getDirection(rtrace::Vector3::Z)/height;
 
 	rtrace::Ray ray(view.getPosition(), rtrace::Vector3::X);
 

@@ -20,8 +20,8 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 	if(!rtrace::BoundingBox::intersect(ray))
 		return rtrace::Collision();
 
-	const rtrace::Vector3 origin = transform.getRotation()*(ray.origin - transform.getTranslation());
-	const rtrace::Vector3 dir = transform.getRotation()*ray.direction;
+	const rtrace::Vector3 origin = transform.getRelativeToTransform(ray.origin);
+	const rtrace::Vector3 dir = rtrace::solveLinearSystem(transform.getRotation(), ray.direction);
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = majorRadius;
@@ -57,7 +57,7 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 	rtrace::Collision collision;
 
 	collision.point = ray.origin + t*ray.direction;
-	collision.normal = rtrace::toVec(rtrace::solveLinearSystem(transform.getRotation(), rtrace::toMat(rtrace::normalize(P - Q))));
+	collision.normal = transform.getRotation()*rtrace::normalize(P - Q);
     collision.material = material;
     collision.distance = t;
     collision.exist = true;
@@ -72,14 +72,14 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 
 rtrace::Collision Torus::distance(const rtrace::Vector3 &point) const {
 
-	const rtrace::Vector3 P = this->transform.getRotation()*(point - this->transform.getTranslation());
+	const rtrace::Vector3 P = transform.getRelativeToTransform(point);
 	const rtrace::Vector3 Q = rtrace::normalize(rtrace::Vector3(P.x, P.y, 0))*majorRadius;
 	
 	rtrace::Collision collision;
 
 	collision.distance = rtrace::length(P - Q) - minorRadius;
     collision.point = point;
-	collision.normal = rtrace::toVec(rtrace::solveLinearSystem(transform.getRotation(), rtrace::toMat(rtrace::normalize(P - Q))));
+	collision.normal = transform.getRotation()*rtrace::normalize(P - Q);
     collision.material = material;
     collision.exist = (collision.distance<rtrace::EPSILON);
 

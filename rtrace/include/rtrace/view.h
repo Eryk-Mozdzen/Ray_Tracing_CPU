@@ -16,9 +16,7 @@ namespace rtrace {
 	public:
 		View(const Vector3&, const double&);
 
-		Vector3 getDirectionX() const;
-		Vector3 getDirectionY() const;
-		Vector3 getDirectionZ() const;
+		Vector3 getDirection(const Vector3&) const;
 		Vector3 getPosition() const;
 		double getDistanceFromProjectionPlane() const;
 

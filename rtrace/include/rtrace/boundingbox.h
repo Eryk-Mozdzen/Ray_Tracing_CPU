@@ -8,8 +8,8 @@ namespace rtrace {
 	class BoundingBox {
 	private:
 		Transform3 &transform;
-		Vector3 min;
-		Vector3 max;
+		Vector3 minimum;
+		Vector3 maximum;
 
 	public:
 		BoundingBox(Transform3 &, Vector3, Vector3);
