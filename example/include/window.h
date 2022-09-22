@@ -7,7 +7,7 @@
 class Window : public sf::RenderWindow, public rtrace::Scene {
 private:
 	int width, height;
-	rtrace::Scene::Mode mode;
+	bool mode;
 	int depth;
 	sf::Image buffer;
 public:

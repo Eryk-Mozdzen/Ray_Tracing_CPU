@@ -5,7 +5,7 @@ rtrace::BoundingBox::BoundingBox(rtrace::Transform3 &transform, rtrace::Vector3 
 
 }
 
-bool rtrace::BoundingBox::intersect(const rtrace::Ray &r) const {
+bool rtrace::BoundingBox::intersect(const rtrace::Ray &ray) const {
 
 	const std::vector<rtrace::Vector3> verts = {
 		transform.getRelativeToReferenceFrame({minimum.x, minimum.y, minimum.z}),
@@ -30,51 +30,16 @@ bool rtrace::BoundingBox::intersect(const rtrace::Ray &r) const {
 		max.z = std::max(max.z, vert.z);
 	}
 
-	// https://www.researchgate.net/publication/220494140_An_Efficient_and_Robust_Ray-Box_Intersection_Algorithm
+	// https://gdbooks.gitbooks.io/3dcollisions/content/Chapter3/raycast_aabb.html
+	const double t1 = (min.x - ray.origin.x)/ray.direction.x;
+	const double t2 = (max.x - ray.origin.x)/ray.direction.x;
+	const double t3 = (min.y - ray.origin.y)/ray.direction.y;
+	const double t4 = (max.y - ray.origin.y)/ray.direction.y;
+	const double t5 = (min.z - ray.origin.z)/ray.direction.z;
+	const double t6 = (max.z - ray.origin.z)/ray.direction.z;
 
-	double tmin, tmax, tymin, tymax, tzmin, tzmax;
+	const double tmin = std::max(std::max(std::min(t1, t2), std::min(t3, t4)), std::min(t5, t6));
+    const double tmax = std::min(std::min(std::max(t1, t2), std::max(t3, t4)), std::max(t5, t6));
 
-	if(r.direction.x>=0) {
-		tmin = (min.x - r.origin.x) / r.direction.x;
-		tmax = (max.x - r.origin.x) / r.direction.x;
-	} else {
-		tmin = (max.x - r.origin.x) / r.direction.x;
-		tmax = (min.x - r.origin.x) / r.direction.x;
-	}
-
-	if(r.direction.y>=0) {
-		tymin = (min.y - r.origin.y) / r.direction.y;
-		tymax = (max.y - r.origin.y) / r.direction.y;
-	} else {
-		tymin = (max.y - r.origin.y) / r.direction.y;
-		tymax = (min.y - r.origin.y) / r.direction.y;
-	}
-
-	if((tmin>tymax) || (tymin>tmax))
-		return false;
-
-	if(tymin>tmin) 
-		tmin = tymin;
-
-	if(tymax<tmax)
-		tmax = tymax;
-
-	if(r.direction.z>=0) {
-		tzmin = (min.z - r.origin.z) / r.direction.z;
-		tzmax = (max.z - r.origin.z) / r.direction.z;
-	} else {
-		tzmin = (max.z - r.origin.z) / r.direction.z;
-		tzmax = (min.z - r.origin.z) / r.direction.z;
-	}
-
-	if((tmin>tzmax) || (tzmin>tmax))
-		return false;
-
-	if(tzmin>tmin)
-		tmin = tzmin;
-
-	if(tzmax<tmax)
-		tmax = tzmax;
-
-	return (tmax>rtrace::EPSILON);
+	return (tmax>0 && tmin<tmax);
 }

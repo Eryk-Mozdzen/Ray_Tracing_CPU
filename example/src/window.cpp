@@ -2,7 +2,7 @@
 
 Window::Window(int width, int height, int depth) : 
 		sf::RenderWindow{sf::VideoMode(1280, 720), ""},
-		width{width}, height{height}, mode{rtrace::Scene::Mode::RAY_TRACING}, depth{depth} {
+		width{width}, height{height}, mode{true}, depth{depth} {
 
 	buffer.create(width, height, sf::Color::Black);
 
@@ -23,11 +23,11 @@ void Window::handleEvents() {
 			}
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::N)) {
-                mode = rtrace::Scene::SPHERE_TRACING;
+                mode = false;
 			}
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-                mode = rtrace::Scene::RAY_TRACING;
+                mode = true;
 			}
 
             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
@@ -53,7 +53,13 @@ void Window::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
 
-    const std::vector<rtrace::Color> frame = this->render(view, width, height, mode, depth);
+    std::vector<rtrace::Color> frame;
+	
+	if(mode) {
+		frame = renderRayTracing(view, width, height, depth);
+	} else {
+		frame = renderSphereTracing(view, width, height);
+	}
 
     const double renderTime = clock.restart().asSeconds();
 
@@ -86,10 +92,12 @@ void Window::display(const rtrace::View &view) {
 	title << " | Draw Time: " << drawTime*1000. << "ms";
     title << " | FPS: " << 1./(renderTime + drawTime);
     title << " | Mode: ";
-    switch(mode) {
-        case RAY_TRACING:      title << "ray tracing";	break;
-        case SPHERE_TRACING:   title << "sphere tracing"; break;
-    }
+
+	if(mode) {
+		title << "ray tracing";
+	} else {
+		title << "sphere tracing";
+	}
 
     sf::RenderWindow::setTitle(title.str());
 }

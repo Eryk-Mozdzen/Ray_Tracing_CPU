@@ -21,22 +21,18 @@ namespace rtrace {
 		std::vector<std::shared_ptr<Object>> objects;
 		std::vector<std::shared_ptr<Light>> lights;
 
-		Collision rayTrace(const Ray&) const;
-		Collision sphereTrace(const Vector3&) const;
-		Color evaluateRayTracing(const Ray&, const unsigned int&) const;
-		Color evaluateSphereTracing(const Ray&, const unsigned int&) const;
-	public:
-		enum Mode {
-			RAY_TRACING,
-			SPHERE_TRACING
-		};
+		Collision traceRay(const Ray&) const;
+		Collision traceSphere(const Vector3&) const;
 
+		Color recursiveRayTracing(const Ray&, int) const;
+	public:
 		Scene();
 		
 		void addObject(std::shared_ptr<Object>);
 		void addLight(std::shared_ptr<Light>);
 
-		std::vector<Color> render(const View&, const int&, const int&, const Mode&, const int&) const;
+		std::vector<Color> renderRayTracing(const View&, int, int, int) const;
+		std::vector<Color> renderSphereTracing(const View&, int, int) const;
 	};
 
 }
