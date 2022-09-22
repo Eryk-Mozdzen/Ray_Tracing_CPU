@@ -22,11 +22,10 @@ Ray Tracing result (left) and ray marching result (right).
 Windows:
 ```
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
-cd Ray_Tracing_CPU/external
+cd Ray_Tracing_CPU/example-ghx
 git submodule init SFML
 git submodule update
 
-cd ../example
 mkdir build
 cd build
 cmake .. -G "Unix Makefiles"
@@ -43,11 +42,10 @@ sudo apt install libgl1-mesa-dev
 sudo apt install xorg-dev
 
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
-cd ./Ray_Tracing_CPU/external
+cd ./Ray_Tracing_CPU/example-ghx
 git submodule init SFML
 git submodule update
 
-cd ../example
 mkdir ./build
 cd ./build
 cmake .. 
@@ -60,9 +58,9 @@ Example usage of all functions is presented in code with comments, but for short
 Lib does not have any pre-made classes to draw on scene. User must declare his own objects inheriting from `Object` class and overrite
 `Collision intersect(const Ray &ray) const` or `Collision distance(const Vector3 &point)` method on it.
 
-Method must return `CollisionData` struct wih correct values in each field.
+Method must return `Collision` struct wih correct values in each field.
 
-`CollisionData` struct contains:
+`Collision` struct contains:
 - `.point` type `Vector3` (should contain coordinates of point in 3d space where collision occurs)
 - `.normal` type `Vector3` (should contain surface norma vector in collision point)
 - `.material` type `Material` (should contain material specifications of the object)
