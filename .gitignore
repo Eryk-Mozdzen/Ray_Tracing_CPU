@@ -1,5 +1,5 @@
-example/build
-example/screenshots
-external/build
 
 **/.vscode
+**/build
+
+example-ghx/screenshots

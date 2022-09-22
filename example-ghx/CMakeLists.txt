@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_compile_options(-O3 -Wall -pedantic)
 
-add_subdirectory("../external/SFML" "SFML")
+add_subdirectory("SFML" "SFML")
 add_subdirectory("../rtrace" "rtrace")
 
 add_executable(${PROJECT_NAME}
