@@ -4,12 +4,12 @@ const rtrace::Vector3 rtrace::Vector3::X(1, 0, 0);
 const rtrace::Vector3 rtrace::Vector3::Y(0, 1, 0);
 const rtrace::Vector3 rtrace::Vector3::Z(0, 0, 1);
 
-rtrace::Vector3::Vector3() : rtrace::Vector3(0, 0, 0) {}
+rtrace::Vector3::Vector3() : x{0}, y{0}, z{0} {
 
-rtrace::Vector3::Vector3(const double &x, const double &y, const double &z) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
+}
+
+rtrace::Vector3::Vector3(const double &x, const double &y, const double &z) : x{x}, y{y}, z{z} {
+
 }
 
 double rtrace::Vector3::getLength() const {
@@ -25,54 +25,54 @@ bool rtrace::Vector3::operator!=(const rtrace::Vector3 &rhs) const {
 }
 
 rtrace::Vector3 & rtrace::Vector3::operator+=(const rtrace::Vector3 &rhs) {
-    this->x +=rhs.x;
-    this->y +=rhs.y;
-    this->z +=rhs.z;
+    x +=rhs.x;
+    y +=rhs.y;
+    z +=rhs.z;
 
     return *this;
 }
 
 rtrace::Vector3 & rtrace::Vector3::operator-=(const rtrace::Vector3 &rhs) {
-    this->x -=rhs.x;
-    this->y -=rhs.y;
-    this->z -=rhs.z;
+    x -=rhs.x;
+    y -=rhs.y;
+    z -=rhs.z;
 
     return *this;
 }
 
 rtrace::Vector3 rtrace::Vector3::operator+(const rtrace::Vector3 &rhs) const {
     return Vector3(
-        this->x + rhs.x,
-        this->y + rhs.y,
-        this->z + rhs.z
+        x + rhs.x,
+        y + rhs.y,
+        z + rhs.z
     );
 }
 
 rtrace::Vector3 rtrace::Vector3::operator-(const rtrace::Vector3 &rhs) const {
     return Vector3(
-        this->x - rhs.x,
-        this->y - rhs.y,
-        this->z - rhs.z
+        x - rhs.x,
+        y - rhs.y,
+        z - rhs.z
     );
 }
 
 double rtrace::Vector3::operator*(const rtrace::Vector3 &rhs) const {
-    return this->x*rhs.x + this->y*rhs.y + this->z*rhs.z;
+    return x*rhs.x + y*rhs.y + z*rhs.z;
 }
 
 rtrace::Vector3 rtrace::Vector3::operator^(const rtrace::Vector3 &rhs) const {
     return Vector3(
-        this->y*rhs.z - this->z*rhs.y,
-        -(this->x*rhs.z - this->z*rhs.x),
-        this->x*rhs.y - this->y*rhs.x
+        y*rhs.z - z*rhs.y,
+        -(x*rhs.z - z*rhs.x),
+        x*rhs.y - y*rhs.x
     );
 }
 
 rtrace::Vector3 rtrace::Vector3::operator*(const double &rhs) const {
     return Vector3(
-        this->x * rhs,
-        this->y * rhs,
-        this->z * rhs
+        x*rhs,
+        y*rhs,
+        z*rhs
     );
 }
 
