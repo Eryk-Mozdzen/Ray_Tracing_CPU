@@ -10,7 +10,7 @@
 
 int main() {
 
-	Window window(100, 100);
+	Window window(60, 30);
     const rtrace::View view({-25, 0, 0}, 1);
 
 	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 0), 6, 3);
@@ -20,7 +20,7 @@ int main() {
 
     while(true) {
 
-		torus->transform.rotate({0, 1.1, 0.75}, 0.03);
+		torus->transform.rotate({0, 1.1, 0.75}, 0.005);
 
         window.display(view);
     }

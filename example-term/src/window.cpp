@@ -34,7 +34,7 @@ char Window::mapColor(const rtrace::Color &color) {
 
 void Window::display(const rtrace::View &view) {
   
-    std::vector<rtrace::Color> frame = renderRayTracing(view, width, height, 3);
+    std::vector<rtrace::Color> frame = renderRayTracing(view, width, height, 1);
 
 	for(int i=0; i<height; i++) {
         for(int j=0; j<width; j++) {
