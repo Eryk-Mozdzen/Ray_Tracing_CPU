@@ -11,8 +11,6 @@ add_subdirectory("../rtrace" "rtrace")
 add_executable(${PROJECT_NAME}
 	"src/main.cpp"
 	"src/window.cpp"
-	"src/sphere.cpp"
-	"src/plane.cpp"
 	"src/torus.cpp"
 )
 
