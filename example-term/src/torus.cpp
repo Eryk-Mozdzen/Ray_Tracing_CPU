@@ -1,18 +1,12 @@
 #include "torus.h"
 
 Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) : 
-		rtrace::BoundingBox{transform, 
-			rtrace::Vector3(-majorRadius-minorRadius, -majorRadius-minorRadius, -minorRadius),
-			rtrace::Vector3(majorRadius+minorRadius, majorRadius+minorRadius, minorRadius)},
 		majorRadius{majorRadius}, minorRadius{minorRadius} {
 
 	transform.translate(center);
 }
 
 rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
-
-	if(!rtrace::BoundingBox::intersect(ray))
-		return rtrace::Collision();
 
 	const rtrace::Vector3 origin = transform.getRelativeToTransform(ray.origin);
 	const rtrace::Vector3 dir = rtrace::solveLinearSystem(transform.getRotation(), ray.direction);

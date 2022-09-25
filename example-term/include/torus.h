@@ -3,9 +3,8 @@
 #include <algorithm>
 #include <rtrace/object.h>
 #include <rtrace/transform.h>
-#include <rtrace/boundingbox.h>
 
-class Torus : public rtrace::Object, private rtrace::BoundingBox {
+class Torus : public rtrace::Object {
 private:
     double majorRadius, minorRadius;
 
