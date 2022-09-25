@@ -20,7 +20,7 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 	if(!rtrace::BoundingBox::intersect(ray))
 		return rtrace::Collision();
 
-	const rtrace::Vector3 origin = transform.getRelativeToTransform(ray.origin);
+	const rtrace::Vector3 origin = transform.convertWordToFrame(ray.origin);
 	const rtrace::Vector3 dir = rtrace::solveLinearSystem(transform.getRotation(), ray.direction);
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
@@ -72,7 +72,7 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 
 rtrace::Collision Torus::distance(const rtrace::Vector3 &point) const {
 
-	const rtrace::Vector3 P = transform.getRelativeToTransform(point);
+	const rtrace::Vector3 P = transform.convertWordToFrame(point);
 	const rtrace::Vector3 Q = rtrace::normalize(rtrace::Vector3(P.x, P.y, 0))*majorRadius;
 	
 	rtrace::Collision collision;

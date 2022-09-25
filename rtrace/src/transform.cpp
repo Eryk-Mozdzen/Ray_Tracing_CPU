@@ -32,11 +32,11 @@ void rtrace::Transform3::rotate(const rtrace::Vector3 &axis, const double &theta
     rotation = rotation*rot;
 }
 
-rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3 &vec) const {
+rtrace::Vector3 rtrace::Transform3::convertWordToFrame(const rtrace::Vector3 &vec) const {
 	return rtrace::solveLinearSystem(rotation, vec - translation);
 }
 
-rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Vector3 &vec) const {
+rtrace::Vector3 rtrace::Transform3::convertFrameToWord(const rtrace::Vector3 &vec) const {
 	return rotation*vec + translation;
 }
 

@@ -8,7 +8,7 @@ Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) :
 
 rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 
-	const rtrace::Vector3 origin = transform.getRelativeToTransform(ray.origin);
+	const rtrace::Vector3 origin = transform.convertWordToFrame(ray.origin);
 	const rtrace::Vector3 dir = rtrace::solveLinearSystem(transform.getRotation(), ray.direction);
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
