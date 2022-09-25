@@ -10,11 +10,13 @@ namespace rtrace {
 		describes translation and rotation of objects in scene.     */
 
 	class Transform3 : public Matrix<4, 4> {
+	private:
+		using Matrix<4, 4>::operator=;
+
 	public:
 		Transform3();
-		Transform3& operator=(const Matrix<4, 4>&);
 
-		void translate(const Vector3 &d);
+		void translate(const Vector3 &);
 		void rotate(const Vector3&, const double&);
 
 		Vector3 getRelativeToTransform(const Vector3&) const;

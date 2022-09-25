@@ -7,17 +7,6 @@ rtrace::Transform3::Transform3() {
 	(*this)(3, 3) = 1;
 }
 
-rtrace::Transform3& rtrace::Transform3::operator=(const rtrace::Matrix<4, 4> &matrix) {
-
-    for(int i=0; i<4; i++) {
-		for(int j=0; j<4; j++) {
-			(*this)(i, j) = matrix(i, j);
-		}
-	}
-
-	return *this;
-}
-
 void rtrace::Transform3::translate(const rtrace::Vector3 &d) {
     Transform3 transform;
 
