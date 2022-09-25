@@ -9,9 +9,10 @@ namespace rtrace {
 		Class represents 3-dimensional transform matrix (4x4) to
 		describes translation and rotation of objects in scene.     */
 
-	class Transform3 : public Matrix<4, 4> {
+	class Transform3 {
 	private:
-		using Matrix<4, 4>::operator=;
+		Matrix33 rotation;
+		Vector3 translation;
 
 	public:
 		Transform3();
@@ -22,8 +23,8 @@ namespace rtrace {
 		Vector3 getRelativeToTransform(const Vector3&) const;
 		Vector3 getRelativeToReferenceFrame(const Vector3&) const;
 
-		Vector3 getTranslation() const;
-		Matrix<3, 3> getRotation() const;
+		const Vector3 & getTranslation() const;
+		const Matrix33 & getRotation() const;
 	};
 
 }

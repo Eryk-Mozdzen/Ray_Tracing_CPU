@@ -1,95 +1,49 @@
 #include <rtrace/transform.h>
 
 rtrace::Transform3::Transform3() {
-	(*this)(0, 0) = 1;
-	(*this)(1, 1) = 1;
-	(*this)(2, 2) = 1;
-	(*this)(3, 3) = 1;
+	rotation(0, 0) = 1;
+	rotation(1, 1) = 1;
+	rotation(2, 2) = 1;
 }
 
-void rtrace::Transform3::translate(const rtrace::Vector3 &d) {
-    Transform3 transform;
-
-    transform(0, 3) = d.x;
-    transform(1, 3) = d.y;
-    transform(2, 3) = d.z;
-
-    *this = (*this)*transform;
+void rtrace::Transform3::translate(const rtrace::Vector3 &vec) {
+   	translation +=rotation*vec;
 }
 
-void rtrace::Transform3::rotate(const rtrace::Vector3 &a, const double &theta) {
-	const rtrace::Vector3 axis = normalize(a);
+void rtrace::Transform3::rotate(const rtrace::Vector3 &axis, const double &theta) {
+	const rtrace::Vector3 u = rtrace::normalize(axis);
+	const double s = std::sin(theta);
+	const double c = std::cos(theta);
 
-    rtrace::Transform3 transform;
+	rtrace::Matrix33 rot;
 
-    rtrace::Matrix<3, 3> m;
-    m(0, 1) = -axis.z;
-    m(0, 2) = axis.y;
-    m(1, 0) = axis.z;
-    m(1, 2) = -axis.x;
-    m(2, 0) = -axis.y;
-    m(2, 1) = axis.x;
+	rot(0, 0) = c + u.x*u.x*(1 - c);
+	rot(0, 1) = u.x*u.y*(1 - c) - u.z*s;
+	rot(0, 2) = u.x*u.z*(1 - c) + u.y*s;
 
-	rtrace::Matrix<3, 3> identity;
-	identity(0, 0) = 1;
-	identity(1, 1) = 1;
-	identity(2, 2) = 1;
+	rot(1, 0) = u.y*u.z*(1 - c) + u.z*s;
+	rot(1, 1) = c + u.y*u.y*(1 - c);
+	rot(1, 2) = u.y*u.z*(1 - c) - u.x*s;
 
-    rtrace::Matrix<3, 3> rot = m*std::sin(theta) + (identity - axis*rtrace::transposition(axis))*std::cos(theta) + (axis*rtrace::transposition(axis));
+	rot(2, 0) = u.z*u.x*(1 - c) - u.y*s;
+	rot(2, 1) = u.z*u.y*(1 - c) + u.x*s;
+	rot(2, 2) = c + u.z*u.z*(1 - c);
 
-    for(unsigned int i=0; i<3; i++)
-        for(unsigned int j=0; j<3; j++)
-            transform(i, j) = rot(i, j);
-
-    *this = (*this)*transform;
+    rotation = rotation*rot;
 }
 
-rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3 &v) const {
-    rtrace::Matrix<4, 1> p;
-    p(0, 0) = v.x;
-    p(1, 0) = v.y;
-    p(2, 0) = v.z;
-    p(3, 0) = 1;
-
-	rtrace::Matrix rel = solveLinearSystem(*this, p);
-
-    return rtrace::Vector3(
-        rel(0, 0),
-        rel(1, 0),
-        rel(2, 0)
-    );
+rtrace::Vector3 rtrace::Transform3::getRelativeToTransform(const rtrace::Vector3 &vec) const {
+	return rtrace::solveLinearSystem(rotation, vec - translation);
 }
 
-rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Vector3 &v) const {
-    rtrace::Matrix<4, 1> p;
-    p(0, 0) = v.x;
-    p(1, 0) = v.y;
-    p(2, 0) = v.z;
-    p(3, 0) = 1;
-
-	rtrace::Matrix rel = (*this)*p;
-
-    return Vector3(
-        rel(0, 0),
-        rel(1, 0),
-        rel(2, 0)
-    );
+rtrace::Vector3 rtrace::Transform3::getRelativeToReferenceFrame(const rtrace::Vector3 &vec) const {
+	return rotation*vec + translation;
 }
 
-rtrace::Vector3 rtrace::Transform3::getTranslation() const {
-	return rtrace::Vector3(
-        (*this)(0, 3),
-        (*this)(1, 3),
-        (*this)(2, 3)
-    );
+const rtrace::Vector3 & rtrace::Transform3::getTranslation() const {
+	return translation;
 }
 
-rtrace::Matrix<3, 3> rtrace::Transform3::getRotation() const {
-    rtrace::Matrix<3, 3> result;
-
-    for(int i=0; i<3; i++)
-        for(int j=0; j<3; j++)
-            result(i, j) = (*this)(i, j);
-	
-    return result;
+const rtrace::Matrix33 & rtrace::Transform3::getRotation() const {
+    return rotation;
 }

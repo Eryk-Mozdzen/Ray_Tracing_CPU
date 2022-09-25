@@ -5,6 +5,7 @@ add_library(rtrace
 	src/color.cpp
 	src/light.cpp
 	src/material.cpp
+	src/matrix.cpp
 	src/ray.cpp
 	src/scene.cpp
 	src/tools.cpp
