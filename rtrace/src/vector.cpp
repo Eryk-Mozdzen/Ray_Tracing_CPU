@@ -107,7 +107,7 @@ rtrace::Vector3 rtrace::normalize(const rtrace::Vector3 &vec) {
     if(len<0.0001)
         return rtrace::Vector3();
 
-    return Vector3(
+    return rtrace::Vector3(
         vec.x/len,
         vec.y/len,
         vec.z/len

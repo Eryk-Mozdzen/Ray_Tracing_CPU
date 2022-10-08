@@ -1,10 +1,6 @@
 #include "torus.h"
 
-Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) : 
-		rtrace::BoundingBox{transform, 
-			rtrace::Vector3(-majorRadius-minorRadius, -majorRadius-minorRadius, -minorRadius),
-			rtrace::Vector3(majorRadius+minorRadius, majorRadius+minorRadius, minorRadius)},
-		majorRadius{majorRadius}, minorRadius{minorRadius}, material{rtrace::Color::blue} {
+Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) : majorRadius{majorRadius}, minorRadius{minorRadius}, material{rtrace::Color::blue} {
 
 	transform.translate(center);
 }
@@ -17,17 +13,13 @@ Torus::Torus(rtrace::Vector3 center, double majorRadius, double minorRadius) :
 
 rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 
-	if(!rtrace::BoundingBox::intersect(ray))
-		return rtrace::Collision();
-
-	const rtrace::Vector3 origin = transform.convertWordToFrame(ray.origin);
-	const rtrace::Vector3 dir = rtrace::solveLinearSystem(transform.getRotation(), ray.direction);
+	const rtrace::Ray relative = transform.convertWordToFrame(ray);
 
     // http://cosinekitty.com/raytrace/chapter13_torus.html
     const double A = majorRadius;
     const double B = minorRadius;
-    const rtrace::Vector3 D = origin;
-    const rtrace::Vector3 E = dir;
+    const rtrace::Vector3 D = relative.origin;
+    const rtrace::Vector3 E = relative.direction;
     const double G = 4.*A*A*(E.x*E.x + E.y*E.y);
     const double H = 8.*A*A*(D.x*E.x + D.y*E.y);
     const double I = 4.*A*A*(D.x*D.x + D.y*D.y);
@@ -51,7 +43,7 @@ rtrace::Collision Torus::intersect(const rtrace::Ray &ray) const {
 
 	const double t = *std::min_element(tSolutions.begin(), tSolutions.end());
 
-	const rtrace::Vector3 P = origin + t*dir;
+	const rtrace::Vector3 P = relative.origin + t*relative.direction;
 	const rtrace::Vector3 Q = rtrace::normalize(rtrace::Vector3(P.x, P.y, 0))*majorRadius;
 	
 	rtrace::Collision collision;

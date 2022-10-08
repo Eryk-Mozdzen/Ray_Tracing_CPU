@@ -33,11 +33,21 @@ void rtrace::Transform3::rotate(const rtrace::Vector3 &axis, const double &theta
 }
 
 rtrace::Vector3 rtrace::Transform3::convertWordToFrame(const rtrace::Vector3 &vec) const {
-	return rtrace::solveLinearSystem(rotation, vec - translation);
+	return rtrace::transposition(rotation)*(vec - translation);
 }
 
 rtrace::Vector3 rtrace::Transform3::convertFrameToWord(const rtrace::Vector3 &vec) const {
 	return rotation*vec + translation;
+}
+
+rtrace::Ray rtrace::Transform3::convertWordToFrame(const rtrace::Ray &ray) const {
+	const rtrace::Matrix33 inverse = rtrace::transposition(rotation);
+
+	return rtrace::Ray(inverse*(ray.origin - translation), inverse*ray.direction);
+}
+
+rtrace::Ray rtrace::Transform3::convertFrameToWord(const rtrace::Ray &ray) const {
+	return rtrace::Ray(rotation*ray.origin + translation, rotation*ray.direction);
 }
 
 const rtrace::Vector3 & rtrace::Transform3::getTranslation() const {

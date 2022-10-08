@@ -3,12 +3,11 @@
 #include <algorithm>
 #include <rtrace/object.h>
 #include <rtrace/transform.h>
-#include <rtrace/boundingbox.h>
 
 /*  User custom Torus class
     It is drawable object looks like donut.    */
 
-class Torus : public rtrace::Object, private rtrace::BoundingBox {
+class Torus : public rtrace::Object {
 private:
     double majorRadius, minorRadius;
 	rtrace::Material material;
