@@ -113,6 +113,7 @@ std::vector<rtrace::Color> rtrace::Scene::renderSphereTracing(const rtrace::View
     for(int i=0; i<height; i++) {
         for(int j=0; j<width; j++) {
 			
+			collision.exist = false;
 			ray.direction = rtrace::normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
 			dist = 0;
 
