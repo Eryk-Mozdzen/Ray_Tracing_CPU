@@ -5,8 +5,6 @@ Window::Window(int width, int height, int depth) :
 		width{width}, height{height}, mode{true}, depth{depth} {
 
 	buffer.create(width, height, sf::Color::Black);
-
-	sf::RenderWindow::setMouseCursorVisible(false);
 }
 
 void Window::handleEvents() {

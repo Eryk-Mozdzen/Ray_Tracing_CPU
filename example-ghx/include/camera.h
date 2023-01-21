@@ -5,14 +5,16 @@
 #include <rtrace/view.h>
 
 /*  User custom Camera class
-    It is used to describes player point of view.   */
+    It is used to describes player point of view and movement.   */
 
 class Camera : public rtrace::View {
 private:
-    sf::Vector2i lastMouseCoords;
+	const sf::WindowBase &relativeTo;
+	
+	void rotation();
+    void translation();
 public:
-    Camera(rtrace::Vector3);
-    
-    void rotate(sf::RenderWindow&);
-    void move();
+    Camera(rtrace::Vector3, sf::WindowBase &);
+
+	void move();
 };

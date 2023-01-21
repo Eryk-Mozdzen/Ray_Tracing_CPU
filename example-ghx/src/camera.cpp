@@ -1,34 +1,35 @@
 #include "camera.h"
 
-constexpr double linearVelocity = 1.5;
-constexpr double angularVelocity = 0.1;
-
-Camera::Camera(rtrace::Vector3 position) : rtrace::View(position, 1) {
-    lastMouseCoords = sf::Mouse::getPosition();
+Camera::Camera(rtrace::Vector3 position, sf::WindowBase &window) : rtrace::View(position, 1), relativeTo{window} {
+	window.setMouseCursorVisible(false);
 }
 
-void Camera::rotate(sf::RenderWindow &window) {
-    sf::Vector2i deltaMouse = sf::Mouse::getPosition(window) - lastMouseCoords;
+void Camera::rotation() {
+	constexpr double angularVelocity = 0.1;
 
-    if(std::abs(deltaMouse.x)>5) {
-        View::rotate(rtrace::Vector3::Z, angularVelocity*((deltaMouse.x<0)? 1 : -1));
+	const sf::Vector2i center = static_cast<sf::Vector2i>(relativeTo.getSize()/2u);
+    const sf::Vector2i delta = sf::Mouse::getPosition(relativeTo) - center;
+
+    if(std::abs(delta.x)>5) {
+        View::rotate(rtrace::Vector3::Z, angularVelocity*((delta.x<0)? 1 : -1));
 	}
 
-    if(std::abs(deltaMouse.y)>5) {
-        View::rotate(rtrace::Vector3::Y, angularVelocity*((deltaMouse.y>0)? 1 : -1));
+    if(std::abs(delta.y)>5) {
+        View::rotate(rtrace::Vector3::Y, angularVelocity*((delta.y>0)? 1 : -1));
 	}
 
-    double s = getDirection(rtrace::Vector3::Y)*rtrace::Vector3::Z;
+    const double s = View::getDirection(rtrace::Vector3::Y)*rtrace::Vector3::Z;
+
     if(std::abs(s)>0.1) {
         View::rotate(rtrace::Vector3::X, angularVelocity*((s<0)? 1 : -1));
 	}
 
-	sf::Mouse::setPosition(sf::Vector2i(window.getSize().x/2, window.getSize().y/2), window);
-
-	lastMouseCoords = sf::Mouse::getPosition(window);
+	sf::Mouse::setPosition(center, relativeTo);
 }
 
-void Camera::move() {
+void Camera::translation() {
+	constexpr double linearVelocity = 1.5;
+
     rtrace::Vector3 translation;
 
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -55,5 +56,10 @@ void Camera::move() {
 		translation -=rtrace::Vector3::Z;
 	}
 
-    translate(linearVelocity*rtrace::normalize(translation));
+    View::translate(linearVelocity*rtrace::normalize(translation));
+}
+
+void Camera::move() {
+	rotation();
+	translation();
 }

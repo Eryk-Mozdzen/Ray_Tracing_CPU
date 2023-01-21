@@ -23,8 +23,8 @@
 
 int main() {
 
-    Camera camera(rtrace::Vector3(-50, 0, 15));
     Window window(135, 90, 3);
+	Camera camera(rtrace::Vector3(-50, 0, 15), window);
 
     /*-----------  Scene setup  ---------------*/
 
@@ -44,7 +44,6 @@ int main() {
     while(window.isOpen()) {
         window.handleEvents();
 
-        camera.rotate(window);
         camera.move();
 
         /*-----------  Scene objects update  ---------------*/
