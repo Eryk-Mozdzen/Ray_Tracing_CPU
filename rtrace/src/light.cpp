@@ -1,11 +1,15 @@
 #include <rtrace/light.h>
 
-rtrace::Light::Light() {}
+namespace rtrace {
 
-rtrace::Light::Light(const rtrace::Vector3 &position) {
-    this->position = position;
-}
+	Light::Light() {}
 
-const rtrace::Vector3 & rtrace::Light::getPosition() const {
-    return this->position;
+	Light::Light(const Vector3 &position) {
+		this->position = position;
+	}
+
+	const Vector3 & Light::getPosition() const {
+		return this->position;
+	}
+
 }

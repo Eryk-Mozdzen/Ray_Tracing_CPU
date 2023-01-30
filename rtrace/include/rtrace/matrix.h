@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <iomanip>
 #include <array>
 
 namespace rtrace {
@@ -14,6 +13,7 @@ namespace rtrace {
 	class Matrix33 {
 	private:
 		std::array<double, 9> data;
+
 	public:
 		Matrix33();
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <rtrace/ray.h>
 #include <rtrace/transform.h>
 

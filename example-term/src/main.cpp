@@ -9,20 +9,21 @@
 #include "torus.h"
 
 int main() {
+	
+	const rtrace::View view({-25, 0, 0}, 1);
+	const rtrace::Light light(rtrace::Vector3(-25, 0, 25));
 
 	Window window(60, 30);
-    const rtrace::View view({-25, 0, 0}, 1);
+    
+	Torus torus(rtrace::Vector3(0, 0, 0), 6, 3);
 
-	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 0), 6, 3);
-	window.addObject(torus);
-
-    window.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(-25, 0, 25)));
+	window.add(torus);
+    window.add(light);
 
     while(true) {
 
-		torus->transform.rotate({0, 1.1, 0.75}, 0.005);
+		torus.transform.rotate({0, 1.1, 0.75}, 0.005);
 
         window.display(view);
     }
-
 }

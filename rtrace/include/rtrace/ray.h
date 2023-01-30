@@ -1,6 +1,6 @@
 #pragma once
 
-#include <rtrace/tools.h>
+#include <rtrace/vector.h>
 
 namespace rtrace {
 

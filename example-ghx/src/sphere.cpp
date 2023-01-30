@@ -1,14 +1,25 @@
 #include "sphere.h"
+#include <cmath>
+#include <vector>
+#include <algorithm>
 
 Sphere::Sphere(rtrace::Vector3 center, double radius, rtrace::Material material) : radius{radius}, material{material} {
 	transform.translate(center);
 }
 
-/*  Collision CustomObject::intersect(const Ray &) const
+std::vector<double> findZerosPoly2(double a, double b, double c) {
+    const double delta = b*b - 4.*a*c;
 
-    method parameter is Ray struct, 
-    if user objects collide with that ray, should return correct CollisionData struct
-    if not, should return not changed CollisionData struct  */
+    if(delta<0.)
+        return {};
+
+    const double deltaSqrt = std::sqrt(delta);
+
+    const double x1 = (-b + deltaSqrt)/(2.*a);
+    const double x2 = (-b - deltaSqrt)/(2.*a);
+
+    return {x1, x2};
+}
 
 rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
     const rtrace::Vector3 center = transform.getTranslation();
@@ -17,7 +28,7 @@ rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
     const double b = 2*(ray.direction*(ray.origin - center));
     const double c = rtrace::length(ray.origin - center)*rtrace::length(ray.origin - center) - radius*radius;
 
-    std::vector<double> tSolutions = rtrace::findZerosPoly2(a, b, c);
+    std::vector<double> tSolutions = findZerosPoly2(a, b, c);
 
     if(tSolutions.size()==0) {
 		return rtrace::Collision();
@@ -43,11 +54,6 @@ rtrace::Collision Sphere::intersect(const rtrace::Ray &ray) const {
 
     return collision;
 }
-
-/*  Collision CustomObject::distance(const Vector3 &) const
-
-    method parameter is Vector3 class, 
-    method should return infromations about object int the nearest point */
 
 rtrace::Collision Sphere::distance(const rtrace::Vector3 &point) const {
     

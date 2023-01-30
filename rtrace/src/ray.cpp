@@ -1,9 +1,13 @@
 #include <rtrace/ray.h>
 
-rtrace::Ray::Ray() {
-	
-}
+namespace rtrace {
 
-rtrace::Ray::Ray(const rtrace::Vector3 &origin, const rtrace::Vector3 &dir) : origin{origin}, direction{dir} {
+	Ray::Ray() {
+		
+	}
+
+	Ray::Ray(const Vector3 &origin, const Vector3 &dir) : origin{origin}, direction{dir} {
+
+	}
 
 }

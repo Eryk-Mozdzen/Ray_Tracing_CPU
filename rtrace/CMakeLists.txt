@@ -8,7 +8,6 @@ add_library(rtrace
 	src/matrix.cpp
 	src/ray.cpp
 	src/scene.cpp
-	src/tools.cpp
 	src/transform.cpp
 	src/vector.cpp
 	src/view.cpp

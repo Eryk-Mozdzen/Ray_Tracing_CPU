@@ -1,4 +1,5 @@
 #include "plane.h"
+#include <cmath>
 
 Plane::Plane(rtrace::Vector3 point, rtrace::Vector3 n) : point{point} {
 	normal = rtrace::normalize(n);
@@ -22,12 +23,6 @@ rtrace::Color Plane::getColor(double u, double v) const {
 
 	return rtrace::Color(0, 0, 0);
 }
-
-/*  CollisionData CustomObject::intersect(const Ray &) const
-
-    method parameter is Ray struct, 
-    if user objects collide with that ray, should return correct CollisionData struct
-    if not, should return not changed CollisionData struct  */
 
 rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
 
@@ -53,11 +48,6 @@ rtrace::Collision Plane::intersect(const rtrace::Ray &ray) const {
 
     return collision;
 }
-
-/*  CollisionData CustomObject::distance(const Vector3 &) const
-
-    method parameter is Vector3 class, 
-    method should return infromations about object int the nearest point */
 
 rtrace::Collision Plane::distance(const rtrace::Vector3 &p) const {
 	rtrace::Collision collision;

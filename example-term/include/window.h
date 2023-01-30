@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ncurses.h>
 #include <rtrace/scene.h>
 
 class Window : public rtrace::Scene {

@@ -20,6 +20,7 @@
 #include "sphere.h"
 #include "plane.h"
 #include "torus.h"
+#include <cmath>
 
 int main() {
 
@@ -28,16 +29,21 @@ int main() {
 
     /*-----------  Scene setup  ---------------*/
 
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(rtrace::Vector3(10, 0, 30), 7, rtrace::Color::red);
-	std::shared_ptr<Torus> torus = std::make_shared<Torus>(rtrace::Vector3(0, 0, 15), 6, 3);
+	Sphere sphere1(rtrace::Vector3(10, 0, 30), 7, rtrace::Color::red);
+	Sphere sphere2(rtrace::Vector3(0, 25, 25), 7, rtrace::Color::green);
+	Plane plane(rtrace::Vector3(0, 0, 0), rtrace::Vector3::Z);
+	Torus torus(rtrace::Vector3(0, 0, 15), 6, 3);
 
-    window.addObject(sphere);
-	window.addObject(torus);
-    window.addObject(std::make_shared<Sphere>(rtrace::Vector3(0, 25, 25), 7, rtrace::Color::green));
-    window.addObject(std::make_shared<Plane>(rtrace::Vector3(0, 0, 0), rtrace::Vector3::Z));
+    window.add(sphere1);
+	window.add(sphere2);
+	window.add(torus);
+    window.add(plane);
 
-    window.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(-25, 0, 25)));
-	window.addLight(std::make_shared<rtrace::Light>(rtrace::Vector3(0, 0, 50)));
+	rtrace::Light light1(rtrace::Vector3(-25, 0, 25));
+	rtrace::Light light2(rtrace::Vector3(0, 0, 50));
+
+    window.add(light1);
+	window.add(light2);
 
     double angle = 0;
 
@@ -48,10 +54,10 @@ int main() {
 
         /*-----------  Scene objects update  ---------------*/
 
-		sphere->transform.translate(rtrace::Vector3(0, 2*std::cos(angle), 0));
+		sphere1.transform.translate(rtrace::Vector3(0, 2*std::cos(angle), 0));
 		angle +=0.1;
 
-		torus->transform.rotate(rtrace::Vector3(0, 1.1, 0.75), 0.1);
+		torus.transform.rotate(rtrace::Vector3(0, 1.1, 0.75), 0.1);
 
         /*-----------  Scene render  ---------------*/
 

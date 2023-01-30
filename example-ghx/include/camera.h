@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include <rtrace/view.h>
 
 /*  User custom Camera class
@@ -10,6 +9,7 @@
 class Camera : public rtrace::View {
 private:
 	const sf::WindowBase &relativeTo;
+	const sf::Vector2i center;
 	
 	void rotation();
     void translation();

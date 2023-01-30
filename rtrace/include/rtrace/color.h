@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ostream>
-#include <algorithm>
 
 namespace rtrace {
 

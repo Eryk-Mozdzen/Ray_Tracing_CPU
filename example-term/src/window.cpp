@@ -1,4 +1,5 @@
 #include "window.h"
+#include <ncurses.h>
 
 Window::Window(int width, int height) : width{width}, height{height} {
 	initscr();

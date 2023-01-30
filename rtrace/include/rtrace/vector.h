@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <cmath>
+#include <rtrace/matrix.h>
 
 namespace rtrace {
 
@@ -9,6 +9,8 @@ namespace rtrace {
 		This is not independent file, it requires Matrix class to work.
 		Class contain basic operators overload, methods and capabilities 
 		to operate with 3-dimensional vectors and matrices in math or physics.  */
+
+	constexpr double EPSILON = 0.001;
 
 	class Vector3 {
 	public:
@@ -32,6 +34,7 @@ namespace rtrace {
 	};
 
 	Vector3 operator*(const double &, const Vector3 &);
+	Vector3 operator*(const Matrix33&, const Vector3&);
 	Vector3 operator-(const Vector3 &);
 	std::ostream & operator<<(std::ostream &, const Vector3 &);
 

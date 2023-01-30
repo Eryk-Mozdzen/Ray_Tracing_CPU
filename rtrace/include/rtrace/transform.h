@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-#include <rtrace/tools.h>
 #include <rtrace/ray.h>
 
 namespace rtrace {

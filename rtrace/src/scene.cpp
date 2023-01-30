@@ -1,132 +1,139 @@
 #include <rtrace/scene.h>
+#include <iomanip>
+#include <sstream>
+#include <cmath>
 
-rtrace::Scene::Scene() {
+namespace rtrace {
 
-}
+	Scene::Scene() {
 
-void rtrace::Scene::addObject(std::shared_ptr<Object> object) {
-    objects.push_back(std::move(object));
-}
+	}
 
-void rtrace::Scene::addLight(std::shared_ptr<Light> light) {
-    lights.push_back(std::move(light));
-}
+	void Scene::add(const Object &object) {
+		objects.push_back(object);
+	}
 
-rtrace::Collision rtrace::Scene::traceRay(const rtrace::Ray &ray) const {
-	rtrace::Collision collision;
+	void Scene::add(const Light &light) {
+		lights.push_back(light);
+	}
 
-	for(const std::shared_ptr<rtrace::Object> &object : objects) {
+	Collision Scene::traceRay(const Ray &ray) const {
+		Collision collision;
 
-		const rtrace::Collision curr = object->intersect(ray);
+		for(const Object &object : objects) {
 
-		if(curr.exist) {
-			if(curr.distance>rtrace::EPSILON && curr.distance<collision.distance) {
-                collision = curr;
-            }
+			const Collision curr = object.intersect(ray);
+
+			if(curr.exist) {
+				if(curr.distance>EPSILON && curr.distance<collision.distance) {
+					collision = curr;
+				}
+			}
 		}
+
+		return collision;
 	}
 
-    return collision;
-}
+	Collision Scene::traceSphere(const Vector3 &point) const {
+		Collision collision;
 
-rtrace::Collision rtrace::Scene::traceSphere(const rtrace::Vector3 &point) const {
-    rtrace::Collision collision;
+		for(const Object &object : objects) {
 
-    for(const std::shared_ptr<rtrace::Object> &object : objects) {
+			const Collision curr = object.distance(point);
 
-        const rtrace::Collision curr = object->distance(point);
+			collision = Collision::smin(curr, collision, 10);
+		}
 
-        collision = Collision::smin(curr, collision, 10);
-    }
-
-    return collision;
-}
-
-rtrace::Color rtrace::Scene::recursiveRayTracing(const rtrace::Ray &ray, int depth) const {
-    if(depth==0)
-        return rtrace::Color();
-
-    const Collision data = traceRay(ray);
-
-    if(!data.exist)
-        return rtrace::Color();
-
-    const rtrace::Vector3 N = rtrace::normalize(data.normal);       // normal
-	const rtrace::Vector3 V = rtrace::normalize(ray.direction);		// view
-    const rtrace::Vector3 H = rtrace::normalize(V - 2*(V*N)*N);		// view reflection
-	
-	const rtrace::Color reflected = recursiveRayTracing(Ray(data.point, H), depth - 1);
-
-    rtrace::Color illumination = data.material.ambient*data.material.color + data.material.reflection*reflected;
-
-	for(const std::shared_ptr<Light> &light : lights) {
-        const rtrace::Vector3 L = rtrace::normalize(light->getPosition() - data.point);   // light
-        const rtrace::Vector3 R = rtrace::normalize(L - 2*(L*N)*N);                       // light reflection
-
-        const rtrace::Collision shadow = traceRay(Ray(data.point, L));
-		if(shadow.exist && shadow.distance<length(light->getPosition() - data.point))
-			continue;
-
-        illumination +=data.material.diffuse*std::max(L*N, 0.)*data.material.color;
-        illumination +=data.material.specular*std::pow(std::max(V*R, 0.), data.material.shininess)*rtrace::Color::white;
-    }
-
-    return illumination;
-}
-
-std::vector<rtrace::Color> rtrace::Scene::renderRayTracing(const rtrace::View &view, int width, int height, int depth) const {
-
-	std::vector<rtrace::Color> buffer(width*height);
-
-	const rtrace::Vector3 dirX = view.getDirection(rtrace::Vector3::X)*view.getDistanceFromProjectionPlane();
-	const rtrace::Vector3 dirY = view.getDirection(rtrace::Vector3::Y)/width*width/height;
-	const rtrace::Vector3 dirZ = view.getDirection(rtrace::Vector3::Z)/height;
-
-	rtrace::Ray ray(view.getPosition(), rtrace::Vector3::X);
-
-    for(int i=0; i<height; i++) {
-        for(int j=0; j<width; j++) {
-			
-			ray.direction = rtrace::normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
-
-			buffer[i*width + j] = recursiveRayTracing(ray, depth);
-        }
+		return collision;
 	}
 
-    return buffer;
-}
+	Color Scene::recursiveRayTracing(const Ray &ray, int depth) const {
+		if(depth==0)
+			return Color();
 
-std::vector<rtrace::Color> rtrace::Scene::renderSphereTracing(const rtrace::View &view, int width, int height) const {
+		const Collision data = traceRay(ray);
 
-	std::vector<rtrace::Color> buffer(width*height);
+		if(!data.exist)
+			return Color();
 
-	const rtrace::Vector3 dirX = view.getDirection(rtrace::Vector3::X)*view.getDistanceFromProjectionPlane();
-	const rtrace::Vector3 dirY = view.getDirection(rtrace::Vector3::Y)/width*width/height;
-	const rtrace::Vector3 dirZ = view.getDirection(rtrace::Vector3::Z)/height;
+		const Vector3 N = normalize(data.normal);       // normal
+		const Vector3 V = normalize(ray.direction);		// view
+		const Vector3 H = normalize(V - 2*(V*N)*N);		// view reflection
+		
+		const Color reflected = recursiveRayTracing(Ray(data.point, H), depth - 1);
 
-	rtrace::Ray ray(view.getPosition(), rtrace::Vector3::X);
-	rtrace::Collision collision;
-	
-	constexpr double renderView = 100;
-	double dist;
+		Color illumination = data.material.ambient*data.material.color + data.material.reflection*reflected;
 
-    for(int i=0; i<height; i++) {
-        for(int j=0; j<width; j++) {
-			
-			collision.exist = false;
-			ray.direction = rtrace::normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
-			dist = 0;
+		for(const Light &light : lights) {
+			const Vector3 L = normalize(light.getPosition() - data.point);	// light
+			const Vector3 R = normalize(L - 2*(L*N)*N);						// light reflection
 
-			while(!collision.exist && dist<renderView) {
-				collision = traceSphere(ray.origin + ray.direction*dist);
-				dist +=collision.distance;
+			const Collision shadow = traceRay(Ray(data.point, L));
+			if(shadow.exist && shadow.distance<length(light.getPosition() - data.point))
+				continue;
+
+			illumination +=data.material.diffuse*std::max(L*N, 0.)*data.material.color;
+			illumination +=data.material.specular*std::pow(std::max(V*R, 0.), data.material.shininess)*Color::white;
+		}
+
+		return illumination;
+	}
+
+	std::vector<Color> Scene::renderRayTracing(const View &view, int width, int height, int depth) const {
+
+		std::vector<Color> buffer(width*height);
+
+		const Vector3 dirX = view.getDirection(Vector3::X)*view.getDistanceFromProjectionPlane();
+		const Vector3 dirY = view.getDirection(Vector3::Y)/width*width/height;
+		const Vector3 dirZ = view.getDirection(Vector3::Z)/height;
+
+		Ray ray(view.getPosition(), Vector3::X);
+
+		for(int i=0; i<height; i++) {
+			for(int j=0; j<width; j++) {
+				
+				ray.direction = normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
+
+				buffer[i*width + j] = recursiveRayTracing(ray, depth);
 			}
+		}
 
-			if(collision.exist) {
-				buffer[i*width + j] = collision.material.color;
-			}
-        }
+		return buffer;
 	}
 
-    return buffer;
+	std::vector<Color> Scene::renderSphereTracing(const View &view, int width, int height) const {
+
+		std::vector<Color> buffer(width*height);
+
+		const Vector3 dirX = view.getDirection(Vector3::X)*view.getDistanceFromProjectionPlane();
+		const Vector3 dirY = view.getDirection(Vector3::Y)/width*width/height;
+		const Vector3 dirZ = view.getDirection(Vector3::Z)/height;
+
+		Ray ray(view.getPosition(), Vector3::X);
+		Collision collision;
+		
+		constexpr double renderView = 100;
+		double dist;
+
+		for(int i=0; i<height; i++) {
+			for(int j=0; j<width; j++) {
+				
+				collision.exist = false;
+				ray.direction = normalize(dirX + dirY*(width/2. - j) + dirZ*(height/2. - i));
+				dist = 0;
+
+				while(!collision.exist && dist<renderView) {
+					collision = traceSphere(ray.origin + ray.direction*dist);
+					dist +=collision.distance;
+				}
+
+				if(collision.exist) {
+					buffer[i*width + j] = collision.material.color;
+				}
+			}
+		}
+
+		return buffer;
+	}
+
 }

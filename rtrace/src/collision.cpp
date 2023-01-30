@@ -1,30 +1,35 @@
 #include <rtrace/collision.h>
+#include <cmath>
 
-rtrace::Collision::Collision() {
-    this->normal = rtrace::Vector3(1, 0, 0);
-    this->distance = 1000000;
-    this->exist = false;
-}
+namespace rtrace {
 
-rtrace::Collision rtrace::Collision::min(const rtrace::Collision &a, const rtrace::Collision &b) {
-    return (a.distance<b.distance) ? a : b;
-}
+	Collision::Collision() {
+		this->normal = Vector3(1, 0, 0);
+		this->distance = 1000000;
+		this->exist = false;
+	}
 
-rtrace::Collision rtrace::Collision::smin(const rtrace::Collision &a, const rtrace::Collision &b, const double &k) {
-    Collision data = Collision::min(a, b);
+	Collision Collision::min(const Collision &a, const Collision &b) {
+		return (a.distance<b.distance) ? a : b;
+	}
 
-    const double h = std::max(k - std::abs(a.distance-b.distance), 0.)/k;
-    data.distance = std::min(a.distance, b.distance) - h*h*h*k*0.167;
+	Collision Collision::smin(const Collision &a, const Collision &b, const double &k) {
+		Collision data = Collision::min(a, b);
 
-    if(data.distance<rtrace::EPSILON) {
-        data.exist = true;
-    }
+		const double h = std::max(k - std::abs(a.distance-b.distance), 0.)/k;
+		data.distance = std::min(a.distance, b.distance) - h*h*h*k*0.167;
 
-    if(h>0) {
-        const double m = a.distance/(a.distance + b.distance);
+		if(data.distance<EPSILON) {
+			data.exist = true;
+		}
+
+		if(h>0) {
+			const double m = a.distance/(a.distance + b.distance);
+			
+			data.material.color = Color::lin(a.material.color, b.material.color, m);
+		}
 		
-		data.material.color = rtrace::Color::lin(a.material.color, b.material.color, m);
-    }
-    
-    return data;
+		return data;
+	}
+
 }

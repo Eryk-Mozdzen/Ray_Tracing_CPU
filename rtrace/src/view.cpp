@@ -1,29 +1,33 @@
 #include <rtrace/view.h>
 
-rtrace::View::View(const rtrace::Vector3 &position, const double &distance) : distance{distance} {
-    transform.translate(position);
-}
+namespace rtrace {
 
-rtrace::Vector3 rtrace::View::getDirection(const rtrace::Vector3 &dir) const {
-	return transform.getRotation()*dir;
-}
+	View::View(const Vector3 &position, const double &distance) : distance{distance} {
+		transform.translate(position);
+	}
 
-rtrace::Vector3 rtrace::View::getPosition() const {
-    return transform.getTranslation();
-}
+	Vector3 View::getDirection(const Vector3 &dir) const {
+		return transform.getRotation()*dir;
+	}
 
-double rtrace::View::getDistanceFromProjectionPlane() const {
-    return distance;
-}
+	Vector3 View::getPosition() const {
+		return transform.getTranslation();
+	}
 
-void rtrace::View::setDistanceFromProjectionPlane(const double &distance) {
-    this->distance = distance;
-}
+	double View::getDistanceFromProjectionPlane() const {
+		return distance;
+	}
 
-void rtrace::View::translate(const rtrace::Vector3 &transltion) {
-    transform.translate(transltion);
-}
+	void View::setDistanceFromProjectionPlane(const double &distance) {
+		this->distance = distance;
+	}
 
-void rtrace::View::rotate(const rtrace::Vector3 &axis, const double &theta) {
-    transform.rotate(axis, theta);
+	void View::translate(const Vector3 &transltion) {
+		transform.translate(transltion);
+	}
+
+	void View::rotate(const Vector3 &axis, const double &theta) {
+		transform.rotate(axis, theta);
+	}
+
 }

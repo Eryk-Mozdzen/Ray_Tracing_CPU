@@ -1,4 +1,5 @@
 #include "window.h"
+#include <iomanip>
 
 Window::Window(int width, int height, int depth) : 
 		sf::RenderWindow{sf::VideoMode(1280, 720), ""},

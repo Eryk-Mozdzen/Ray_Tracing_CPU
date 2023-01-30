@@ -1,13 +1,16 @@
 #include "camera.h"
 
-Camera::Camera(rtrace::Vector3 position, sf::WindowBase &window) : rtrace::View(position, 1), relativeTo{window} {
+Camera::Camera(rtrace::Vector3 position, sf::WindowBase &window) : rtrace::View(position, 1), relativeTo{window}, 
+		center{static_cast<sf::Vector2i>(relativeTo.getSize()/2u)} {
+			
 	window.setMouseCursorVisible(false);
+
+	sf::Mouse::setPosition(center, relativeTo);
 }
 
 void Camera::rotation() {
 	constexpr double angularVelocity = 0.1;
 
-	const sf::Vector2i center = static_cast<sf::Vector2i>(relativeTo.getSize()/2u);
     const sf::Vector2i delta = sf::Mouse::getPosition(relativeTo) - center;
 
     if(std::abs(delta.x)>5) {

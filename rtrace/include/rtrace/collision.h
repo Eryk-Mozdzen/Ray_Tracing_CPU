@@ -1,14 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cmath>
-#include <cassert>
-
 #include <rtrace/material.h>
 #include <rtrace/vector.h>
-#include <rtrace/tools.h>
 
 namespace rtrace {
 
