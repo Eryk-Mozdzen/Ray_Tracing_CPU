@@ -40,6 +40,7 @@ sudo apt install libvorbis-dev
 sudo apt install libflac-dev
 sudo apt install libgl1-mesa-dev
 sudo apt install xorg-dev
+sudo apt install ncurses-*
 
 git clone https://github.com/Eryk-Mozdzen/Ray_Tracing_CPU.git
 cd ./Ray_Tracing_CPU/example-ghx

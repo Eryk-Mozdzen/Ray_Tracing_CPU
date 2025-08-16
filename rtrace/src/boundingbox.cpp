@@ -1,5 +1,6 @@
 #include <rtrace/boundingbox.h>
 #include <algorithm>
+#include <vector>
 
 namespace rtrace {
 
