@@ -9,8 +9,8 @@
     Controls:
         - Mouse         - camera rotation
         - Mouse Scroll  - resolution change
-        - WASD          - camera forward, left, backward, right movment
-        - LShift, LCtr  - camera up, down movment
+        - WASD          - camera forward, left, backward, right movement
+        - LShift, LCtr  - camera up, down movement
         - N/M keys      - toggling between two modes (ray/sphere tracing)
         - Z key         - take a screenshot
         - X key         - exit the application		*/
