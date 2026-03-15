@@ -15,4 +15,4 @@ add_library(rtrace
 
 target_include_directories(rtrace PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(rtrace PRIVATE m)
+target_link_libraries(rtrace PRIVATE m tbb)

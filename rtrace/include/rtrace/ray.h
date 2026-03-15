@@ -1,18 +1,23 @@
-#pragma once
+#ifndef RTRACE_RAY_HPP
+#define RTRACE_RAY_HPP
 
-#include <rtrace/vector.h>
+#include "rtrace/vector.h"
 
 namespace rtrace {
 
-	/*  Ray struct  
-		Struct contains origin point and normalized direction vector */
+/*
+Ray struct
+Struct contains origin point and normalized direction vector
+*/
 
-	struct Ray {
-		Vector3 origin;
-		Vector3 direction;
+struct Ray {
+    Vector3 origin;
+    Vector3 direction;
 
-		Ray();
-		Ray(const Vector3&, const Vector3&);
-	};
+    Ray();
+    Ray(const Vector3 &, const Vector3 &);
+};
 
 }
+
+#endif

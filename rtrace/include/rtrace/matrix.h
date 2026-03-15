@@ -1,30 +1,34 @@
-#pragma once
+#ifndef RTRACE_MATRIX_HPP
+#define RTRACE_MATRIX_HPP
 
-#include <iostream>
 #include <array>
+#include <iostream>
 
 namespace rtrace {
 
-	/*  Matrix class
-		This is independent file, can be used in other projects.
-		Class contain basic operators overload, methods and capabilities 
-		to operate with matrices in math or physics.                        */
+/*
+Matrix class
+This is independent file, can be used in other projects.
+Class contain basic operators overload, methods and capabilities
+to operate with matrices in math or physics.
+*/
 
-	class Matrix33 {
-	private:
-		std::array<double, 9> data;
+class Matrix33 {
+    std::array<double, 9> data;
 
-	public:
-		Matrix33();
+public:
+    Matrix33();
 
-		Matrix33 operator*(const Matrix33&) const;
+    Matrix33 operator*(const Matrix33 &) const;
 
-		const double & operator()(int, int) const;
-		double & operator()(int, int);
-	};
+    const double &operator()(int, int) const;
+    double &operator()(int, int);
+};
 
-	std::ostream& operator<<(std::ostream&, const Matrix33&);
+std::ostream &operator<<(std::ostream &, const Matrix33 &);
 
-	double determinant(const Matrix33&);
-	Matrix33 transposition(const Matrix33&);
+double determinant(const Matrix33 &);
+Matrix33 transposition(const Matrix33 &);
 }
+
+#endif

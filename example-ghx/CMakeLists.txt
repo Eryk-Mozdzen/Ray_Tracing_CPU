@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(example-ghx)
 
-set(CMAKE_CXX_STANDARD 17)
-
-add_compile_options(-O3 -Wall -pedantic)
+add_compile_options(-O3 -Wall -pedantic -std=c++23)
 
 add_subdirectory("SFML")
 add_subdirectory("../rtrace" "rtrace")
