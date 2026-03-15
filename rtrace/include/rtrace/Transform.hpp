@@ -1,7 +1,7 @@
 #ifndef RTRACE_TRANSFORM_HPP
 #define RTRACE_TRANSFORM_HPP
 
-#include "rtrace/ray.h"
+#include "rtrace/Ray.hpp"
 
 namespace rtrace {
 

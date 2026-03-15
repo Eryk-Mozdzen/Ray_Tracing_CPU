@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "rtrace/color.h"
+#include "rtrace/Color.hpp"
 
 namespace rtrace {
 

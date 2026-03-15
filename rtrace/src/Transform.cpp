@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "rtrace/transform.h"
+#include "rtrace/Transform.hpp"
 
 namespace rtrace {
 

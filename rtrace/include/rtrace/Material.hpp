@@ -1,7 +1,7 @@
 #ifndef RTRACE_MATERIAL_HPP
 #define RTRACE_MATERIAL_HPP
 
-#include "rtrace/color.h"
+#include "rtrace/Color.hpp"
 
 namespace rtrace {
 

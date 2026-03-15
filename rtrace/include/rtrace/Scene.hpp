@@ -4,10 +4,10 @@
 #include <functional>
 #include <vector>
 
-#include "rtrace/color.h"
-#include "rtrace/light.h"
-#include "rtrace/object.h"
-#include "rtrace/view.h"
+#include "rtrace/Color.hpp"
+#include "rtrace/Light.hpp"
+#include "rtrace/Object.hpp"
+#include "rtrace/View.hpp"
 
 namespace rtrace {
 

@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "rtrace/scene.h"
+#include "rtrace/Scene.hpp"
 
 namespace rtrace {
 

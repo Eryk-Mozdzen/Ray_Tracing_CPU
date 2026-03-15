@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "rtrace/boundingbox.h"
+#include "rtrace/BoundingBox.hpp"
 
 namespace rtrace {
 

@@ -1,7 +1,7 @@
 #ifndef RTRACE_RAY_HPP
 #define RTRACE_RAY_HPP
 
-#include "rtrace/vector.h"
+#include "rtrace/Vector.hpp"
 
 namespace rtrace {
 

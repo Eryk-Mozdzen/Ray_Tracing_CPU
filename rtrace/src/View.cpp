@@ -1,4 +1,4 @@
-#include "rtrace/view.h"
+#include "rtrace/View.hpp"
 
 namespace rtrace {
 

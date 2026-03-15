@@ -1,8 +1,8 @@
 #ifndef RTRACE_BOUNDING_BOX_HPP
 #define RTRACE_BOUNDING_BOX_HPP
 
-#include "rtrace/ray.h"
-#include "rtrace/transform.h"
+#include "rtrace/Ray.hpp"
+#include "rtrace/Transform.hpp"
 
 namespace rtrace {
 

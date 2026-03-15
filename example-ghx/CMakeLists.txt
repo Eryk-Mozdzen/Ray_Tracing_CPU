@@ -2,22 +2,28 @@ cmake_minimum_required(VERSION 3.16)
 
 project(example-ghx)
 
-add_compile_options(-O3 -Wall -pedantic -std=c++23)
-
 add_subdirectory("SFML")
 add_subdirectory("../rtrace" "rtrace")
 
 add_executable(${PROJECT_NAME}
 	"src/main.cpp"
-	"src/window.cpp"
-	"src/camera.cpp"
-	"src/sphere.cpp"
-	"src/plane.cpp"
-	"src/torus.cpp"
+	"src/Window.cpp"
+	"src/Camera.cpp"
+	"src/Sphere.cpp"
+	"src/Plane.cpp"
+	"src/Torus.cpp"
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
+target_include_directories(${PROJECT_NAME} PRIVATE
 	"include"
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+	-Wall
+	-Wextra
+	-Wpedantic
+	-O3
+	-std=c++23
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

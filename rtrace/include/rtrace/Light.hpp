@@ -1,7 +1,7 @@
 #ifndef RTRACE_LIGHT_HPP
 #define RTRACE_LIGHT_HPP
 
-#include "rtrace/vector.h"
+#include "rtrace/Vector.hpp"
 
 namespace rtrace {
 

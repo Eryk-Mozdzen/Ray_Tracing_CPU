@@ -1,4 +1,4 @@
-#include "rtrace/material.h"
+#include "rtrace/Material.hpp"
 
 namespace rtrace {
 

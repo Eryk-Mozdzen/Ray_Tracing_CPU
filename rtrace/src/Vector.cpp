@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "rtrace/vector.h"
+#include "rtrace/Vector.hpp"
 
 namespace rtrace {
 

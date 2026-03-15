@@ -1,4 +1,4 @@
-#include "rtrace/ray.h"
+#include "rtrace/Ray.hpp"
 
 namespace rtrace {
 

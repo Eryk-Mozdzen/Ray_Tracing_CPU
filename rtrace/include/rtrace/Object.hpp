@@ -1,9 +1,9 @@
 #ifndef RTRACE_OBJECT_HPP
 #define RTRACE_OBJECT_HPP
 
-#include "rtrace/collision.h"
-#include "rtrace/ray.h"
-#include "rtrace/vector.h"
+#include "rtrace/Collision.hpp"
+#include "rtrace/Ray.hpp"
+#include "rtrace/Vector.hpp"
 
 namespace rtrace {
 

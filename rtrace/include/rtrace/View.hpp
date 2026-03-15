@@ -1,7 +1,7 @@
 #ifndef RTRACE_VIEW_HPP
 #define RTRACE_VIEW_HPP
 
-#include "rtrace/transform.h"
+#include "rtrace/Transform.hpp"
 
 namespace rtrace {
 

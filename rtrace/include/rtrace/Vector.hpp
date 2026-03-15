@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "rtrace/matrix.h"
+#include "rtrace/Matrix.hpp"
 
 namespace rtrace {
 

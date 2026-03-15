@@ -1,6 +1,6 @@
 #include <iomanip>
 
-#include "rtrace/matrix.h"
+#include "rtrace/Matrix.hpp"
 
 namespace rtrace {
 

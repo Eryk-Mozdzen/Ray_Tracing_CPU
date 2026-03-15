@@ -1,4 +1,4 @@
-#include "rtrace/light.h"
+#include "rtrace/Light.hpp"
 
 namespace rtrace {
 

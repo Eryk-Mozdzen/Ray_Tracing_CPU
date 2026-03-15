@@ -1,8 +1,8 @@
 #ifndef RTRACE_COLLISION_HPP
 #define RTRACE_COLLISION_HPP
 
-#include "rtrace/material.h"
-#include "rtrace/vector.h"
+#include "rtrace/Material.hpp"
+#include "rtrace/Vector.hpp"
 
 namespace rtrace {
 

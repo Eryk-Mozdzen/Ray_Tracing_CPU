@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "rtrace/collision.h"
+#include "rtrace/Collision.hpp"
 
 namespace rtrace {
 
