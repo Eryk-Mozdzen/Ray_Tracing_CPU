@@ -1,21 +1,25 @@
-#pragma once
+#ifndef TORUS_HPP
+#define TORUS_HPP
 
-#include <rtrace/object.h>
-#include <rtrace/transform.h>
+#include <rtrace/Object.hpp>
+#include <rtrace/Transform.hpp>
 
-/*  User custom Torus class
-    It is drawable object looks like donut.    */
+/*
+User custom Torus class
+It is drawable object looks like donut.
+*/
 
 class Torus : public rtrace::Object {
-private:
     double majorRadius, minorRadius;
-	rtrace::Material material;
+    rtrace::Material material;
 
 public:
-	rtrace::Transform3 transform;
+    rtrace::Transform3 transform;
 
     Torus(rtrace::Vector3, double, double);
 
-    rtrace::Collision intersect(const rtrace::Ray&) const;
-    rtrace::Collision distance(const rtrace::Vector3&) const;
+    rtrace::Collision intersect(const rtrace::Ray &) const;
+    rtrace::Collision distance(const rtrace::Vector3 &) const;
 };
+
+#endif

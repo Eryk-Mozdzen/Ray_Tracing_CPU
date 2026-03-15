@@ -1,21 +1,25 @@
-#pragma once
+#ifndef SPHERE_HPP
+#define SPHERE_HPP
 
-#include <rtrace/object.h>
-#include <rtrace/transform.h>
+#include <rtrace/Object.hpp>
+#include <rtrace/Transform.hpp>
 
-/*  User custom Sphere class
-    It is drawable object looks like ball. Can have color or texture.    */
+/*
+User custom Sphere class
+It is drawable object looks like ball. Can have color or texture.
+*/
 
 class Sphere : public rtrace::Object {
-private:
     double radius;
-	rtrace::Material material;
+    rtrace::Material material;
 
 public:
-	rtrace::Transform3 transform;
+    rtrace::Transform3 transform;
 
     Sphere(rtrace::Vector3, double, rtrace::Material);
 
-    rtrace::Collision intersect(const rtrace::Ray&) const;
-    rtrace::Collision distance(const rtrace::Vector3&) const;
+    rtrace::Collision intersect(const rtrace::Ray &) const;
+    rtrace::Collision distance(const rtrace::Vector3 &) const;
 };
+
+#endif

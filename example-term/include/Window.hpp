@@ -1,15 +1,18 @@
-#pragma once
+#ifndef WINDOW_HPP
+#define WINDOW_HPP
 
-#include <rtrace/scene.h>
+#include <rtrace/Scene.hpp>
 
 class Window : public rtrace::Scene {
-private:
-	int width, height;
+    int width, height;
 
-	static char mapColor(const rtrace::Color &);
+    static char mapColor(const rtrace::Color &);
+
 public:
-	Window(int, int);
-	~Window();
+    Window(int, int);
+    ~Window();
 
-	void display(const rtrace::View&);
+    void display(const rtrace::View &);
 };
+
+#endif

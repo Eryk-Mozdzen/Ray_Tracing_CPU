@@ -20,39 +20,40 @@ void Scene::add(const Light &light) {
 }
 
 Collision Scene::traceRay(const Ray &ray) const {
-    const Collision collision = std::transform_reduce(
+    return std::transform_reduce(
         std::execution::par_unseq, objects.begin(), objects.end(), Collision{},
         [](const Collision &a, const Collision &b) {
-            if(!a.exist)
+            if(!a.exist) {
                 return b;
-            if(!b.exist)
+            }
+            if(!b.exist) {
                 return a;
+            }
             return (a.distance < b.distance) ? a : b;
         },
         [ray](const Object &object) {
-            Collision curr = object.intersect(ray);
-
+            const Collision curr = object.intersect(ray);
             if(!curr.exist || curr.distance <= EPSILON) {
                 return Collision{};
             }
-
             return curr;
         });
-
-    return collision;
 }
 
 Collision Scene::traceSphere(const Vector3 &point) const {
     Collision collision;
 
     for(const Object &object : objects) {
-
-        const Collision curr = object.distance(point);
-
-        collision = Collision::smin(curr, collision, 10);
+        collision = Collision::smin(object.distance(point), collision, 10);
     }
 
     return collision;
+
+    // not used due to performance decrease
+    // return std::transform_reduce(
+    //     std::execution::par_unseq, objects.begin(), objects.end(), Collision{},
+    //     [](const Collision &a, const Collision &b) { return Collision::smin(a, b, 10); },
+    //     [point](const Object &object) { return object.distance(point); });
 }
 
 Color Scene::recursiveRayTracing(const Ray &ray, int depth) const {
@@ -117,29 +118,28 @@ std::vector<Color> Scene::renderSphereTracing(const View &view, int width, int h
     const Vector3 dirY = view.getDirection(Vector3::Y) / width * width / height;
     const Vector3 dirZ = view.getDirection(Vector3::Z) / height;
 
-    Ray ray(view.getPosition(), Vector3::X);
-    Collision collision;
+    std::for_each(std::execution::par_unseq, buffer.begin(), buffer.end(), [&](Color &color) {
+        const int index = &color - buffer.data();
+        const int i = index / width;
+        const int j = index % width;
 
-    constexpr double renderView = 100;
-    double dist;
+        Collision collision;
+        collision.exist = false;
 
-    for(int i = 0; i < height; i++) {
-        for(int j = 0; j < width; j++) {
+        const Ray ray(view.getPosition(),
+                      normalize(dirX + dirY * (width / 2. - j) + dirZ * (height / 2. - i)));
 
-            collision.exist = false;
-            ray.direction = normalize(dirX + dirY * (width / 2. - j) + dirZ * (height / 2. - i));
-            dist = 0;
-
-            while(!collision.exist && dist < renderView) {
-                collision = traceSphere(ray.origin + ray.direction * dist);
-                dist += collision.distance;
-            }
-
-            if(collision.exist) {
-                buffer[i * width + j] = collision.material.color;
-            }
+        constexpr double renderView = 100;
+        double dist = 0;
+        while(!collision.exist && dist < renderView) {
+            collision = traceSphere(ray.origin + ray.direction * dist);
+            dist += collision.distance;
         }
-    }
+
+        if(collision.exist) {
+            color = collision.material.color;
+        }
+    });
 
     return buffer;
 }
