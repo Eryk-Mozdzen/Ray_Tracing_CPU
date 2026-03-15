@@ -5,10 +5,8 @@
 
 namespace rtrace {
 
-/*
-Ray struct
-Struct contains origin point and normalized direction vector
-*/
+/*  Ray struct
+    Struct contains origin point and normalized direction vector    */
 
 struct Ray {
     Vector3 origin;

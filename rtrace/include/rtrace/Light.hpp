@@ -5,10 +5,8 @@
 
 namespace rtrace {
 
-/*
-LightSource class
-It is part of the scene. At this moment describes only position of light point.
-*/
+/*  LightSource class
+    It is part of the scene. At this moment describes only position of light point. */
 
 class Light {
     Vector3 position;

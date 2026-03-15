@@ -56,14 +56,16 @@ Collision Scene::traceSphere(const Vector3 &point) const {
     //     [point](const Object &object) { return object.distance(point); });
 }
 
-Color Scene::recursiveRayTracing(const Ray &ray, int depth) const {
-    if(depth == 0)
+Color Scene::recursiveRayTracing(const Ray &ray, const int depth) const {
+    if(depth == 0) {
         return Color();
+    }
 
     const Collision data = traceRay(ray);
 
-    if(!data.exist)
+    if(!data.exist) {
         return Color();
+    }
 
     const Vector3 N = normalize(data.normal);         // normal
     const Vector3 V = normalize(ray.direction);       // view

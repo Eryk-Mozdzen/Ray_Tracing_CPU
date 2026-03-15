@@ -7,12 +7,10 @@
 
 namespace rtrace {
 
-/*
-Vector class (3-dimensions only)
-This is not independent file, it requires Matrix class to work.
-Class contain basic operators overload, methods and capabilities
-to operate with 3-dimensional vectors and matrices in math or physics.
-*/
+/*  Vector class (3-dimensions only)
+    This is not independent file, it requires Matrix class to work.
+    Class contain basic operators overload, methods and capabilities
+    to operate with 3-dimensional vectors and matrices in math or physics.  */
 
 constexpr double EPSILON = 0.001;
 

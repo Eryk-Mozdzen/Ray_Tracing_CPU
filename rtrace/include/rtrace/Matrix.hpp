@@ -6,12 +6,10 @@
 
 namespace rtrace {
 
-/*
-Matrix class
-This is independent file, can be used in other projects.
-Class contain basic operators overload, methods and capabilities
-to operate with matrices in math or physics.
-*/
+/*  Matrix class
+    This is independent file, can be used in other projects.
+    Class contain basic operators overload, methods and capabilities
+    to operate with matrices in math or physics.    */
 
 class Matrix33 {
     std::array<double, 9> data;

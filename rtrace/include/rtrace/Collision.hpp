@@ -6,12 +6,10 @@
 
 namespace rtrace {
 
-/*
-Collision struct
-Struct contains all data requied to calculate reflections and other stuff.
-When method intersect() or distance() returns this struct, it should
-be initialized by user with correct values (like in example).
-*/
+/*  Collision struct
+    Struct contains all data required to calculate reflections and other stuff.
+    When method intersect() or distance() returns this struct, it should
+    be initialized by user with correct values (like in example).   */
 
 struct Collision {
     bool exist;        // true if collision occurred

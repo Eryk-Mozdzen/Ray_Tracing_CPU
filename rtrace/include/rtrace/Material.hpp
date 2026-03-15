@@ -5,14 +5,12 @@
 
 namespace rtrace {
 
-/*
-Material class
-This class contains all required informations
-about material properties in render algorith.
-*/
+/*  Material class
+    This class contains all required informations
+    about material properties in render algorithm.  */
 
 struct Material {
-    double ambient, diffuse, specular, shininess, reflection; // phong model
+    double ambient, diffuse, specular, shininess, reflection; // Phong model
     Color color;
 
     Material();

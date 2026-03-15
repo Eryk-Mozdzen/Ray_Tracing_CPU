@@ -7,14 +7,12 @@
 
 namespace rtrace {
 
-/*
-Object class
-Class can be drawn on the scene.
-Whene user want to inheriting them form this class
-and overrite one from distance() or intersect() methods (like in example).
-When custom object has only one of this methods,
-then will be appear only in coresponding mode.
-*/
+/*  Object class
+    Class can be drawn on the scene.
+    When user want to inheriting them form this class
+    and overwrite one from distance() or intersect() methods (like in example).
+    When custom object has only one of this methods,
+    then will be appear only in corresponding mode.  */
 
 class Object {
 public:
