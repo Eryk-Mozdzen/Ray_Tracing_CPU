@@ -2,15 +2,7 @@
 
 #include "Window.hpp"
 
-Window::Window(int width, int height) : width{width}, height{height} {
-    initscr();
-}
-
-Window::~Window() {
-    endwin();
-}
-
-char Window::mapColor(const rtrace::Color &color) {
+static char map(const rtrace::Color &color) {
     const rtrace::Vector3 vec(color.r, color.g, color.b);
     const double brightness = rtrace::length(vec);
 
@@ -33,12 +25,21 @@ char Window::mapColor(const rtrace::Color &color) {
     return ' ';
 }
 
+Window::Window(const int width, const int height) : width{width}, height{height} {
+    frame.resize(width * height);
+    initscr();
+}
+
+Window::~Window() {
+    endwin();
+}
+
 void Window::display(const rtrace::View &view) {
-    std::vector<rtrace::Color> frame = renderRayTracing(view, width, height, 1);
+    renderRayTracing(frame, view, width, height, 1);
 
     for(int i = 0; i < height; i++) {
         for(int j = 0; j < width; j++) {
-            mvaddch(i, j, mapColor(frame[i * width + j]));
+            mvaddch(i, j, map(frame[i * width + j]));
         }
     }
 

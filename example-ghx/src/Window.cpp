@@ -9,6 +9,7 @@ Window::Window(int width, int height, int depth)
       mode{true},
       depth{depth} {
 
+    frame.resize(width * height);
     buffer.create(width, height, sf::Color::Black);
 }
 
@@ -47,6 +48,7 @@ void Window::handleEvents() {
                 height -= 10;
             }
 
+            frame.resize(width * height);
             buffer.create(width, height, sf::Color::Black);
         }
     }
@@ -56,12 +58,10 @@ void Window::display(const rtrace::View &view) {
     sf::Clock clock;
     clock.restart();
 
-    std::vector<rtrace::Color> frame;
-
     if(mode) {
-        frame = renderRayTracing(view, width, height, depth);
+        renderRayTracing(frame, view, width, height, depth);
     } else {
-        frame = renderSphereTracing(view, width, height);
+        renderSphereTracing(frame, view, width, height);
     }
 
     const double renderTime = clock.restart().asSeconds();

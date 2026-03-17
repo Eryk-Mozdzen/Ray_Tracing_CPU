@@ -4,15 +4,15 @@
 #include <rtrace/Scene.hpp>
 
 class Window : public rtrace::Scene {
-    int width, height;
-
-    static char mapColor(const rtrace::Color &);
+    std::vector<rtrace::Color> frame;
+    const int width;
+    const int height;
 
 public:
-    Window(int, int);
+    Window(const int width, const int height);
     ~Window();
 
-    void display(const rtrace::View &);
+    void display(const rtrace::View &view);
 };
 
 #endif

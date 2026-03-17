@@ -30,8 +30,15 @@ public:
     void add(const Object &object);
     void add(const Light &light);
 
-    std::vector<Color> renderRayTracing(const View &view, int width, int height, int depth) const;
-    std::vector<Color> renderSphereTracing(const View &view, int width, int height) const;
+    void renderRayTracing(std::vector<Color> &buffer,
+                          const View &view,
+                          const int width,
+                          const int height,
+                          const int depth) const;
+    void renderSphereTracing(std::vector<Color> &buffer,
+                             const View &view,
+                             const int width,
+                             const int height) const;
 };
 
 }

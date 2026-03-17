@@ -91,10 +91,11 @@ Color Scene::recursiveRayTracing(const Ray &ray, const int depth) const {
     return illumination;
 }
 
-std::vector<Color>
-Scene::renderRayTracing(const View &view, int width, int height, int depth) const {
-    std::vector<Color> buffer(width * height);
-
+void Scene::renderRayTracing(std::vector<Color> &buffer,
+                             const View &view,
+                             const int width,
+                             const int height,
+                             const int depth) const {
     const Vector3 dirX = view.getDirection(Vector3::X) * view.getDistanceFromProjectionPlane();
     const Vector3 dirY = view.getDirection(Vector3::Y) / width * width / height;
     const Vector3 dirZ = view.getDirection(Vector3::Z) / height;
@@ -109,13 +110,12 @@ Scene::renderRayTracing(const View &view, int width, int height, int depth) cons
 
         color = recursiveRayTracing(ray, depth);
     });
-
-    return buffer;
 }
 
-std::vector<Color> Scene::renderSphereTracing(const View &view, int width, int height) const {
-    std::vector<Color> buffer(width * height);
-
+void Scene::renderSphereTracing(std::vector<Color> &buffer,
+                                const View &view,
+                                const int width,
+                                const int height) const {
     const Vector3 dirX = view.getDirection(Vector3::X) * view.getDistanceFromProjectionPlane();
     const Vector3 dirY = view.getDirection(Vector3::Y) / width * width / height;
     const Vector3 dirZ = view.getDirection(Vector3::Z) / height;
@@ -142,8 +142,6 @@ std::vector<Color> Scene::renderSphereTracing(const View &view, int width, int h
             color = collision.material.color;
         }
     });
-
-    return buffer;
 }
 
 }
