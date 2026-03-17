@@ -140,6 +140,8 @@ void Scene::renderSphereTracing(std::vector<Color> &buffer,
 
         if(collision.exist) {
             color = collision.material.color;
+        } else {
+            color = Color{};
         }
     });
 }
