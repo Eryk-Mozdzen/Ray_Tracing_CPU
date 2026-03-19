@@ -2,19 +2,23 @@ cmake_minimum_required(VERSION 3.16)
 
 project(example-term)
 
-set(CMAKE_CXX_STANDARD 17)
-
-add_compile_options(-O3 -Wall -pedantic)
+add_compile_options(
+	-Wall
+	-Wextra
+	-Wpedantic
+	-O3
+	-std=c++23
+)
 
 add_subdirectory("../rtrace" "rtrace")
 
 add_executable(${PROJECT_NAME}
 	"src/main.cpp"
-	"src/window.cpp"
-	"src/torus.cpp"
+	"src/Window.cpp"
+	"src/Torus.cpp"
 )
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
+target_include_directories(${PROJECT_NAME} PRIVATE
 	"include"
 )
 
