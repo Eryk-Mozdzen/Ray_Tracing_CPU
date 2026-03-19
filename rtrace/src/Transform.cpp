@@ -10,6 +10,32 @@ Transform3::Transform3() {
     rotation(2, 2) = 1;
 }
 
+void Transform3::setTranslation(const Vector3 &vec) {
+    translation = vec;
+}
+
+void Transform3::setRotation(const Vector3 &axis, const double &theta) {
+    const Vector3 u = normalize(axis);
+    const double s = std::sin(theta);
+    const double c = std::cos(theta);
+
+    Matrix33 rot;
+
+    rot(0, 0) = c + u.x * u.x * (1 - c);
+    rot(0, 1) = u.x * u.y * (1 - c) - u.z * s;
+    rot(0, 2) = u.x * u.z * (1 - c) + u.y * s;
+
+    rot(1, 0) = u.y * u.x * (1 - c) + u.z * s;
+    rot(1, 1) = c + u.y * u.y * (1 - c);
+    rot(1, 2) = u.y * u.z * (1 - c) - u.x * s;
+
+    rot(2, 0) = u.z * u.x * (1 - c) - u.y * s;
+    rot(2, 1) = u.z * u.y * (1 - c) + u.x * s;
+    rot(2, 2) = c + u.z * u.z * (1 - c);
+
+    rotation = rot;
+}
+
 void Transform3::translate(const Vector3 &vec) {
     translation += rotation * vec;
 }
@@ -25,7 +51,7 @@ void Transform3::rotate(const Vector3 &axis, const double &theta) {
     rot(0, 1) = u.x * u.y * (1 - c) - u.z * s;
     rot(0, 2) = u.x * u.z * (1 - c) + u.y * s;
 
-    rot(1, 0) = u.y * u.z * (1 - c) + u.z * s;
+    rot(1, 0) = u.y * u.x * (1 - c) + u.z * s;
     rot(1, 1) = c + u.y * u.y * (1 - c);
     rot(1, 2) = u.y * u.z * (1 - c) - u.x * s;
 

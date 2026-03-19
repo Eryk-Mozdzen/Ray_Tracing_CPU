@@ -1,6 +1,8 @@
+#include <chrono>
+
 #include "Camera.hpp"
 
-Camera::Camera(rtrace::Vector3 position, sf::WindowBase &window)
+Camera::Camera(const rtrace::Vector3 position, sf::WindowBase &window)
     : rtrace::View(position, 1),
       relativeTo{window},
       center{static_cast<sf::Vector2i>(relativeTo.getSize() / 2u)} {
@@ -8,6 +10,8 @@ Camera::Camera(rtrace::Vector3 position, sf::WindowBase &window)
     window.setMouseCursorVisible(false);
 
     sf::Mouse::setPosition(center, relativeTo);
+
+    prevTime = std::chrono::steady_clock::now();
 }
 
 void Camera::rotation() {
@@ -32,8 +36,8 @@ void Camera::rotation() {
     sf::Mouse::setPosition(center, relativeTo);
 }
 
-void Camera::translation() {
-    constexpr double linearVelocity = 1.5;
+void Camera::translation(const double dt) {
+    constexpr double linearVelocity = 100;
 
     rtrace::Vector3 translation;
 
@@ -61,10 +65,15 @@ void Camera::translation() {
         translation -= rtrace::Vector3::Z;
     }
 
-    View::translate(linearVelocity * rtrace::normalize(translation));
+    View::translate(dt * linearVelocity * rtrace::normalize(translation));
 }
 
 void Camera::move() {
+    const auto now = std::chrono::steady_clock::now();
+    const double dt =
+        std::chrono::duration_cast<std::chrono::duration<double>>(now - prevTime).count();
+    prevTime = now;
+
     rotation();
-    translation();
+    translation(dt);
 }

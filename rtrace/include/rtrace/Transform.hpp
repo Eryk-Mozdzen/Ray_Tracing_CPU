@@ -12,14 +12,17 @@ class Transform3 {
 public:
     Transform3();
 
-    void translate(const Vector3 &);
-    void rotate(const Vector3 &, const double &);
+    void setTranslation(const Vector3 &vec);
+    void setRotation(const Vector3 &axis, const double &theta);
 
-    Vector3 convertWordToFrame(const Vector3 &) const;
-    Vector3 convertFrameToWord(const Vector3 &) const;
+    void translate(const Vector3 &vec);
+    void rotate(const Vector3 &axis, const double &theta);
 
-    Ray convertWordToFrame(const Ray &) const;
-    Ray convertFrameToWord(const Ray &) const;
+    Vector3 convertWordToFrame(const Vector3 &vec) const;
+    Vector3 convertFrameToWord(const Vector3 &vec) const;
+
+    Ray convertWordToFrame(const Ray &ray) const;
+    Ray convertFrameToWord(const Ray &ray) const;
 
     const Vector3 &getTranslation() const;
     const Matrix33 &getRotation() const;
